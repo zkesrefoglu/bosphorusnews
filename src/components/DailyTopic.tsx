@@ -35,10 +35,6 @@ export const DailyTopic = ({ title, excerpt, author, date, slug }: DailyTopicPro
         <p className="text-lg md:text-xl text-foreground/90 leading-relaxed mb-6 max-w-3xl animate-[fade-in_1s_ease-out_0.4s_both]">
           {excerpt}
         </p>
-        
-        <div className="flex items-center text-sm animate-[fade-in_1.2s_ease-out_0.6s_both]">
-          <span className="font-medium text-foreground">{author}</span>
-        </div>
       </div>
     </article>
   );

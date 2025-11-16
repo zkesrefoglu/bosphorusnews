@@ -37,6 +37,11 @@ const Admin = () => {
   const [newsContent, setNewsContent] = useState("");
   const [newsImageUrl, setNewsImageUrl] = useState("");
 
+  // Daily topic (Agenda) form state
+  const [topicTitle, setTopicTitle] = useState("");
+  const [topicExcerpt, setTopicExcerpt] = useState("");
+  const [topicContent, setTopicContent] = useState("");
+
   useEffect(() => {
     checkAdmin();
   }, []);
@@ -135,6 +140,67 @@ const Admin = () => {
       setNewsExcerpt("");
       setNewsContent("");
       setNewsImageUrl("");
+    } catch (error: any) {
+      toast({
+        title: "Validation Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleTopicSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      // Validate input data
+      const validationResult = newsArticleSchema.safeParse({
+        title: topicTitle,
+        category: "Agenda",
+        excerpt: topicExcerpt,
+        content: topicContent,
+        image_url: "",
+      });
+
+      if (!validationResult.success) {
+        const errors = validationResult.error.errors.map(err => err.message).join(", ");
+        throw new Error(errors);
+      }
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+
+      const validData = validationResult.data;
+      
+      // Create slug from title with timestamp to avoid collisions
+      const slug = `${validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
+      
+      const { error } = await supabase
+        .from("news_articles")
+        .insert({
+          title: validData.title,
+          slug: slug,
+          category: "Agenda",
+          excerpt: validData.excerpt,
+          content: validData.content,
+          author: session.user.email || "Admin",
+          published: true,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success!",
+        description: "Daily topic (Agenda article) has been uploaded successfully",
+      });
+
+      // Reset form
+      setTopicTitle("");
+      setTopicExcerpt("");
+      setTopicContent("");
     } catch (error: any) {
       toast({
         title: "Validation Error",
@@ -252,8 +318,9 @@ const Admin = () => {
         <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
         <Tabs defaultValue="news" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="news">Latest News</TabsTrigger>
+            <TabsTrigger value="topic">Daily Topic (Agenda)</TabsTrigger>
             <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
           </TabsList>
 
@@ -262,7 +329,7 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle>Add Single News Article</CardTitle>
                 <CardDescription>
-                  Manually add one news article at a time. Articles with "Agenda" category will automatically become the featured Daily Topic on the homepage.
+                  Manually add one news article at a time. Select any category except Agenda (use the Daily Topic tab for Agenda articles).
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -284,7 +351,6 @@ const Admin = () => {
                         <SelectValue placeholder="Select a section" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Agenda">Agenda</SelectItem>
                         <SelectItem value="Politics">Politics</SelectItem>
                         <SelectItem value="FP & Defense">FP & Defense</SelectItem>
                         <SelectItem value="Business">Business</SelectItem>
@@ -337,12 +403,62 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="topic">
+            <Card>
+              <CardHeader>
+                <CardTitle>Featured Daily Topic (Agenda)</CardTitle>
+                <CardDescription>
+                  Upload the main featured story that appears at the top of the homepage. This automatically creates an Agenda article.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleTopicSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="topic-title">Title</Label>
+                    <Input
+                      id="topic-title"
+                      value={topicTitle}
+                      onChange={(e) => setTopicTitle(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="topic-excerpt">Excerpt</Label>
+                    <Textarea
+                      id="topic-excerpt"
+                      value={topicExcerpt}
+                      onChange={(e) => setTopicExcerpt(e.target.value)}
+                      rows={2}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="topic-content">Full Content</Label>
+                    <Textarea
+                      id="topic-content"
+                      value={topicContent}
+                      onChange={(e) => setTopicContent(e.target.value)}
+                      rows={8}
+                      required
+                    />
+                  </div>
+
+                  <Button type="submit" disabled={submitting}>
+                    {submitting ? "Uploading..." : "Upload Daily Topic"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="bulk">
             <Card>
               <CardHeader>
                 <CardTitle>Bulk Upload News Articles</CardTitle>
                 <CardDescription>
-                  Upload multiple news articles at once using a CSV or JSON file. This populates the news section only (not the Daily Topic).
+                  Upload multiple news articles at once using a CSV or JSON file. You can include any category including Agenda.
                   <br /><br />
                   <strong>Required fields:</strong> title, category (or section - must be: Agenda, Politics, FP & Defense, Business, Life, Health, Sports, World, or Xtra), excerpt, content
                   <br />

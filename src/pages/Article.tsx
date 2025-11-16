@@ -114,8 +114,6 @@ const Article = () => {
                 minute: "2-digit",
               })}
             </time>
-            <span className="text-muted-foreground">•</span>
-            <span className="text-sm font-medium text-foreground">{article.author}</span>
           </div>
 
           <div className="prose prose-lg max-w-none">

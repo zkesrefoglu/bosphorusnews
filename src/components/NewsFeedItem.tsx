@@ -49,8 +49,6 @@ export const NewsFeedItem = ({ title, excerpt, section, author, date, slug }: Ne
       <p className="text-muted-foreground leading-relaxed mb-2">
         {excerpt}
       </p>
-      
-      <span className="text-sm text-muted-foreground">{author}</span>
     </article>
   );
 };
