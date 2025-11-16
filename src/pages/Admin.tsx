@@ -332,9 +332,9 @@ const Admin = () => {
           <TabsContent value="news">
             <Card>
               <CardHeader>
-                <CardTitle>Upload News Article</CardTitle>
+                <CardTitle>Add Single News Article</CardTitle>
                 <CardDescription>
-                  Add a new article to the latest news section
+                  Manually add one news article at a time. Select a category (Agenda, Politics, etc.) and fill in the details.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -412,9 +412,9 @@ const Admin = () => {
           <TabsContent value="topic">
             <Card>
               <CardHeader>
-                <CardTitle>Upload Daily Topic</CardTitle>
+                <CardTitle>Featured Daily Topic</CardTitle>
                 <CardDescription>
-                  Update the featured daily topic section
+                  Add/update the main featured story that appears at the top of the homepage. This is separate from regular news articles.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -509,11 +509,11 @@ const Admin = () => {
           <TabsContent value="bulk">
             <Card>
               <CardHeader>
-                <CardTitle>Bulk Upload Articles</CardTitle>
+                <CardTitle>Bulk Upload News Articles</CardTitle>
                 <CardDescription>
-                  Upload a CSV or JSON file to add multiple articles at once.
-                  <br />
-                  <strong>Required fields:</strong> title, category (or section), excerpt, content
+                  Upload multiple news articles at once using a CSV or JSON file. This populates the news section only (not the Daily Topic).
+                  <br /><br />
+                  <strong>Required fields:</strong> title, category (or section - must be: Agenda, Politics, FP & Defense, Business, Life, Health, Sports, World, or Xtra), excerpt, content
                   <br />
                   <strong>Optional fields:</strong> image_url (or source)
                 </CardDescription>
