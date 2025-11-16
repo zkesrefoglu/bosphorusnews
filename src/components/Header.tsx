@@ -64,7 +64,7 @@ export const Header = () => {
                     <li key={section}>
                       <Link
                         to={`/section/${section.toLowerCase().replace(/\s&\s/g, '-').replace(/\s/g, '-')}`}
-                        className="block text-lg font-medium text-foreground hover:text-primary hover:bg-muted/50 active:bg-muted transition-colors py-3 px-4 rounded-md"
+                        className="block text-lg font-medium text-foreground hover:text-primary hover:bg-primary/10 active:bg-primary/20 transition-colors py-3 px-4 rounded-md"
                       >
                         {section}
                       </Link>
