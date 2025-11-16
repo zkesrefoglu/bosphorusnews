@@ -15,14 +15,14 @@ const sections = [
 export const Header = () => {
   return (
     <header className="border-b border-border bg-background sticky top-0 z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between py-4">
-          <Link to="/" className="flex items-center space-x-3">
-            <img src={logo} alt="Bosphorus News" className="h-24 w-auto" />
+      <div className="container mx-auto px-2 sm:px-4">
+        <div className="flex items-center justify-between py-2 sm:py-4 gap-2 sm:gap-4">
+          <Link to="/" className="flex items-center flex-shrink-0">
+            <img src={logo} alt="Bosphorus News" className="h-12 sm:h-16 md:h-20 lg:h-24 w-auto" />
           </Link>
           
-          <nav className="overflow-x-auto scrollbar-hide">
-            <ul className="flex space-x-8 text-sm font-medium">
+          <nav className="overflow-x-auto scrollbar-hide flex-1">
+            <ul className="flex space-x-3 sm:space-x-4 md:space-x-6 lg:space-x-8 text-xs sm:text-sm font-medium justify-end">
               {sections.map((section) => (
                 <li key={section}>
                   <Link
