@@ -12,19 +12,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { z } from "zod";
 
-// Validation schemas
+// Validation schema
 const newsArticleSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(200, "Title must be less than 200 characters"),
   category: z.string().min(1, "Section is required"),
   excerpt: z.string().trim().min(1, "Excerpt is required").max(500, "Excerpt must be less than 500 characters"),
   content: z.string().trim().min(1, "Content is required").max(50000, "Content must be less than 50,000 characters"),
   image_url: z.string().trim().url("Invalid URL format").optional().or(z.literal("")),
-});
-
-const dailyTopicSchema = z.object({
-  title: z.string().trim().min(1, "Title is required").max(200, "Title must be less than 200 characters"),
-  excerpt: z.string().trim().min(1, "Excerpt is required").max(500, "Excerpt must be less than 500 characters"),
-  content: z.string().trim().min(1, "Content is required").max(50000, "Content must be less than 50,000 characters"),
 });
 
 const Admin = () => {
@@ -42,12 +36,6 @@ const Admin = () => {
   const [newsExcerpt, setNewsExcerpt] = useState("");
   const [newsContent, setNewsContent] = useState("");
   const [newsImageUrl, setNewsImageUrl] = useState("");
-
-  // Daily topic form state
-  const [topicTitle, setTopicTitle] = useState("");
-  const [topicExcerpt, setTopicExcerpt] = useState("");
-  const [topicContent, setTopicContent] = useState("");
-  const [topicImageUrl, setTopicImageUrl] = useState("");
 
   useEffect(() => {
     checkAdmin();
@@ -147,65 +135,6 @@ const Admin = () => {
       setNewsExcerpt("");
       setNewsContent("");
       setNewsImageUrl("");
-    } catch (error: any) {
-      toast({
-        title: "Validation Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleTopicSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-
-    try {
-      // Validate input data
-      const validationResult = dailyTopicSchema.safeParse({
-        title: topicTitle,
-        excerpt: topicExcerpt,
-        content: topicContent,
-      });
-
-      if (!validationResult.success) {
-        const errors = validationResult.error.errors.map(err => err.message).join(", ");
-        throw new Error(errors);
-      }
-
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not authenticated");
-
-      const validData = validationResult.data;
-      
-      // Create slug from title with timestamp to avoid collisions
-      const slug = `${validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
-      
-      const { error } = await supabase
-        .from("daily_topics")
-        .insert({
-          title: validData.title,
-          slug: slug,
-          excerpt: validData.excerpt,
-          content: validData.content,
-          author: session.user.email || "Admin",
-          published: true,
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: "Success!",
-        description: "Daily topic has been uploaded successfully",
-      });
-
-      // Reset form
-      setTopicTitle("");
-      setTopicExcerpt("");
-      setTopicContent("");
-      setTopicImageUrl("");
     } catch (error: any) {
       toast({
         title: "Validation Error",
@@ -323,9 +252,8 @@ const Admin = () => {
         <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
         <Tabs defaultValue="news" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="news">Latest News</TabsTrigger>
-            <TabsTrigger value="topic">Daily Topic</TabsTrigger>
             <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
           </TabsList>
 
@@ -334,7 +262,7 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle>Add Single News Article</CardTitle>
                 <CardDescription>
-                  Manually add one news article at a time. Select a category (Agenda, Politics, etc.) and fill in the details.
+                  Manually add one news article at a time. Articles with "Agenda" category will automatically become the featured Daily Topic on the homepage.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -403,103 +331,6 @@ const Admin = () => {
 
                   <Button type="submit" disabled={submitting}>
                     {submitting ? "Uploading..." : "Upload Article"}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="topic">
-            <Card>
-              <CardHeader>
-                <CardTitle>Featured Daily Topic</CardTitle>
-                <CardDescription>
-                  Add/update the main featured story that appears at the top of the homepage. This is separate from regular news articles.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleTopicSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="topic-title">Title</Label>
-                    <Input
-                      id="topic-title"
-                      value={topicTitle}
-                      onChange={(e) => setTopicTitle(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="topic-excerpt">Excerpt</Label>
-                    <Textarea
-                      id="topic-excerpt"
-                      value={topicExcerpt}
-                      onChange={(e) => setTopicExcerpt(e.target.value)}
-                      rows={2}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="topic-content">Full Content</Label>
-                    <Textarea
-                      id="topic-content"
-                      value={topicContent}
-                      onChange={(e) => setTopicContent(e.target.value)}
-                      rows={8}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="topic-image">Background Image URL (optional)</Label>
-                    <Input
-                      id="topic-image"
-                      type="url"
-                      value={topicImageUrl}
-                      onChange={(e) => setTopicImageUrl(e.target.value)}
-                    />
-                  </div>
-
-                  <Button type="submit" disabled={submitting}>
-                    {submitting ? "Uploading..." : "Upload Topic"}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="bulk">
-            <Card>
-              <CardHeader>
-                <CardTitle>Bulk Upload Articles</CardTitle>
-                <CardDescription>
-                  Upload a CSV or JSON file to add multiple articles at once.
-                  <br />
-                  <strong>Required fields:</strong> title, category (or section), excerpt, content
-                  <br />
-                  <strong>Optional fields:</strong> image_url (or source)
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleBulkUpload} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="bulkFile">Upload File (CSV or JSON)</Label>
-                    <Input
-                      id="bulkFile"
-                      type="file"
-                      accept=".csv,.json"
-                      onChange={(e) => setBulkFile(e.target.files?.[0] || null)}
-                      required
-                    />
-                    <p className="text-sm text-muted-foreground">
-                      CSV format: title, category, excerpt, content, image_url
-                      <br />
-                      JSON format: [{"{"}"title": "...", "category": "...", "excerpt": "...", "content": "...", "image_url": "..."{"}"}]
-                    </p>
-                  </div>
-                  <Button type="submit" disabled={uploading || !bulkFile}>
-                    {uploading ? "Uploading..." : "Upload Articles"}
                   </Button>
                 </form>
               </CardContent>
