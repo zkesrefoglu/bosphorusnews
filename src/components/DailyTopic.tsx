@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import dailyTopicBg from "@/assets/daily-topic-bg.jpg";
+import dailyTopicBg from "@/assets/daily-topic-bg.png";
 
 interface DailyTopicProps {
   title: string;
@@ -13,10 +13,10 @@ export const DailyTopic = ({ title, excerpt, author, date, slug }: DailyTopicPro
   return (
     <article className="relative mb-16 animate-fade-in overflow-hidden rounded-lg">
       <div 
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center brightness-75"
         style={{ backgroundImage: `url(${dailyTopicBg})` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/85 to-background/70" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/85 to-background/60" />
       
       <div className="relative px-8 md:px-12 py-16 md:py-20">
         <div className="mb-4 flex items-center space-x-3">
