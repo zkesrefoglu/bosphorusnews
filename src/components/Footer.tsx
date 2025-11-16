@@ -72,45 +72,13 @@ export const Footer = () => {
   return (
     <footer className="border-t border-border mt-16 bg-muted/30">
       <div className="container mx-auto px-4 py-12 max-w-6xl">
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto_1fr] gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 mb-8">
           {/* Logo and About */}
           <div>
             <img src={logoImage} alt="Bosphorus News" className="h-8 mb-4" />
             <p className="text-sm text-muted-foreground">
               Your trusted source for news and analysis from Turkey and beyond.
             </p>
-          </div>
-
-          {/* First Column */}
-          <div>
-            <ul className="space-y-2">
-              {sections.slice(0, 5).map((section) => (
-                <li key={section.path}>
-                  <Link
-                    to={section.path}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {section.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Second Column */}
-          <div>
-            <ul className="space-y-2">
-              {sections.slice(5).map((section) => (
-                <li key={section.path}>
-                  <Link
-                    to={section.path}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {section.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
           </div>
 
           {/* Newsletter */}
@@ -180,6 +148,22 @@ export const Footer = () => {
 
           <div className="text-sm text-muted-foreground">
             © 2025 Bosphorus News. All rights reserved.
+          </div>
+        </div>
+
+        {/* Navigation Links */}
+        <div className="flex justify-end pt-4 border-t border-border">
+          <div className="text-xs text-muted-foreground flex flex-wrap justify-end gap-x-2">
+            <Link to="/" className="hover:text-foreground transition-colors">HOME</Link>
+            <span>-</span>
+            {sections.map((section, index) => (
+              <span key={section.path} className="flex items-center gap-x-2">
+                <Link to={section.path} className="hover:text-foreground transition-colors">
+                  {section.name}
+                </Link>
+                {index < sections.length - 1 && <span>|</span>}
+              </span>
+            ))}
           </div>
         </div>
       </div>
