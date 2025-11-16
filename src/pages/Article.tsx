@@ -1,11 +1,67 @@
 import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
-import { getArticleBySlug } from "@/data/newsData";
+import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+interface ArticleData {
+  title: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  category: string;
+  created_at: string;
+}
 
 const Article = () => {
   const { slug } = useParams<{ slug: string }>();
-  const article = slug ? getArticleBySlug(slug) : undefined;
+  const { toast } = useToast();
+  const [article, setArticle] = useState<ArticleData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchArticle = async () => {
+      if (!slug) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from("news_articles")
+          .select("*")
+          .eq("slug", slug)
+          .eq("published", true)
+          .maybeSingle();
+
+        if (error) throw error;
+        
+        setArticle(data);
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: "Failed to load article",
+          variant: "destructive",
+        });
+        console.error("Error fetching article:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArticle();
+  }, [slug, toast]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8 max-w-4xl">
+          <div className="text-center py-16">
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (!article) {
     return (
@@ -37,10 +93,10 @@ const Article = () => {
         <article className="animate-fade-in">
           <div className="mb-6">
             <Link
-              to={`/section/${article.section.toLowerCase().replace(/\s&\s/g, '-').replace(/\s/g, '-')}`}
+              to={`/section/${article.category.toLowerCase().replace(/\s&\s/g, '-').replace(/\s/g, '-')}`}
               className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wide bg-primary text-primary-foreground rounded hover:opacity-80 transition-opacity"
             >
-              {article.section}
+              {article.category}
             </Link>
           </div>
 
@@ -49,7 +105,15 @@ const Article = () => {
           </h1>
 
           <div className="flex items-center space-x-4 mb-8 pb-8 border-b border-border">
-            <time className="text-sm text-muted-foreground">{article.date}</time>
+            <time className="text-sm text-muted-foreground">
+              {new Date(article.created_at).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </time>
             <span className="text-muted-foreground">•</span>
             <span className="text-sm font-medium text-foreground">{article.author}</span>
           </div>
@@ -58,6 +122,9 @@ const Article = () => {
             <p className="text-xl leading-relaxed text-foreground mb-8">
               {article.excerpt}
             </p>
+            <div className="whitespace-pre-wrap text-foreground">
+              {article.content}
+            </div>
           </div>
         </article>
       </main>

@@ -38,11 +38,12 @@ const Index = () => {
 
   const fetchData = async () => {
     try {
-      // Fetch the latest daily topic
+      // Fetch the latest Agenda article as the daily topic
       const { data: topicData, error: topicError } = await supabase
-        .from("daily_topics")
+        .from("news_articles")
         .select("*")
         .eq("published", true)
+        .eq("category", "Agenda")
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -67,16 +68,12 @@ const Index = () => {
         });
       }
 
-      // Fetch all news articles from today
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayISO = today.toISOString();
-
+      // Fetch all news articles except the Agenda one shown as daily topic
       const { data: articlesData, error: articlesError } = await supabase
         .from("news_articles")
         .select("*")
         .eq("published", true)
-        .gte("created_at", todayISO)
+        .neq("category", "Agenda")
         .order("created_at", { ascending: false });
 
       if (articlesError) throw articlesError;
