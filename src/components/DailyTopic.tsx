@@ -32,7 +32,7 @@ export const DailyTopic = ({ title, excerpt, author, date, slug }: DailyTopicPro
           </h2>
         </Link>
         
-        <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-6 max-w-3xl animate-[fade-in_1s_ease-out_0.4s_both]">
+        <p className="text-lg md:text-xl text-foreground/90 leading-relaxed mb-6 max-w-3xl animate-[fade-in_1s_ease-out_0.4s_both]">
           {excerpt}
         </p>
         

@@ -106,7 +106,7 @@ export const Header = () => {
                 <li key={section}>
                   <Link
                     to={`/section/${section.toLowerCase().replace(/\s&\s/g, '-').replace(/\s/g, '-')}`}
-                    className="hover-underline whitespace-nowrap text-foreground hover:text-primary transition-colors"
+                    className="hover-underline whitespace-nowrap text-foreground hover:text-accent transition-colors"
                   >
                     {section}
                   </Link>
