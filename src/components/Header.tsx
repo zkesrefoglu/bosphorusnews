@@ -18,7 +18,7 @@ export const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-3">
-            <img src={logo} alt="Bosphorus News" className="h-12 w-auto" />
+            <img src={logo} alt="Bosphorus News" className="h-[300px] w-auto" />
           </Link>
         </div>
         
