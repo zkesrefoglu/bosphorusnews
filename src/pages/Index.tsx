@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { DailyTopic } from "@/components/DailyTopic";
 import { NewsFeedItem } from "@/components/NewsFeedItem";
+import { Footer } from "@/components/Footer";
 import { dailyTopic, newsItems } from "@/data/newsData";
 
 const Index = () => {
@@ -21,11 +22,7 @@ const Index = () => {
         </section>
       </main>
       
-      <footer className="border-t border-border mt-16 py-8">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© 2025 Bosphorus News. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
