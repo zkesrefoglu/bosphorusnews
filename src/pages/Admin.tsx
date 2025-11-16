@@ -33,6 +33,8 @@ const Admin = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [bulkFile, setBulkFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   // News article form state
   const [newsTitle, setNewsTitle] = useState("");
@@ -215,6 +217,90 @@ const Admin = () => {
     }
   };
 
+  const handleBulkUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bulkFile) return;
+
+    setUploading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+
+      const fileText = await bulkFile.text();
+      let articles: any[] = [];
+
+      // Parse based on file type
+      if (bulkFile.name.endsWith('.json')) {
+        articles = JSON.parse(fileText);
+      } else if (bulkFile.name.endsWith('.csv')) {
+        const lines = fileText.split('\n').filter(line => line.trim());
+        const headers = lines[0].split(',').map(h => h.trim());
+        
+        articles = lines.slice(1).map(line => {
+          const values = line.split(',').map(v => v.trim());
+          const article: any = {};
+          headers.forEach((header, index) => {
+            article[header.toLowerCase()] = values[index] || '';
+          });
+          return article;
+        });
+      }
+
+      // Validate and insert articles
+      const validArticles = articles.map(article => {
+        const validationResult = newsArticleSchema.safeParse({
+          title: article.title,
+          category: article.category || article.section,
+          excerpt: article.excerpt,
+          content: article.content,
+          image_url: article.image_url || article.source || '',
+        });
+
+        if (!validationResult.success) {
+          throw new Error(`Invalid article "${article.title}": ${validationResult.error.errors.map(e => e.message).join(', ')}`);
+        }
+
+        const validData = validationResult.data;
+        const slug = `${validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
+
+        return {
+          title: validData.title,
+          slug: slug,
+          category: validData.category,
+          excerpt: validData.excerpt,
+          content: validData.content,
+          author: session.user.email || "Admin",
+          image_url: validData.image_url || null,
+          published: true,
+        };
+      });
+
+      const { error } = await supabase
+        .from("news_articles")
+        .insert(validArticles);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `${validArticles.length} articles uploaded successfully`,
+      });
+
+      setBulkFile(null);
+      // Reset the file input
+      const fileInput = document.getElementById('bulkFile') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+    } catch (error: any) {
+      toast({
+        title: "Upload Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -237,9 +323,10 @@ const Admin = () => {
         <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
         <Tabs defaultValue="news" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="news">Latest News</TabsTrigger>
             <TabsTrigger value="topic">Daily Topic</TabsTrigger>
+            <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
           </TabsList>
 
           <TabsContent value="news">
@@ -376,6 +463,80 @@ const Admin = () => {
 
                   <Button type="submit" disabled={submitting}>
                     {submitting ? "Uploading..." : "Upload Topic"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="bulk">
+            <Card>
+              <CardHeader>
+                <CardTitle>Bulk Upload Articles</CardTitle>
+                <CardDescription>
+                  Upload a CSV or JSON file to add multiple articles at once.
+                  <br />
+                  <strong>Required fields:</strong> title, category (or section), excerpt, content
+                  <br />
+                  <strong>Optional fields:</strong> image_url (or source)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleBulkUpload} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="bulkFile">Upload File (CSV or JSON)</Label>
+                    <Input
+                      id="bulkFile"
+                      type="file"
+                      accept=".csv,.json"
+                      onChange={(e) => setBulkFile(e.target.files?.[0] || null)}
+                      required
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      CSV format: title, category, excerpt, content, image_url
+                      <br />
+                      JSON format: [{"{"}"title": "...", "category": "...", "excerpt": "...", "content": "...", "image_url": "..."{"}"}]
+                    </p>
+                  </div>
+                  <Button type="submit" disabled={uploading || !bulkFile}>
+                    {uploading ? "Uploading..." : "Upload Articles"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="bulk">
+            <Card>
+              <CardHeader>
+                <CardTitle>Bulk Upload Articles</CardTitle>
+                <CardDescription>
+                  Upload a CSV or JSON file to add multiple articles at once.
+                  <br />
+                  <strong>Required fields:</strong> title, category (or section), excerpt, content
+                  <br />
+                  <strong>Optional fields:</strong> image_url (or source)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleBulkUpload} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="bulkFile">Upload File (CSV or JSON)</Label>
+                    <Input
+                      id="bulkFile"
+                      type="file"
+                      accept=".csv,.json"
+                      onChange={(e) => setBulkFile(e.target.files?.[0] || null)}
+                      required
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      CSV format: title, category, excerpt, content, image_url
+                      <br />
+                      JSON format: [{`{`}"title": "...", "category": "...", "excerpt": "...", "content": "...", "image_url": "..."{`}`}]
+                    </p>
+                  </div>
+                  <Button type="submit" disabled={uploading || !bulkFile}>
+                    {uploading ? "Uploading..." : "Upload Articles"}
                   </Button>
                 </form>
               </CardContent>
