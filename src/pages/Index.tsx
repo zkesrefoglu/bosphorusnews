@@ -67,13 +67,17 @@ const Index = () => {
         });
       }
 
-      // Fetch latest news articles
+      // Fetch all news articles from today
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayISO = today.toISOString();
+
       const { data: articlesData, error: articlesError } = await supabase
         .from("news_articles")
         .select("*")
         .eq("published", true)
-        .order("created_at", { ascending: false })
-        .limit(20);
+        .gte("created_at", todayISO)
+        .order("created_at", { ascending: false });
 
       if (articlesError) throw articlesError;
 
