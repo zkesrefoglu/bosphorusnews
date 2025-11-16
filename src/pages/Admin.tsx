@@ -81,12 +81,27 @@ const Admin = () => {
     setSubmitting(true);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+
       // Create slug from title
       const slug = newsTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      const timestamp = new Date().toISOString();
+      
+      const { error } = await supabase
+        .from("news_articles")
+        .insert({
+          title: newsTitle,
+          slug: slug,
+          category: newsSection,
+          excerpt: newsExcerpt,
+          content: newsContent,
+          author: session.user.email || "Admin",
+          image_url: newsImageUrl || null,
+          published: true,
+        });
 
-      // In a real app, you would save this to a database
-      // For now, we'll just show a success message
+      if (error) throw error;
+
       toast({
         title: "Success!",
         description: "News article has been uploaded successfully",
@@ -114,9 +129,25 @@ const Admin = () => {
     setSubmitting(true);
 
     try {
-      const timestamp = new Date().toISOString();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
 
-      // In a real app, you would save this to a database
+      // Create slug from title
+      const slug = topicTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      
+      const { error } = await supabase
+        .from("daily_topics")
+        .insert({
+          title: topicTitle,
+          slug: slug,
+          excerpt: topicExcerpt,
+          content: topicContent,
+          author: session.user.email || "Admin",
+          published: true,
+        });
+
+      if (error) throw error;
+
       toast({
         title: "Success!",
         description: "Daily topic has been uploaded successfully",
