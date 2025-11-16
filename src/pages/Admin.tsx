@@ -10,6 +10,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { z } from "zod";
+
+// Validation schemas
+const newsArticleSchema = z.object({
+  title: z.string().trim().min(1, "Title is required").max(200, "Title must be less than 200 characters"),
+  category: z.string().min(1, "Section is required"),
+  excerpt: z.string().trim().min(1, "Excerpt is required").max(500, "Excerpt must be less than 500 characters"),
+  content: z.string().trim().min(1, "Content is required").max(50000, "Content must be less than 50,000 characters"),
+  image_url: z.string().trim().url("Invalid URL format").optional().or(z.literal("")),
+});
+
+const dailyTopicSchema = z.object({
+  title: z.string().trim().min(1, "Title is required").max(200, "Title must be less than 200 characters"),
+  excerpt: z.string().trim().min(1, "Excerpt is required").max(500, "Excerpt must be less than 500 characters"),
+  content: z.string().trim().min(1, "Content is required").max(50000, "Content must be less than 50,000 characters"),
+});
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -81,22 +97,38 @@ const Admin = () => {
     setSubmitting(true);
 
     try {
+      // Validate input data
+      const validationResult = newsArticleSchema.safeParse({
+        title: newsTitle,
+        category: newsSection,
+        excerpt: newsExcerpt,
+        content: newsContent,
+        image_url: newsImageUrl,
+      });
+
+      if (!validationResult.success) {
+        const errors = validationResult.error.errors.map(err => err.message).join(", ");
+        throw new Error(errors);
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
 
-      // Create slug from title
-      const slug = newsTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const validData = validationResult.data;
+      
+      // Create slug from title with timestamp to avoid collisions
+      const slug = `${validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
       
       const { error } = await supabase
         .from("news_articles")
         .insert({
-          title: newsTitle,
+          title: validData.title,
           slug: slug,
-          category: newsSection,
-          excerpt: newsExcerpt,
-          content: newsContent,
+          category: validData.category,
+          excerpt: validData.excerpt,
+          content: validData.content,
           author: session.user.email || "Admin",
-          image_url: newsImageUrl || null,
+          image_url: validData.image_url || null,
           published: true,
         });
 
@@ -115,7 +147,7 @@ const Admin = () => {
       setNewsImageUrl("");
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: "Validation Error",
         description: error.message,
         variant: "destructive",
       });
@@ -129,19 +161,33 @@ const Admin = () => {
     setSubmitting(true);
 
     try {
+      // Validate input data
+      const validationResult = dailyTopicSchema.safeParse({
+        title: topicTitle,
+        excerpt: topicExcerpt,
+        content: topicContent,
+      });
+
+      if (!validationResult.success) {
+        const errors = validationResult.error.errors.map(err => err.message).join(", ");
+        throw new Error(errors);
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
 
-      // Create slug from title
-      const slug = topicTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const validData = validationResult.data;
+      
+      // Create slug from title with timestamp to avoid collisions
+      const slug = `${validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
       
       const { error } = await supabase
         .from("daily_topics")
         .insert({
-          title: topicTitle,
+          title: validData.title,
           slug: slug,
-          excerpt: topicExcerpt,
-          content: topicContent,
+          excerpt: validData.excerpt,
+          content: validData.content,
           author: session.user.email || "Admin",
           published: true,
         });
@@ -160,7 +206,7 @@ const Admin = () => {
       setTopicImageUrl("");
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: "Validation Error",
         description: error.message,
         variant: "destructive",
       });
