@@ -33,7 +33,7 @@ export const Header = () => {
         
         <div className="flex items-center justify-between py-4">
           <Link to="/" className="flex items-center space-x-3">
-            <img src={logo} alt="Bosphorus News" className="h-[188px] w-auto" />
+            <img src={logo} alt="Bosphorus News" className="h-24 w-auto" />
           </Link>
         </div>
       </div>
