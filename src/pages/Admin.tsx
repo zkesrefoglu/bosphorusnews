@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { z } from "zod";
+import NewsConverter from "@/components/NewsConverter";
 
 // Validation schema
 const newsArticleSchema = z.object({
@@ -318,10 +319,11 @@ const Admin = () => {
         <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
         <Tabs defaultValue="news" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="news">Latest News</TabsTrigger>
             <TabsTrigger value="topic">Daily Topic (Agenda)</TabsTrigger>
             <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
+            <TabsTrigger value="converter">News Converter</TabsTrigger>
           </TabsList>
 
           <TabsContent value="news">
@@ -486,6 +488,20 @@ const Admin = () => {
                     {uploading ? "Uploading..." : "Upload Articles"}
                   </Button>
                 </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="converter">
+            <Card>
+              <CardHeader>
+                <CardTitle>AI-Powered News Converter</CardTitle>
+                <CardDescription>
+                  Convert DOCX news files to CSV or JSON format with AI-generated catchy headlines using Lovable AI.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <NewsConverter />
               </CardContent>
             </Card>
           </TabsContent>
