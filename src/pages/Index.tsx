@@ -19,6 +19,7 @@ interface DailyTopicData {
 interface NewsArticleData {
   title: string;
   excerpt: string;
+  content: string;
   section: string;
   author: string;
   date: string;
@@ -83,6 +84,7 @@ const Index = () => {
           articlesData.map((article) => ({
             title: article.title,
             excerpt: article.excerpt,
+            content: article.content,
             section: article.category,
             author: article.author,
             date: new Date(article.created_at).toLocaleDateString("en-US", {
