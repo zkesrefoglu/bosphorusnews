@@ -9,6 +9,7 @@ import { ArrowLeft } from "lucide-react";
 interface NewsArticleData {
   title: string;
   excerpt: string;
+  content: string;
   section: string;
   author: string;
   date: string;
@@ -59,6 +60,7 @@ const Section = () => {
             data.map((article) => ({
               title: article.title,
               excerpt: article.excerpt,
+              content: article.content,
               section: article.category,
               author: article.author,
               date: new Date(article.created_at).toLocaleDateString("en-US", {
