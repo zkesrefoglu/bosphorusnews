@@ -61,6 +61,7 @@ const Admin = () => {
   const [deleteArticleId, setDeleteArticleId] = useState<string | null>(null);
   const [loadingArticles, setLoadingArticles] = useState(false);
   const [filterPublished, setFilterPublished] = useState<"all" | "published" | "unpublished">("all");
+  const [sendingNewsletter, setSendingNewsletter] = useState(false);
 
   useEffect(() => {
     checkAdmin();
@@ -471,6 +472,29 @@ const Admin = () => {
     return true;
   });
 
+  const handleSendNewsletter = async () => {
+    try {
+      setSendingNewsletter(true);
+      
+      const { data, error } = await supabase.functions.invoke('send-weekly-newsletter');
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Newsletter Sent!",
+        description: `Successfully sent to ${data.stats?.successfulSends || 0} subscribers`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send newsletter",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingNewsletter(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -495,12 +519,13 @@ const Admin = () => {
         <Tabs defaultValue="news" className="w-full" onValueChange={(value) => {
           if (value === "manage") fetchArticles();
         }}>
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="news">Latest News</TabsTrigger>
             <TabsTrigger value="topic">Daily Topic (Agenda)</TabsTrigger>
             <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
             <TabsTrigger value="converter">News Converter</TabsTrigger>
             <TabsTrigger value="manage">Manage Articles</TabsTrigger>
+            <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
           </TabsList>
 
           <TabsContent value="news">
@@ -853,6 +878,47 @@ const Admin = () => {
                     )}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="newsletter">
+            <Card>
+              <CardHeader>
+                <CardTitle>Send Weekly Newsletter</CardTitle>
+                <CardDescription>
+                  Manually send the weekly newsletter digest to all subscribers. It includes all published articles from the last 7 days.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-4 bg-muted rounded-lg space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    <strong>How it works:</strong>
+                  </p>
+                  <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
+                    <li>Collects all published articles from the last 7 days</li>
+                    <li>Groups them by category</li>
+                    <li>Sends a formatted email to all newsletter subscribers</li>
+                  </ul>
+                </div>
+                
+                <div className="p-4 bg-primary/5 rounded-lg space-y-2">
+                  <p className="text-sm font-medium">For automated weekly sending:</p>
+                  <p className="text-sm text-muted-foreground">
+                    Use a free service like <a href="https://cron-job.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">cron-job.org</a> to schedule weekly calls to:
+                  </p>
+                  <code className="block text-xs bg-background p-2 rounded mt-2 break-all">
+                    https://mxmarjrkwrqnhhipckzj.supabase.co/functions/v1/send-weekly-newsletter
+                  </code>
+                </div>
+
+                <Button 
+                  onClick={handleSendNewsletter} 
+                  disabled={sendingNewsletter}
+                  className="w-full"
+                >
+                  {sendingNewsletter ? "Sending..." : "Send Newsletter Now"}
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
