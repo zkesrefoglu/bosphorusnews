@@ -12,7 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { z } from "zod";
 import NewsConverter from "@/components/NewsConverter";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -59,6 +60,7 @@ const Admin = () => {
   const [editingArticle, setEditingArticle] = useState<any>(null);
   const [deleteArticleId, setDeleteArticleId] = useState<string | null>(null);
   const [loadingArticles, setLoadingArticles] = useState(false);
+  const [filterPublished, setFilterPublished] = useState<"all" | "published" | "unpublished">("all");
 
   useEffect(() => {
     checkAdmin();
@@ -430,6 +432,30 @@ const Admin = () => {
     }
   };
 
+  const handleTogglePublish = async (articleId: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from("news_articles")
+        .update({ published: !currentStatus })
+        .eq("id", articleId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Article ${!currentStatus ? "published" : "unpublished"} successfully`,
+      });
+
+      fetchArticles();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const cancelEdit = () => {
     setEditingArticle(null);
     setNewsTitle("");
@@ -438,6 +464,12 @@ const Admin = () => {
     setNewsContent("");
     setNewsImageUrl("");
   };
+
+  const filteredArticles = articles.filter((article) => {
+    if (filterPublished === "published") return article.published;
+    if (filterPublished === "unpublished") return !article.published;
+    return true;
+  });
 
   if (loading) {
     return (
@@ -736,27 +768,70 @@ const Admin = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
+                    <div className="flex items-center gap-4 mb-4">
+                      <Label>Filter:</Label>
+                      <div className="flex gap-2">
+                        <Button
+                          variant={filterPublished === "all" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setFilterPublished("all")}
+                        >
+                          All
+                        </Button>
+                        <Button
+                          variant={filterPublished === "published" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setFilterPublished("published")}
+                        >
+                          Published
+                        </Button>
+                        <Button
+                          variant={filterPublished === "unpublished" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setFilterPublished("unpublished")}
+                        >
+                          Unpublished
+                        </Button>
+                      </div>
+                    </div>
+
                     {loadingArticles ? (
                       <p className="text-center py-8 text-muted-foreground">Loading articles...</p>
-                    ) : articles.length === 0 ? (
+                    ) : filteredArticles.length === 0 ? (
                       <p className="text-center py-8 text-muted-foreground">No articles found</p>
                     ) : (
                       <div className="space-y-2">
-                        {articles.map((article) => (
+                        {filteredArticles.map((article) => (
                           <div
                             key={article.id}
                             className="flex items-start justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
                           >
                             <div className="flex-1 space-y-1">
-                              <h4 className="font-semibold">{article.title}</h4>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-semibold">{article.title}</h4>
+                                {article.published ? (
+                                  <Eye className="w-4 h-4 text-green-600" />
+                                ) : (
+                                  <EyeOff className="w-4 h-4 text-muted-foreground" />
+                                )}
+                              </div>
                               <p className="text-sm text-muted-foreground">
-                                {article.category} • {new Date(article.created_at).toLocaleDateString()}
+                                {article.category} • {new Date(article.created_at).toLocaleDateString()} • {article.published ? "Published" : "Unpublished"}
                               </p>
                               <p className="text-sm text-muted-foreground line-clamp-2">
                                 {article.excerpt}
                               </p>
                             </div>
-                            <div className="flex gap-2 ml-4">
+                            <div className="flex gap-2 ml-4 items-start">
+                              <div className="flex flex-col items-center gap-1">
+                                <Switch
+                                  checked={article.published}
+                                  onCheckedChange={() => handleTogglePublish(article.id, article.published)}
+                                />
+                                <span className="text-xs text-muted-foreground">
+                                  {article.published ? "Live" : "Hidden"}
+                                </span>
+                              </div>
                               <Button
                                 variant="outline"
                                 size="sm"
