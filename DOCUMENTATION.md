@@ -77,6 +77,7 @@ A modern, full-stack news platform built with React and TypeScript, featuring dy
 
 #### 3. Article Pages (`/article/:slug`)
 - **Full Article View**: Complete article content with metadata
+- **Image Display**: Optional featured image displayed at top of article (if `image_url` is provided)
 - **Author Attribution**: Display author and publication date
 - **SEO Optimized**: Proper meta tags and structured data
 
@@ -698,17 +699,21 @@ Second article content -- SOURCE {Category}
 - **Title**: Text input (required)
 - **Excerpt**: Textarea (required)
 - **Content**: Large textarea (required)
+- **Image URL**: URL input (optional) - Add image to display on the topic page
 - **Author**: Text input (required)
 
 **Workflow**:
 1. Fill out form
-2. Click "Publish Topic"
-3. Insert into `news_articles` with:
+2. Optionally add image URL
+3. Click "Publish Topic"
+4. Insert into `news_articles` with:
    - `category = "Agenda"`
    - `published = true`
+   - `image_url` (if provided)
    - Auto-generated slug
-4. Appears as featured topic on homepage
-5. Success toast and form clear
+5. Appears as featured topic on homepage
+6. Image displays on detailed topic page if provided
+7. Success toast and form clear
 
 ### Tab 4: Manage Articles
 
@@ -1479,6 +1484,15 @@ verify_jwt = false  # Public access for welcome emails
 
 ### Version 1.1 - November 2025
 
+#### Daily Topic Image Support
+- **Image URL Field**: Added optional image URL field to Daily Topic (Agenda) form
+  - Admin can now add images to Daily Topic/Agenda articles
+  - Images display on article detail page when provided
+  - Stored in `image_url` field of `news_articles` table
+- **Article Display**: Updated Article page to render featured images
+  - Images display above article content with proper styling
+  - Responsive image sizing and overflow handling
+
 #### Newsletter System Enhancements
 - **Email Domain Configuration**: Updated all newsletter edge functions to use verified domain `newsletter@send.newsletter`
   - `send-newsletter-confirmation`: Welcome email sender updated
@@ -1508,6 +1522,7 @@ verify_jwt = false  # Public access for welcome emails
 - Resend domain setup instructions
 - Updated workflow diagrams for NewsConverter
 - Added error handling documentation
+- Daily Topic image functionality documentation
 
 ---
 
