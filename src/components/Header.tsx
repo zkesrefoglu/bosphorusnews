@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Menu } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -71,7 +72,7 @@ export const Header = () => {
       <div className="container mx-auto px-2 sm:px-4">
         <div className="flex items-center justify-between py-2 sm:py-4 gap-2 sm:gap-4">
           <Link to="/" className="flex items-center flex-shrink-0">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">Bosphorus News</h1>
+            <img src={logo} alt="Bosphorus News" className="h-12 sm:h-16 md:h-20 lg:h-24 w-auto" />
           </Link>
 
           {/* Auth Buttons */}
