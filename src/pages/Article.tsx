@@ -12,6 +12,7 @@ interface ArticleData {
   author: string;
   category: string;
   created_at: string;
+  image_url?: string;
 }
 
 const Article = () => {
@@ -115,6 +116,16 @@ const Article = () => {
               })}
             </time>
           </div>
+
+          {article.image_url && (
+            <div className="mb-8 rounded-lg overflow-hidden">
+              <img 
+                src={article.image_url} 
+                alt={article.title}
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          )}
 
           <div className="prose prose-lg max-w-none">
             <p className="text-xl leading-relaxed text-foreground mb-8">

@@ -54,6 +54,7 @@ const Admin = () => {
   const [topicTitle, setTopicTitle] = useState("");
   const [topicExcerpt, setTopicExcerpt] = useState("");
   const [topicContent, setTopicContent] = useState("");
+  const [topicImageUrl, setTopicImageUrl] = useState("");
 
   // Manage articles state
   const [articles, setArticles] = useState<any[]>([]);
@@ -204,7 +205,7 @@ const Admin = () => {
         category: "Agenda",
         excerpt: topicExcerpt,
         content: topicContent,
-        image_url: "",
+        image_url: topicImageUrl,
       });
 
       if (!validationResult.success) {
@@ -229,6 +230,7 @@ const Admin = () => {
           excerpt: validData.excerpt,
           content: validData.content,
           author: session.user.email || "Admin",
+          image_url: validData.image_url || null,
           published: true,
         });
 
@@ -243,6 +245,7 @@ const Admin = () => {
       setTopicTitle("");
       setTopicExcerpt("");
       setTopicContent("");
+      setTopicImageUrl("");
     } catch (error: any) {
       toast({
         title: "Validation Error",
@@ -646,6 +649,16 @@ const Admin = () => {
                       onChange={(e) => setTopicContent(e.target.value)}
                       rows={8}
                       required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="topic-image">Image URL (optional)</Label>
+                    <Input
+                      id="topic-image"
+                      type="url"
+                      value={topicImageUrl}
+                      onChange={(e) => setTopicImageUrl(e.target.value)}
                     />
                   </div>
 
