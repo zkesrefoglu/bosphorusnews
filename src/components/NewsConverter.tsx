@@ -162,10 +162,10 @@ export default function NewsConverter() {
       const articles = JSON.parse(output);
       
       const validArticles = articles.map((article: any) => {
-        const slug = `${article.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
+        const slug = `${article.excerpt.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
         
         return {
-          title: article.title,
+          title: article.excerpt, // AI-generated headline
           slug: slug,
           category: article.category,
           excerpt: article.excerpt,
