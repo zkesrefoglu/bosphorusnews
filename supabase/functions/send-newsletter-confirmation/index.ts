@@ -1,8 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@4.0.0";
-import React from "https://esm.sh/react@18.2.0";
-import { renderAsync } from "https://esm.sh/@react-email/components@0.0.22";
-import { WelcomeEmail } from "./_templates/welcome-email.tsx";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -28,12 +25,80 @@ serve(async (req) => {
 
     console.log("Sending welcome email to:", email);
 
-    // Render the React email template
-    const html = await renderAsync(
-      React.createElement(WelcomeEmail, {
-        subscriberEmail: email,
-      })
-    );
+    // Create HTML email content
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f6f9fc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Ubuntu, sans-serif;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f6f9fc; padding: 20px 0;">
+            <tr>
+              <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; margin: 0 auto; padding: 40px;">
+                  <tr>
+                    <td>
+                      <h1 style="color: #1a1a1a; font-size: 32px; font-weight: bold; margin: 0 0 20px 0;">Welcome to Bosphorus News!</h1>
+                      
+                      <p style="color: #333; font-size: 16px; line-height: 26px; margin: 16px 0;">
+                        Thank you for subscribing to our newsletter. We're thrilled to have you join our community of informed readers.
+                      </p>
+
+                      <div style="background-color: #f0f7ff; border-left: 4px solid #2563eb; padding: 16px 20px; margin: 32px 0; border-radius: 4px;">
+                        <p style="color: #1e40af; font-size: 16px; line-height: 24px; margin: 0;">
+                          🎉 You're now subscribed with: <strong>${email}</strong>
+                        </p>
+                      </div>
+
+                      <p style="color: #333; font-size: 16px; line-height: 26px; margin: 16px 0;">
+                        <strong>What to expect:</strong>
+                      </p>
+                      
+                      <div style="margin: 16px 0;">
+                        <p style="color: #333; font-size: 16px; line-height: 28px; margin: 8px 0;">📰 Daily curated news from around the world</p>
+                        <p style="color: #333; font-size: 16px; line-height: 28px; margin: 8px 0;">💼 Business insights and market updates</p>
+                        <p style="color: #333; font-size: 16px; line-height: 28px; margin: 8px 0;">⚽ Sports highlights and breaking news</p>
+                        <p style="color: #333; font-size: 16px; line-height: 28px; margin: 8px 0;">💻 Technology trends and innovations</p>
+                        <p style="color: #333; font-size: 16px; line-height: 28px; margin: 8px 0;">🌍 Exclusive Xtra content and special features</p>
+                      </div>
+
+                      <hr style="border: none; border-top: 1px solid #e6ebf1; margin: 32px 0;">
+
+                      <div style="text-align: center; margin: 32px 0;">
+                        <p style="color: #333; font-size: 16px; line-height: 26px; margin: 16px 0;">
+                          Start exploring our latest stories now:
+                        </p>
+                        <a href="https://bosphorusnews.lovable.app" 
+                           style="display: inline-block; background-color: #2563eb; color: #fff; font-size: 16px; font-weight: bold; text-decoration: none; padding: 14px 32px; border-radius: 8px; margin-top: 16px;">
+                          Visit Bosphorus News
+                        </a>
+                      </div>
+
+                      <hr style="border: none; border-top: 1px solid #e6ebf1; margin: 32px 0;">
+
+                      <p style="color: #8898aa; font-size: 14px; line-height: 22px; margin: 24px 0;">
+                        Stay informed, stay ahead. We deliver the news that matters most to you, right to your inbox.
+                      </p>
+
+                      <p style="color: #8898aa; font-size: 12px; line-height: 20px; margin-top: 32px; text-align: center;">
+                        © 2025 Bosphorus News. All rights reserved.<br>
+                        <a href="https://bosphorusnews.lovable.app" style="color: #2563eb; text-decoration: underline;">bosphorusnews.lovable.app</a>
+                      </p>
+
+                      <p style="color: #ababab; font-size: 12px; line-height: 18px; margin-top: 16px; text-align: center;">
+                        If you didn't subscribe to this newsletter, you can safely ignore this email.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+      </html>
+    `;
 
     // Send the email using Resend
     const { data, error } = await resend.emails.send({
