@@ -12,6 +12,17 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { z } from "zod";
 import NewsConverter from "@/components/NewsConverter";
+import { Pencil, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // Validation schema
 const newsArticleSchema = z.object({
@@ -43,9 +54,36 @@ const Admin = () => {
   const [topicExcerpt, setTopicExcerpt] = useState("");
   const [topicContent, setTopicContent] = useState("");
 
+  // Manage articles state
+  const [articles, setArticles] = useState<any[]>([]);
+  const [editingArticle, setEditingArticle] = useState<any>(null);
+  const [deleteArticleId, setDeleteArticleId] = useState<string | null>(null);
+  const [loadingArticles, setLoadingArticles] = useState(false);
+
   useEffect(() => {
     checkAdmin();
   }, []);
+
+  const fetchArticles = async () => {
+    setLoadingArticles(true);
+    try {
+      const { data, error } = await supabase
+        .from("news_articles")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setArticles(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to load articles",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingArticles(false);
+    }
+  };
 
   const checkAdmin = async () => {
     try {
@@ -297,6 +335,110 @@ const Admin = () => {
     }
   };
 
+  const handleEditArticle = (article: any) => {
+    setEditingArticle(article);
+    setNewsTitle(article.title);
+    setNewsSection(article.category);
+    setNewsExcerpt(article.excerpt);
+    setNewsContent(article.content);
+    setNewsImageUrl(article.image_url || "");
+  };
+
+  const handleUpdateArticle = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingArticle) return;
+
+    setSubmitting(true);
+    try {
+      const validationResult = newsArticleSchema.safeParse({
+        title: newsTitle,
+        category: newsSection,
+        excerpt: newsExcerpt,
+        content: newsContent,
+        image_url: newsImageUrl,
+      });
+
+      if (!validationResult.success) {
+        const errors = validationResult.error.errors.map(err => err.message).join(", ");
+        throw new Error(errors);
+      }
+
+      const validData = validationResult.data;
+      const slug = `${validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
+
+      const { error } = await supabase
+        .from("news_articles")
+        .update({
+          title: validData.title,
+          slug: slug,
+          category: validData.category,
+          excerpt: validData.excerpt,
+          content: validData.content,
+          image_url: validData.image_url || null,
+        })
+        .eq("id", editingArticle.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Article updated successfully",
+      });
+
+      setNewsTitle("");
+      setNewsSection("");
+      setNewsExcerpt("");
+      setNewsContent("");
+      setNewsImageUrl("");
+      setEditingArticle(null);
+      fetchArticles();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteArticle = async () => {
+    if (!deleteArticleId) return;
+
+    try {
+      const { error } = await supabase
+        .from("news_articles")
+        .delete()
+        .eq("id", deleteArticleId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Article deleted successfully",
+      });
+
+      setDeleteArticleId(null);
+      fetchArticles();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingArticle(null);
+    setNewsTitle("");
+    setNewsSection("");
+    setNewsExcerpt("");
+    setNewsContent("");
+    setNewsImageUrl("");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -318,12 +460,15 @@ const Admin = () => {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
-        <Tabs defaultValue="news" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+        <Tabs defaultValue="news" className="w-full" onValueChange={(value) => {
+          if (value === "manage") fetchArticles();
+        }}>
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="news">Latest News</TabsTrigger>
             <TabsTrigger value="topic">Daily Topic (Agenda)</TabsTrigger>
             <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
             <TabsTrigger value="converter">News Converter</TabsTrigger>
+            <TabsTrigger value="manage">Manage Articles</TabsTrigger>
           </TabsList>
 
           <TabsContent value="news">
@@ -505,7 +650,153 @@ const Admin = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="manage">
+            <Card>
+              <CardHeader>
+                <CardTitle>Manage Articles</CardTitle>
+                <CardDescription>
+                  Edit or delete existing published articles
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {editingArticle ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold">Editing Article</h3>
+                      <Button variant="outline" onClick={cancelEdit}>Cancel Edit</Button>
+                    </div>
+                    <form onSubmit={handleUpdateArticle} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-title">Title</Label>
+                        <Input
+                          id="edit-title"
+                          value={newsTitle}
+                          onChange={(e) => setNewsTitle(e.target.value)}
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-section">Section</Label>
+                        <Select value={newsSection} onValueChange={setNewsSection} required>
+                          <SelectTrigger id="edit-section">
+                            <SelectValue placeholder="Select a section" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Agenda">Agenda</SelectItem>
+                            <SelectItem value="Politics">Politics</SelectItem>
+                            <SelectItem value="FP & Defense">FP & Defense</SelectItem>
+                            <SelectItem value="Business">Business</SelectItem>
+                            <SelectItem value="Life">Life</SelectItem>
+                            <SelectItem value="Health">Health</SelectItem>
+                            <SelectItem value="Sports">Sports</SelectItem>
+                            <SelectItem value="World">World</SelectItem>
+                            <SelectItem value="Xtra">Xtra</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-excerpt">Excerpt</Label>
+                        <Textarea
+                          id="edit-excerpt"
+                          value={newsExcerpt}
+                          onChange={(e) => setNewsExcerpt(e.target.value)}
+                          rows={2}
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-content">Full Content</Label>
+                        <Textarea
+                          id="edit-content"
+                          value={newsContent}
+                          onChange={(e) => setNewsContent(e.target.value)}
+                          rows={8}
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-image">Image URL (optional)</Label>
+                        <Input
+                          id="edit-image"
+                          type="url"
+                          value={newsImageUrl}
+                          onChange={(e) => setNewsImageUrl(e.target.value)}
+                        />
+                      </div>
+
+                      <Button type="submit" disabled={submitting}>
+                        {submitting ? "Updating..." : "Update Article"}
+                      </Button>
+                    </form>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {loadingArticles ? (
+                      <p className="text-center py-8 text-muted-foreground">Loading articles...</p>
+                    ) : articles.length === 0 ? (
+                      <p className="text-center py-8 text-muted-foreground">No articles found</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {articles.map((article) => (
+                          <div
+                            key={article.id}
+                            className="flex items-start justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
+                          >
+                            <div className="flex-1 space-y-1">
+                              <h4 className="font-semibold">{article.title}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                {article.category} • {new Date(article.created_at).toLocaleDateString()}
+                              </p>
+                              <p className="text-sm text-muted-foreground line-clamp-2">
+                                {article.excerpt}
+                              </p>
+                            </div>
+                            <div className="flex gap-2 ml-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEditArticle(article)}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setDeleteArticleId(article.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
+
+        <AlertDialog open={!!deleteArticleId} onOpenChange={() => setDeleteArticleId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the article.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteArticle}>Delete</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
