@@ -195,7 +195,7 @@ serve(async (req) => {
       
       try {
         const { data, error } = await resend.emails.send({
-          from: "Bosphorus News <onboarding@resend.dev>",
+          from: "Bosphorus News <newsletter@send.newsletter>",
           to: batch.map(sub => sub.email),
           subject: `📰 Bosphorus News Weekly Digest - ${weekEnd}`,
           html,
