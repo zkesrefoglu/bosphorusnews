@@ -42,6 +42,8 @@ const Admin = () => {
   const [submitting, setSubmitting] = useState(false);
   const [bulkFile, setBulkFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [batchImages, setBatchImages] = useState<File[]>([]);
 
   // News article form state
   const [newsTitle, setNewsTitle] = useState("");
@@ -130,6 +132,24 @@ const Admin = () => {
     }
   };
 
+  const handleImageUpload = async (file: File, slug: string) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${slug}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('article-images')
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('article-images')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  };
+
   const handleNewsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -154,8 +174,24 @@ const Admin = () => {
 
       const validData = validationResult.data;
       
-      // Create slug from title with timestamp to avoid collisions
-      const slug = `${validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
+      // Create slug from title
+      const baseSlug = validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const slug = `${baseSlug}-${Date.now()}`;
+      
+      // Handle image upload if file is selected
+      const imageInput = document.getElementById('newsImage') as HTMLInputElement;
+      let imageUrl = validData.image_url || null;
+      
+      if (imageInput?.files?.[0]) {
+        setUploadingImage(true);
+        try {
+          imageUrl = await handleImageUpload(imageInput.files[0], baseSlug);
+        } catch (err) {
+          throw new Error("Failed to upload image");
+        } finally {
+          setUploadingImage(false);
+        }
+      }
       
       const { error } = await supabase
         .from("news_articles")
@@ -166,7 +202,7 @@ const Admin = () => {
           excerpt: validData.excerpt,
           content: validData.content,
           author: session.user.email || "Admin",
-          image_url: validData.image_url || null,
+          image_url: imageUrl,
           published: true,
         });
 
@@ -183,6 +219,7 @@ const Admin = () => {
       setNewsExcerpt("");
       setNewsContent("");
       setNewsImageUrl("");
+      if (imageInput) imageInput.value = '';
     } catch (error: any) {
       toast({
         title: "Validation Error",
@@ -218,8 +255,24 @@ const Admin = () => {
 
       const validData = validationResult.data;
       
-      // Create slug from title with timestamp to avoid collisions
-      const slug = `${validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
+      // Create slug from title
+      const baseSlug = validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const slug = `${baseSlug}-${Date.now()}`;
+      
+      // Handle image upload if file is selected
+      const imageInput = document.getElementById('topicImage') as HTMLInputElement;
+      let imageUrl = validData.image_url || null;
+      
+      if (imageInput?.files?.[0]) {
+        setUploadingImage(true);
+        try {
+          imageUrl = await handleImageUpload(imageInput.files[0], baseSlug);
+        } catch (err) {
+          throw new Error("Failed to upload image");
+        } finally {
+          setUploadingImage(false);
+        }
+      }
       
       const { error } = await supabase
         .from("news_articles")
@@ -230,7 +283,7 @@ const Admin = () => {
           excerpt: validData.excerpt,
           content: validData.content,
           author: session.user.email || "Admin",
-          image_url: validData.image_url || null,
+          image_url: imageUrl,
           published: true,
         });
 
@@ -246,6 +299,7 @@ const Admin = () => {
       setTopicExcerpt("");
       setTopicContent("");
       setTopicImageUrl("");
+      if (imageInput) imageInput.value = '';
     } catch (error: any) {
       toast({
         title: "Validation Error",
@@ -254,6 +308,44 @@ const Admin = () => {
       });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleBatchImageUpload = async () => {
+    if (batchImages.length === 0) return;
+
+    setUploadingImage(true);
+    try {
+      let successCount = 0;
+      
+      for (const file of batchImages) {
+        const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+        const slug = nameWithoutExt.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        
+        try {
+          await handleImageUpload(file, slug);
+          successCount++;
+        } catch (err) {
+          console.error(`Failed to upload ${file.name}:`, err);
+        }
+      }
+
+      toast({
+        title: "Batch Upload Complete",
+        description: `${successCount}/${batchImages.length} images uploaded successfully`,
+      });
+
+      setBatchImages([]);
+      const imageInput = document.getElementById('batchImages') as HTMLInputElement;
+      if (imageInput) imageInput.value = '';
+    } catch (error: any) {
+      toast({
+        title: "Upload Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -286,8 +378,8 @@ const Admin = () => {
         });
       }
 
-      // Validate and insert articles
-      const validArticles = articles.map(article => {
+      // Validate and insert articles with auto-matched images
+      const validArticles = await Promise.all(articles.map(async article => {
         const validationResult = newsArticleSchema.safeParse({
           title: article.title,
           category: article.category || article.section,
@@ -301,7 +393,24 @@ const Admin = () => {
         }
 
         const validData = validationResult.data;
-        const slug = `${validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
+        const baseSlug = validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        const slug = `${baseSlug}-${Date.now()}`;
+
+        // Try to find matching image in storage by base slug
+        let imageUrl = validData.image_url || null;
+        
+        if (!imageUrl) {
+          const { data: files } = await supabase.storage
+            .from('article-images')
+            .list('', { search: baseSlug });
+
+          if (files && files.length > 0) {
+            const { data: { publicUrl } } = supabase.storage
+              .from('article-images')
+              .getPublicUrl(files[0].name);
+            imageUrl = publicUrl;
+          }
+        }
 
         return {
           title: validData.title,
@@ -310,10 +419,10 @@ const Admin = () => {
           excerpt: validData.excerpt,
           content: validData.content,
           author: session.user.email || "Admin",
-          image_url: validData.image_url || null,
+          image_url: imageUrl,
           published: true,
         };
-      });
+      }));
 
       const { error } = await supabase
         .from("news_articles")
@@ -321,13 +430,13 @@ const Admin = () => {
 
       if (error) throw error;
 
+      const withImages = validArticles.filter(a => a.image_url).length;
       toast({
         title: "Success",
-        description: `${validArticles.length} articles uploaded successfully`,
+        description: `${validArticles.length} articles uploaded (${withImages} with auto-matched images)`,
       });
 
       setBulkFile(null);
-      // Reset the file input
       const fileInput = document.getElementById('bulkFile') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
     } catch (error: any) {
@@ -600,10 +709,24 @@ const Admin = () => {
                       value={newsImageUrl}
                       onChange={(e) => setNewsImageUrl(e.target.value)}
                     />
+                    <div className="text-xs text-muted-foreground">Or upload an image below:</div>
                   </div>
 
-                  <Button type="submit" disabled={submitting}>
-                    {submitting ? "Uploading..." : "Upload Article"}
+                  <div className="space-y-2">
+                    <Label htmlFor="newsImage">Upload Image (optional)</Label>
+                    <Input
+                      id="newsImage"
+                      type="file"
+                      accept="image/*"
+                      disabled={uploadingImage}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Image will be auto-named based on article title slug
+                    </p>
+                  </div>
+
+                  <Button type="submit" disabled={submitting || uploadingImage}>
+                    {uploadingImage ? "Uploading Image..." : submitting ? "Uploading..." : "Upload Article"}
                   </Button>
                 </form>
               </CardContent>
@@ -660,10 +783,24 @@ const Admin = () => {
                       value={topicImageUrl}
                       onChange={(e) => setTopicImageUrl(e.target.value)}
                     />
+                    <div className="text-xs text-muted-foreground">Or upload an image below:</div>
                   </div>
 
-                  <Button type="submit" disabled={submitting}>
-                    {submitting ? "Uploading..." : "Upload Daily Topic"}
+                  <div className="space-y-2">
+                    <Label htmlFor="topicImage">Upload Image (optional)</Label>
+                    <Input
+                      id="topicImage"
+                      type="file"
+                      accept="image/*"
+                      disabled={uploadingImage}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Image will be auto-named based on article title slug
+                    </p>
+                  </div>
+
+                  <Button type="submit" disabled={submitting || uploadingImage}>
+                    {uploadingImage ? "Uploading Image..." : submitting ? "Uploading..." : "Upload Daily Topic"}
                   </Button>
                 </form>
               </CardContent>
@@ -675,34 +812,72 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle>Bulk Upload News Articles</CardTitle>
                 <CardDescription>
-                  Upload multiple news articles at once using a CSV or JSON file. You can include any category including Agenda.
-                  <br /><br />
-                  <strong>Required fields:</strong> title, category (or section - must be: Agenda, Politics, FP & Defense, Business, Life, Health, Sports, World, or Editorial), excerpt, content
-                  <br />
-                  <strong>Optional fields:</strong> image_url (or source)
+                  Upload images first (named by article slug), then bulk upload articles with auto-image matching
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleBulkUpload} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="bulkFile">Upload File (CSV or JSON)</Label>
-                    <Input
-                      id="bulkFile"
-                      type="file"
-                      accept=".csv,.json"
-                      onChange={(e) => setBulkFile(e.target.files?.[0] || null)}
-                      required
-                    />
-                    <p className="text-sm text-muted-foreground">
-                      CSV format: title, category, excerpt, content, image_url
-                      <br />
-                      JSON format: [{`{`}"title": "...", "category": "...", "excerpt": "...", "content": "...", "image_url": "..."{`}`}]
+                <div className="space-y-6">
+                  <div className="p-4 bg-muted rounded-lg">
+                    <h3 className="font-semibold mb-2">📦 Step 1: Batch Image Upload</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Upload images named by article slug (e.g., us-china-trade-deal.jpg)
                     </p>
+                    <div className="space-y-3">
+                      <Input
+                        id="batchImages"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => setBatchImages(Array.from(e.target.files || []))}
+                        disabled={uploadingImage}
+                      />
+                      {batchImages.length > 0 && (
+                        <div className="text-sm">
+                          Selected: {batchImages.length} images
+                          <ul className="mt-1 text-xs text-muted-foreground">
+                            {batchImages.slice(0, 5).map((f, i) => <li key={i}>• {f.name}</li>)}
+                            {batchImages.length > 5 && <li>... and {batchImages.length - 5} more</li>}
+                          </ul>
+                        </div>
+                      )}
+                      <Button 
+                        onClick={handleBatchImageUpload}
+                        disabled={batchImages.length === 0 || uploadingImage}
+                        variant="secondary"
+                        className="w-full"
+                      >
+                        {uploadingImage ? "Uploading..." : `Upload ${batchImages.length} Images`}
+                      </Button>
+                    </div>
                   </div>
-                  <Button type="submit" disabled={uploading || !bulkFile}>
-                    {uploading ? "Uploading..." : "Upload Articles"}
-                  </Button>
-                </form>
+
+                  <div className="p-4 border rounded-lg">
+                    <h3 className="font-semibold mb-2">📄 Step 2: Bulk Article Upload</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Articles will auto-match images by title slug
+                    </p>
+                    <form onSubmit={handleBulkUpload} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="bulkFile">Upload File (CSV or JSON)</Label>
+                        <Input
+                          id="bulkFile"
+                          type="file"
+                          accept=".csv,.json"
+                          onChange={(e) => setBulkFile(e.target.files?.[0] || null)}
+                          required
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          CSV format: title, category, excerpt, content, image_url
+                          <br />
+                          JSON format: [{`{`}"title": "...", "category": "...", "excerpt": "...", "content": "...", "image_url": "..."{`}`}]
+                        </p>
+                      </div>
+                      <Button type="submit" disabled={uploading || !bulkFile}>
+                        {uploading ? "Uploading..." : "Upload Articles"}
+                      </Button>
+                    </form>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
