@@ -1,36 +1,33 @@
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
-import { DailyTopic } from "@/components/DailyTopic";
-import { NewsFeedItem } from "@/components/NewsFeedItem";
+import { NewsCarousel } from "@/components/NewsCarousel";
+import { CategoryNewsGrid } from "@/components/CategoryNewsGrid";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-interface DailyTopicData {
+interface CarouselArticle {
   title: string;
   excerpt: string;
-  author: string;
-  date: string;
   slug: string;
-  timestamp: Date;
-  section: string;
+  imageUrl: string;
+  category: string;
+  date: string;
 }
 
-interface NewsArticleData {
+interface CategoryArticle {
   title: string;
   excerpt: string;
-  content: string;
-  section: string;
-  author: string;
-  date: string;
   slug: string;
-  timestamp: Date;
+  imageUrl: string;
+  category: string;
+  date: string;
 }
 
 const Index = () => {
   const { toast } = useToast();
-  const [dailyTopic, setDailyTopic] = useState<DailyTopicData | null>(null);
-  const [newsItems, setNewsItems] = useState<NewsArticleData[]>([]);
+  const [carouselArticles, setCarouselArticles] = useState<CarouselArticle[]>([]);
+  const [categoryArticles, setCategoryArticles] = useState<CategoryArticle[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,63 +36,57 @@ const Index = () => {
 
   const fetchData = async () => {
     try {
-      // Fetch the latest Agenda article as the daily topic
-      const { data: topicData, error: topicError } = await supabase
+      // Fetch top 5 articles with images for the carousel (prioritizing those with images)
+      const { data: carouselData, error: carouselError } = await supabase
         .from("news_articles")
         .select("*")
         .eq("published", true)
-        .eq("category", "Agenda")
+        .not("image_url", "is", null)
         .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .limit(5);
 
-      if (topicError) throw topicError;
+      if (carouselError) throw carouselError;
 
-      if (topicData) {
-        setDailyTopic({
-          title: topicData.title,
-          excerpt: topicData.excerpt,
-          author: topicData.author,
-          date: new Date(topicData.created_at).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          slug: topicData.slug,
-          timestamp: new Date(topicData.created_at),
-          section: "Agenda",
-        });
-      }
-
-      // Fetch all news articles except the Agenda one shown as daily topic
-      const { data: articlesData, error: articlesError } = await supabase
-        .from("news_articles")
-        .select("*")
-        .eq("published", true)
-        .neq("category", "Agenda")
-        .order("created_at", { ascending: false });
-
-      if (articlesError) throw articlesError;
-
-      if (articlesData) {
-        setNewsItems(
-          articlesData.map((article) => ({
+      if (carouselData) {
+        setCarouselArticles(
+          carouselData.map((article) => ({
             title: article.title,
             excerpt: article.excerpt,
-            content: article.content,
-            section: article.category,
-            author: article.author,
-            date: new Date(article.created_at).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
             slug: article.slug,
-            timestamp: new Date(article.created_at),
+            imageUrl: article.image_url || "",
+            category: article.category,
+            date: new Date(article.created_at).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
+          }))
+        );
+      }
+
+      // Fetch articles for category grid (excluding Agenda and Xtra, showing others with images)
+      const { data: categoryData, error: categoryError } = await supabase
+        .from("news_articles")
+        .select("*")
+        .eq("published", true)
+        .not("category", "in", '("Agenda","Xtra")')
+        .order("created_at", { ascending: false })
+        .limit(30);
+
+      if (categoryError) throw categoryError;
+
+      if (categoryData) {
+        setCategoryArticles(
+          categoryData.map((article) => ({
+            title: article.title,
+            excerpt: article.excerpt,
+            slug: article.slug,
+            imageUrl: article.image_url || "",
+            category: article.category,
+            date: new Date(article.created_at).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            }),
           }))
         );
       }
@@ -115,27 +106,20 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-8 max-w-5xl">
+      <main className="container mx-auto px-4 py-8 max-w-7xl">
         {loading ? (
           <div className="text-center py-16">
             <p className="text-muted-foreground">Loading...</p>
           </div>
         ) : (
           <>
-            {dailyTopic && <DailyTopic {...dailyTopic} />}
+            {carouselArticles.length > 0 && (
+              <NewsCarousel articles={carouselArticles} />
+            )}
             
-            <section>
-              <h2 className="text-2xl font-bold mb-6 tracking-tight">Latest News</h2>
-              {newsItems.length > 0 ? (
-                <div className="space-y-0 rounded-lg overflow-hidden border border-border">
-                  {newsItems.map((item, index) => (
-                    <NewsFeedItem key={index} {...item} />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground text-center py-8">No news articles available</p>
-              )}
-            </section>
+            {categoryArticles.length > 0 && (
+              <CategoryNewsGrid articles={categoryArticles} />
+            )}
           </>
         )}
       </main>

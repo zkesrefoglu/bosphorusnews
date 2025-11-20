@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { NewsFeedItem } from "@/components/NewsFeedItem";
+import { DailyTopic } from "@/components/DailyTopic";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
@@ -90,6 +91,10 @@ const Section = () => {
     fetchArticles();
   }, [sectionName, toast]);
 
+  // Check if this is the Xtra section - show as Daily Topic format
+  const isXtraSection = sectionName === "Xtra";
+  const latestXtraArticle = isXtraSection && articles.length > 0 ? articles[0] : null;
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -106,35 +111,40 @@ const Section = () => {
           </div>
         ) : (
           <>
-            <div className="mb-8">
-              <h1 className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">{sectionName}</h1>
-              <p className="text-muted-foreground">
-                {articles.length} {articles.length === 1 ? 'article' : 'articles'} in this section
-              </p>
-            </div>
-
-            {articles.length > 0 ? (
-              <section>
-                <div className="space-y-0 rounded-lg overflow-hidden border border-border">
-                  {articles.map((item, index) => (
-                    <NewsFeedItem key={index} {...item} />
-                  ))}
-                </div>
-              </section>
+            {isXtraSection && latestXtraArticle ? (
+              // Show Xtra as Daily Topic format
+              <DailyTopic 
+                title={latestXtraArticle.title}
+                excerpt={latestXtraArticle.excerpt}
+                author={latestXtraArticle.author}
+                date={latestXtraArticle.date}
+                slug={latestXtraArticle.slug}
+              />
             ) : (
-              <div className="text-center py-16">
-                <p className="text-muted-foreground text-lg">No articles found in this section yet.</p>
-              </div>
+              <>
+                <div className="mb-8">
+                  <h1 className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">{sectionName}</h1>
+                  <p className="text-muted-foreground">
+                    {articles.length} {articles.length === 1 ? 'article' : 'articles'} in this section
+                  </p>
+                </div>
+
+                {articles.length > 0 ? (
+                  <section>
+                    <div className="space-y-0 rounded-lg overflow-hidden border border-border">
+                      {articles.map((item, index) => (
+                        <NewsFeedItem key={index} {...item} />
+                      ))}
+                    </div>
+                  </section>
+                ) : (
+                  <p className="text-muted-foreground text-center py-8">No articles in this section</p>
+                )}
+              </>
             )}
           </>
         )}
       </main>
-
-      <footer className="border-t border-border mt-16 py-8">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© 2025 Bosphorus News. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 };
