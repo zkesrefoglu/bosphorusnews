@@ -188,9 +188,9 @@
   .gradient-overlay-dark {
     background: linear-gradient(
       to top,
-      rgba(15, 20, 25, 0.95) 0%,
-      rgba(15, 20, 25, 0.7) 40%,
-      rgba(15, 20, 25, 0.3) 70%,
+      rgba(15, 20, 25, 0.48) 0%,
+      rgba(15, 20, 25, 0.35) 40%,
+      rgba(15, 20, 25, 0.15) 70%,
       transparent 100%
     );
   }
