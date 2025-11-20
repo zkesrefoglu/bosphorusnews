@@ -21,10 +21,7 @@ interface Article {
 const Index = () => {
   const { toast } = useToast();
   const [carouselArticles, setCarouselArticles] = useState<Article[]>([]);
-  const [firstMatrixCategories, setFirstMatrixCategories] = useState<Array<{ name: string; articles: Article[] }>>([]);
-  const [secondMatrixCategories, setSecondMatrixCategories] = useState<Array<{ name: string; articles: Article[] }>>([]);
-  const [firstMidFeatured, setFirstMidFeatured] = useState<Article | null>(null);
-  const [secondMidFeatured, setSecondMidFeatured] = useState<Article | null>(null);
+  const [matrixCategories, setMatrixCategories] = useState<Array<{ name: string; articles: Article[] }>>([]);
   const [agendaArticles, setAgendaArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -79,10 +76,10 @@ const Index = () => {
         }))
       );
 
-      // 2. FIRST MATRIX SECTION: Politics, FP & Defense, Business & Economy
-      const firstMatrixCats = ["Politics", "FP & Defense", "Business & Economy"];
-      const firstMatrixData = await Promise.all(
-        firstMatrixCats.map(async (category) => {
+      // 2. MATRIX SECTION: Politics, FP & Defense, Business & Economy (3 articles each)
+      const matrixCats = ["Politics", "FP & Defense", "Business & Economy"];
+      const matrixData = await Promise.all(
+        matrixCats.map(async (category) => {
           const { data, error } = await supabase
             .from("news_articles")
             .select("*")
@@ -90,7 +87,7 @@ const Index = () => {
             .eq("category", category)
             .eq("is_carousel_featured", false)
             .order("created_at", { ascending: false })
-            .limit(2);
+            .limit(3);
 
           if (error) throw error;
 
@@ -110,98 +107,9 @@ const Index = () => {
           };
         })
       );
-      setFirstMatrixCategories(firstMatrixData);
+      setMatrixCategories(matrixData);
 
-      // 3. FIRST MID-FEATURED: From Politics, FP & Defense, Business categories
-      const { data: firstMidData, error: firstMidError } = await supabase
-        .from("news_articles")
-        .select("*")
-        .eq("published", true)
-        .eq("is_mid_featured", true)
-        .in("category", ["Politics", "FP & Defense", "Business & Economy"])
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
-
-      if (firstMidError && firstMidError.code !== 'PGRST116') throw firstMidError;
-
-      if (firstMidData) {
-        setFirstMidFeatured({
-          title: firstMidData.title,
-          excerpt: firstMidData.excerpt,
-          slug: firstMidData.slug,
-          imageUrl: firstMidData.image_url || `https://picsum.photos/seed/${firstMidData.slug}/1200/600`,
-          category: firstMidData.category,
-          date: new Date(firstMidData.created_at).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          }),
-        });
-      }
-
-      // 4. SECOND MATRIX SECTION: Technology, Life
-      const secondMatrixCats = ["Life"];
-      const secondMatrixData = await Promise.all(
-        secondMatrixCats.map(async (category) => {
-          const { data, error } = await supabase
-            .from("news_articles")
-            .select("*")
-            .eq("published", true)
-            .eq("category", category)
-            .eq("is_carousel_featured", false)
-            .order("created_at", { ascending: false })
-            .limit(2);
-
-          if (error) throw error;
-
-          return {
-            name: category,
-            articles: (data || []).map((article) => ({
-              title: article.title,
-              excerpt: article.excerpt,
-              slug: article.slug,
-              imageUrl: article.image_url || `https://picsum.photos/seed/${article.slug}/600/400`,
-              category: article.category,
-              date: new Date(article.created_at).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              }),
-            })),
-          };
-        })
-      );
-      setSecondMatrixCategories(secondMatrixData);
-
-      // 5. SECOND MID-FEATURED: From Life
-      const { data: secondMidData, error: secondMidError } = await supabase
-        .from("news_articles")
-        .select("*")
-        .eq("published", true)
-        .eq("is_mid_featured", true)
-        .in("category", ["Life"])
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
-
-      if (secondMidError && secondMidError.code !== 'PGRST116') throw secondMidError;
-
-      if (secondMidData) {
-        setSecondMidFeatured({
-          title: secondMidData.title,
-          excerpt: secondMidData.excerpt,
-          slug: secondMidData.slug,
-          imageUrl: secondMidData.image_url || `https://picsum.photos/seed/${secondMidData.slug}/1200/600`,
-          category: secondMidData.category,
-          date: new Date(secondMidData.created_at).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          }),
-        });
-      }
-
-      // 6. AGENDA: All Agenda articles
+      // 3. AGENDA: All Agenda articles
       const { data: agendaData, error: agendaError } = await supabase
         .from("news_articles")
         .select("*")
@@ -268,31 +176,10 @@ const Index = () => {
           </div>
         )}
 
-        {/* FIRST MATRIX SECTION */}
-        {firstMatrixCategories.length > 0 && (
+        {/* MATRIX SECTION */}
+        {matrixCategories.length > 0 && (
           <div className="container-custom">
-            <HomeMatrixSection categories={firstMatrixCategories} />
-          </div>
-        )}
-
-        {/* FIRST MID-FEATURED */}
-        {firstMidFeatured && (
-          <div className="container-custom">
-            <HomeFeaturedMid article={firstMidFeatured} />
-          </div>
-        )}
-
-        {/* SECOND MATRIX SECTION */}
-        {secondMatrixCategories.length > 0 && (
-          <div className="container-custom">
-            <HomeMatrixSection categories={secondMatrixCategories} />
-          </div>
-        )}
-
-        {/* SECOND MID-FEATURED */}
-        {secondMidFeatured && (
-          <div className="container-custom">
-            <HomeFeaturedMid article={secondMidFeatured} />
+            <HomeMatrixSection categories={matrixCategories} />
           </div>
         )}
 
