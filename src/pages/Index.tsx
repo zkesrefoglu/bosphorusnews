@@ -140,8 +140,8 @@ const Index = () => {
         });
       }
 
-      // 4. SECOND MATRIX SECTION: Technology, Life, Sports
-      const secondMatrixCats = ["Technology", "Life", "Sports"];
+      // 4. SECOND MATRIX SECTION: Technology, Life
+      const secondMatrixCats = ["Technology", "Life"];
       const secondMatrixData = await Promise.all(
         secondMatrixCats.map(async (category) => {
           const { data, error } = await supabase
@@ -173,13 +173,13 @@ const Index = () => {
       );
       setSecondMatrixCategories(secondMatrixData);
 
-      // 5. SECOND MID-FEATURED: From Sports, Technology, Life
+      // 5. SECOND MID-FEATURED: From Technology, Life
       const { data: secondMidData, error: secondMidError } = await supabase
         .from("news_articles")
         .select("*")
         .eq("published", true)
         .eq("is_mid_featured", true)
-        .in("category", ["Sports", "Technology", "Life"])
+        .in("category", ["Technology", "Life"])
         .order("created_at", { ascending: false })
         .limit(1)
         .single();
@@ -299,12 +299,12 @@ const Index = () => {
         {/* AGENDA SECTION */}
         {agendaArticles.length > 0 && (
           <div className="container-custom mt-16">
-            <h2 className="text-3xl font-bold mb-6">Agenda</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 className="text-3xl font-bold mb-8">Agenda</h2>
+            <div className="space-y-6">
               {agendaArticles.map((article, index) => (
                 <Link key={index} to={`/article/${article.slug}`} className="block group">
-                  <article className="h-full border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="p-6">
+                  <article className="flex flex-col md:flex-row gap-6 border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow p-6">
+                    <div className="flex-1 flex flex-col justify-center order-2 md:order-1">
                       <div className="flex items-center space-x-3 mb-3">
                         <span className="text-xs font-semibold uppercase tracking-wide text-primary">
                           {article.category}
@@ -312,12 +312,19 @@ const Index = () => {
                         <span className="text-muted-foreground">•</span>
                         <time className="text-xs text-muted-foreground">{article.date}</time>
                       </div>
-                      <h3 className="text-xl font-bold mb-2 leading-tight group-hover:text-primary transition-colors">
+                      <h3 className="text-2xl font-bold mb-3 leading-tight group-hover:text-primary transition-colors">
                         {article.title}
                       </h3>
-                      <p className="text-muted-foreground leading-relaxed line-clamp-3">
+                      <p className="text-muted-foreground leading-relaxed line-clamp-2">
                         {article.excerpt}
                       </p>
+                    </div>
+                    <div className="w-full md:w-[400px] h-[250px] flex-shrink-0 order-1 md:order-2">
+                      <img
+                        src={article.imageUrl}
+                        alt={article.title}
+                        className="w-full h-full object-cover rounded transition-transform duration-300 group-hover:scale-105"
+                      />
                     </div>
                   </article>
                 </Link>

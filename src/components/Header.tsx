@@ -14,13 +14,11 @@ import {
 
 const sections = [
   "Agenda",
-  "Business & Economy",
-  "FP & Defense",
-  "Health",
-  "Life",
   "Politics",
-  "Sports",
-  "World",
+  "FP & Defense",
+  "Business & Economy",
+  "Technology",
+  "Life",
   "Editorial",
 ];
 

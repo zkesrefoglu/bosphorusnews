@@ -33,10 +33,10 @@ export const HomeFeaturedMid = ({ article }: HomeFeaturedMidProps) => {
   return (
     <section className="my-16">
       <Link to={`/article/${article.slug}`}>
-        <div className="relative overflow-hidden rounded-lg group cursor-pointer" style={{ height: "500px" }}>
+        <div className="relative overflow-hidden rounded-lg group cursor-pointer" style={{ height: "400px" }}>
           {/* Background Image */}
           <img
-            src={article.imageUrl || `https://picsum.photos/seed/${article.slug}/1200/600`}
+            src={article.imageUrl || `https://picsum.photos/seed/${article.slug}/1200/800`}
             alt={article.title}
             className="absolute inset-0 w-full h-full object-cover image-darkened transition-transform duration-[5s] ease-out group-hover:scale-105"
           />
