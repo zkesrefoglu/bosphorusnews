@@ -141,7 +141,7 @@ const Index = () => {
       }
 
       // 4. SECOND MATRIX SECTION: Technology, Life
-      const secondMatrixCats = ["Technology", "Life"];
+      const secondMatrixCats = ["Life"];
       const secondMatrixData = await Promise.all(
         secondMatrixCats.map(async (category) => {
           const { data, error } = await supabase
@@ -173,13 +173,13 @@ const Index = () => {
       );
       setSecondMatrixCategories(secondMatrixData);
 
-      // 5. SECOND MID-FEATURED: From Technology, Life
+      // 5. SECOND MID-FEATURED: From Life
       const { data: secondMidData, error: secondMidError } = await supabase
         .from("news_articles")
         .select("*")
         .eq("published", true)
         .eq("is_mid_featured", true)
-        .in("category", ["Technology", "Life"])
+        .in("category", ["Life"])
         .order("created_at", { ascending: false })
         .limit(1)
         .single();

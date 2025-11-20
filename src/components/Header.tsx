@@ -17,7 +17,6 @@ const sections = [
   "Politics",
   "FP & Defense",
   "Business & Economy",
-  "Technology",
   "Life",
   "Editorial",
 ];
