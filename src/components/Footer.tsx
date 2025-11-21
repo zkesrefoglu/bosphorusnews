@@ -5,7 +5,6 @@ import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import logoImage from "@/assets/logo.png";
-import { formatCategoryDisplay } from "@/lib/contentUtils";
 
 export const Footer = () => {
   const navigate = useNavigate();
@@ -249,7 +248,7 @@ export const Footer = () => {
             {sections.map((section, index) => (
               <span key={section.path} className="flex items-center gap-x-2">
                 <Link to={section.path} className="hover:text-foreground transition-colors">
-                  {formatCategoryDisplay(section.name)}
+                  {section.name}
                 </Link>
                 {index < sections.length - 1 && <span>|</span>}
               </span>
