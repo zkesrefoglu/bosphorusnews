@@ -218,25 +218,6 @@ export const Footer = () => {
 
         {/* Navigation Links */}
         <div className="flex justify-end pt-4 border-t border-border">
-          {/* Auth Buttons */}
-          <div className="flex items-center gap-2">
-            {user ? (
-              <>
-                {isAdmin && (
-                  <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
-                    Admin
-                  </Button>
-                )}
-                <Button variant="outline" size="sm" onClick={handleSignOut}>
-                  Sign Out
-                </Button>
-              </>
-            ) : (
-              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
-                Sign In
-              </Button>
-            )}
-          </div>
           <div className="text-xs text-muted-foreground flex flex-wrap justify-end gap-x-2">
             <Link to="/" className="hover:text-foreground transition-colors">
               HOME
@@ -253,6 +234,27 @@ export const Footer = () => {
           </div>
         </div>
       </div>
+      <center>
+        {/* Auth Buttons */}
+        <div className="flex items-center gap-2">
+          {user ? (
+            <>
+              {isAdmin && (
+                <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+                  Admin
+                </Button>
+              )}
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+              Sign In
+            </Button>
+          )}
+        </div>
+      </center>
     </footer>
   );
 };
