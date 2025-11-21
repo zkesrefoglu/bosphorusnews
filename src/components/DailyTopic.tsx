@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import dailyTopicBg from "@/assets/daily-topic-bg-dynamic.jpg";
+import dailyTopicBg from "@/assets/daily-topic-diplomatic.jpg";
 
 interface DailyTopicProps {
   title: string;
