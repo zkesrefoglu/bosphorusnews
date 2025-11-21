@@ -44,6 +44,7 @@ const Section = () => {
 
   const sectionName = section ? getSectionName(section) : "";
   const [dailyTopic, setDailyTopic] = useState<NewsArticleData | null>(null);
+  const [latestXtraImage, setLatestXtraImage] = useState<string>(bannerImage);
 
   useEffect(() => {
     if (!sectionName) return;
@@ -78,6 +79,11 @@ const Section = () => {
               timestamp: new Date(article.created_at),
             }))
           );
+
+          // For Xtra section, get the latest article's image
+          if (sectionName === "Xtra" && data.length > 0 && data[0].image_url) {
+            setLatestXtraImage(data[0].image_url);
+          }
         }
 
         // Fetch Daily Topic for Xtra section
@@ -164,8 +170,8 @@ const Section = () => {
                 {/* Diplomatic Banner Background */}
                 <div className="absolute inset-0 opacity-20">
                   <img 
-                    src={bannerImage} 
-                    alt="Diplomatic" 
+                    src={latestXtraImage} 
+                    alt="Latest Xtra" 
                     className="w-full h-full object-cover"
                     style={{
                       filter: 'grayscale(40%) contrast(1.1) brightness(0.7)',
