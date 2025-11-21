@@ -82,27 +82,27 @@ export const LiveTicker = () => {
   return (
     <div className="hidden lg:flex items-center gap-3 text-xs font-medium">
       {/* USD/TRY */}
-      <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors">
+      <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors animate-slide-in-right" style={{ animationDelay: '0.1s' }}>
         <span className="text-muted-foreground">$/₺</span>
         <span className="text-foreground font-semibold">{data.usdTry.toFixed(2)}</span>
         <TrendingUp className="w-3 h-3 text-green-500" />
       </div>
 
       {/* EUR/TRY */}
-      <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors">
+      <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
         <span className="text-muted-foreground">€/₺</span>
         <span className="text-foreground font-semibold">{data.eurTry.toFixed(2)}</span>
         <TrendingDown className="w-3 h-3 text-red-500" />
       </div>
 
       {/* BIST 100 */}
-      <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors">
+      <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors animate-slide-in-right" style={{ animationDelay: '0.3s' }}>
         <span className="text-muted-foreground">BIST</span>
         <span className="text-foreground font-semibold">{data.bist100.toFixed(0)}</span>
       </div>
 
       {/* Weather */}
-      <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors">
+      <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors animate-slide-in-right" style={{ animationDelay: '0.4s' }}>
         <Cloud className="w-3 h-3 text-muted-foreground" />
         <span className="text-foreground font-semibold">{data.weather.temp}°C</span>
         <span className="text-muted-foreground text-[10px]">{data.weather.description}</span>
