@@ -16,6 +16,23 @@ interface NewsCarouselProps {
   articles: CarouselArticle[];
 }
 
+const getCategoryColor = (category: string): string => {
+  const categoryMap: { [key: string]: string } = {
+    "Agenda": "bg-category-agenda",
+    "Turkiye": "bg-category-turkiye",
+    "Economy": "bg-category-business",
+    "Business & Economy": "bg-category-business",
+    "Defense": "bg-category-fp-defense",
+    "FP & Defense": "bg-category-fp-defense",
+    "Life": "bg-category-life",
+    "Sports": "bg-category-sports",
+    "World": "bg-category-world",
+    "Xtra": "bg-category-xtra",
+    "Editorial": "bg-category-xtra",
+  };
+  return categoryMap[category] || "bg-accent";
+};
+
 export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
   const plugin = React.useRef(Autoplay({ delay: 9000, stopOnInteraction: true }));
 
@@ -43,7 +60,9 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
                 <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 container-custom">
                   <div className="max-w-4xl">
                     <div className="flex items-center gap-3 mb-4">
-                      <span className="category-badge bg-accent text-white">{article.category}</span>
+                      <span className={`category-badge ${getCategoryColor(article.category)} text-white`}>
+                        {article.category}
+                      </span>
                       <time className="text-sm text-white/80 font-ui uppercase tracking-wide">{article.date}</time>
                     </div>
 

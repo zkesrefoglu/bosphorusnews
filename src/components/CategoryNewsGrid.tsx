@@ -17,13 +17,15 @@ interface CategoryNewsGridProps {
 const getCategoryColor = (category: string): string => {
   const categoryMap: { [key: string]: string } = {
     "Agenda": "bg-category-agenda/20",
-    "Politics": "bg-category-politics/20",
-    "FP & Defense": "bg-category-fp-defense/20",
+    "Turkiye": "bg-category-turkiye/20",
+    "Economy": "bg-category-business/20",
     "Business & Economy": "bg-category-business/20",
+    "Defense": "bg-category-fp-defense/20",
+    "FP & Defense": "bg-category-fp-defense/20",
     "Life": "bg-category-life/20",
-    "Health": "bg-category-health/20",
     "Sports": "bg-category-sports/20",
     "World": "bg-category-world/20",
+    "Xtra": "bg-category-xtra/20",
     "Editorial": "bg-category-xtra/20",
   };
   return categoryMap[category] || "bg-muted/20";

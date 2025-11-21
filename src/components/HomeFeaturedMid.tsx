@@ -16,12 +16,16 @@ interface HomeFeaturedMidProps {
 
 const getCategoryColor = (category: string): string => {
   const categoryMap: { [key: string]: string } = {
-    "Politics": "bg-category-politics",
-    "FP & Defense": "bg-category-fp-defense",
+    "Agenda": "bg-category-agenda",
+    "Turkiye": "bg-category-turkiye",
+    "Economy": "bg-category-business",
     "Business & Economy": "bg-category-business",
-    "Technology": "bg-category-technology",
+    "Defense": "bg-category-fp-defense",
+    "FP & Defense": "bg-category-fp-defense",
     "Life": "bg-category-life",
     "Sports": "bg-category-sports",
+    "World": "bg-category-world",
+    "Xtra": "bg-category-xtra",
     "Editorial": "bg-category-xtra",
   };
   return categoryMap[category] || "bg-accent";
