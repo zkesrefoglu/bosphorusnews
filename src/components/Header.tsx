@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Menu } from "lucide-react";
 import logo from "@/assets/logo.png";
 import xtraLogo from "@/assets/xtra-logo.png";
+import bannerImage from "@/assets/banner-diplomatic.jpg";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -21,8 +22,20 @@ export const Header = () => {
     <header className="border-b border-border bg-background sticky top-0 z-50">
       <div className="container mx-auto px-2 sm:px-4">
         <div className="flex items-center justify-between py-2 sm:py-4 gap-2 sm:gap-4">
-          <Link to="/" className="flex items-center flex-shrink-0">
+          <Link to="/" className="flex items-center gap-4 flex-shrink-0">
             <img src={logo} alt="Bosphorus News" className="h-12 sm:h-16 md:h-20 lg:h-24 w-auto" />
+            <div className="hidden xl:block relative h-20 w-32 overflow-hidden rounded-lg group">
+              <img 
+                src={bannerImage} 
+                alt="Diplomatic Banner" 
+                className="h-full w-full object-cover transition-all duration-500 group-hover:scale-110"
+                style={{
+                  filter: 'contrast(1.2) saturate(0.9) brightness(0.95)',
+                  mixBlendMode: 'multiply'
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 mix-blend-overlay" />
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
