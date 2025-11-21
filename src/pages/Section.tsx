@@ -126,26 +126,38 @@ const Section = () => {
         ) : (
           <>
             {isXtraSection ? (
-              // Special Xtra Banner
-              <div className="mb-12 relative overflow-hidden rounded-2xl border border-primary/20">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-background" />
-                <div className="relative px-8 py-16 md:py-20 flex flex-col items-center text-center">
-                  <div className="mb-6 relative">
-                    <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full" />
-                    <img 
-                      src={xtraLogo} 
-                      alt="Xtra" 
-                      className="relative w-40 h-40 md:w-48 md:h-48 object-contain animate-fade-in"
-                    />
+              // Special Xtra Banner - Horizontal Layout
+              <div className="mb-12 relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-background via-primary/5 to-background">
+                {/* Animated background effects */}
+                <div className="absolute inset-0 opacity-30">
+                  <div className="absolute top-0 -left-4 w-72 h-72 bg-primary rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
+                  <div className="absolute top-0 -right-4 w-72 h-72 bg-accent rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+                  <div className="absolute -bottom-8 left-20 w-72 h-72 bg-primary/50 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+                </div>
+                
+                <div className="relative px-6 py-12 md:px-12 md:py-16 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                  {/* Logo Section */}
+                  <div className="flex-shrink-0 relative group">
+                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl group-hover:blur-3xl transition-all duration-500" />
+                    <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-primary/30 p-4 bg-background/50 backdrop-blur-sm hover-scale">
+                      <img 
+                        src={xtraLogo} 
+                        alt="Xtra" 
+                        className="w-full h-full object-contain animate-fade-in"
+                      />
+                    </div>
                   </div>
-                  <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                    Xtra
-                  </h1>
-                  <p className="text-lg text-muted-foreground max-w-2xl">
-                    Beyond the headlines. Deep dives, special features, and exclusive content.
-                  </p>
-                  <div className="mt-4 text-sm text-muted-foreground/60">
-                    {articles.length} {articles.length === 1 ? 'article' : 'articles'}
+
+                  {/* Content Section */}
+                  <div className="flex-grow text-center md:text-left">
+                    <p className="text-xl md:text-2xl lg:text-3xl font-medium mb-4 leading-relaxed text-foreground">
+                      Beyond the headlines. Deep dives, special features, and exclusive content.
+                    </p>
+                    <div className="flex items-center justify-center md:justify-start gap-4 text-sm text-muted-foreground">
+                      <div className="px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+                        {articles.length} {articles.length === 1 ? 'article' : 'articles'}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
