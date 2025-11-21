@@ -155,6 +155,26 @@ export const Footer = () => {
 
         {/* Auth Buttons, Social & Contact */}
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-border gap-4">
+          {/* Auth Buttons */}
+          <div className="flex items-center gap-2">
+            {user ? (
+              <>
+                {isAdmin && (
+                  <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+                    Admin
+                  </Button>
+                )}
+                <Button variant="outline" size="sm" onClick={handleSignOut}>
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+                Sign In
+              </Button>
+            )}
+          </div>
+
           <div className="flex gap-4">
             <a
               href="https://x.com/BosphorusNN"
@@ -234,27 +254,6 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-      <center>
-        {/* Auth Buttons */}
-        <div className="flex items-center gap-2">
-          {user ? (
-            <>
-              {isAdmin && (
-                <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
-                  Admin
-                </Button>
-              )}
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
-                Sign Out
-              </Button>
-            </>
-          ) : (
-            <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
-              Sign In
-            </Button>
-          )}
-        </div>
-      </center>
     </footer>
   );
 };
