@@ -27,6 +27,7 @@ const Index = () => {
     author: string;
     date: string;
     slug: string;
+    imageUrl?: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -114,43 +115,32 @@ const Index = () => {
       );
       setMatrixCategories(matrixData);
 
-      // 3. EDITOR'S PICK: Latest from daily_topics table
-      const { data: dailyTopicData, error: dailyTopicError } = await supabase
-        .from("daily_topics")
+      // 3. DAILY TOPIC: Latest from Xtra category
+      const { data: xtraArticle, error: xtraError } = await supabase
+        .from("news_articles")
         .select("*")
         .eq("published", true)
+        .eq("category", "Xtra")
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      if (dailyTopicError) {
-        console.error("Error fetching daily topic:", dailyTopicError);
+      if (xtraError) {
+        console.error("Error fetching Xtra article:", xtraError);
       }
 
-      if (dailyTopicData) {
+      if (xtraArticle) {
         setEditorsPick({
-          title: dailyTopicData.title,
-          excerpt: dailyTopicData.excerpt,
-          author: dailyTopicData.author,
-          date: new Date(dailyTopicData.created_at).toLocaleDateString("en-US", {
+          title: xtraArticle.title,
+          excerpt: xtraArticle.excerpt,
+          author: xtraArticle.author,
+          date: new Date(xtraArticle.created_at).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
             year: "numeric",
           }),
-          slug: dailyTopicData.slug,
-        });
-      } else {
-        // Placeholder content for Editor's Pick
-        setEditorsPick({
-          title: "The Shifting Landscape of Global Politics",
-          excerpt: "In an era of unprecedented change, we examine how geopolitical tensions, economic pressures, and technological disruption are reshaping international relations. From trade wars to climate negotiations, the world is witnessing a fundamental transformation in how nations interact and compete on the global stage.",
-          author: "Editorial Team",
-          date: new Date().toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          }),
-          slug: "editors-pick-placeholder",
+          slug: xtraArticle.slug,
+          imageUrl: xtraArticle.image_url || undefined,
         });
       }
     } catch (error: any) {
@@ -201,7 +191,7 @@ const Index = () => {
           </div>
         )}
 
-        {/* EDITOR'S PICK SECTION */}
+        {/* DAILY TOPIC SECTION */}
         {editorsPick && (
           <div className="container-custom mt-16">
             <DailyTopic 
@@ -210,6 +200,7 @@ const Index = () => {
               author={editorsPick.author}
               date={editorsPick.date}
               slug={editorsPick.slug}
+              imageUrl={editorsPick.imageUrl}
             />
           </div>
         )}

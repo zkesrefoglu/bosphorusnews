@@ -7,14 +7,17 @@ interface DailyTopicProps {
   author: string;
   date: string;
   slug: string;
+  imageUrl?: string;
 }
 
-export const DailyTopic = ({ title, excerpt, author, date, slug }: DailyTopicProps) => {
+export const DailyTopic = ({ title, excerpt, author, date, slug, imageUrl }: DailyTopicProps) => {
+  const backgroundImage = imageUrl || dailyTopicBg;
+  
   return (
     <article className="relative mb-16 animate-fade-in overflow-hidden rounded-lg group">
       <div 
         className="absolute inset-0 bg-cover bg-center animate-[subtle-zoom_20s_ease-in-out_infinite]"
-        style={{ backgroundImage: `url(${dailyTopicBg})` }}
+        style={{ backgroundImage: `url(${backgroundImage})` }}
       />
       <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/70 to-transparent animate-[gradient-shift_8s_ease-in-out_infinite]" />
       
