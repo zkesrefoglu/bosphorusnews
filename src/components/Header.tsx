@@ -4,6 +4,7 @@ import logo from "@/assets/logo.png";
 import xtraLogo from "@/assets/xtra-logo.png";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { LiveTicker } from "@/components/LiveTicker";
 
 const sections = [
   { name: "Agenda", slug: "agenda", isLogo: false },
@@ -40,6 +41,11 @@ export const Header = () => {
               ))}
             </ul>
           </nav>
+
+          {/* Live Ticker */}
+          <div className="hidden lg:block ml-4">
+            <LiveTicker />
+          </div>
 
           {/* Mobile/Tablet Menu */}
           <Sheet>
