@@ -82,8 +82,8 @@ const Index = () => {
         }))
       );
 
-      // 2. MATRIX SECTION: Turkiye, Economy, World (3 articles each)
-      const matrixCats = ["Turkiye", "Economy", "World"];
+      // 2. MATRIX SECTION: Türkiye, Economy, World (3 articles each)
+      const matrixCats = ["Türkiye", "Economy", "World"];
       const matrixData = await Promise.all(
         matrixCats.map(async (category) => {
           const { data, error } = await supabase

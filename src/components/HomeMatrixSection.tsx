@@ -22,7 +22,7 @@ interface HomeMatrixSectionProps {
 const getCategoryColor = (category: string): string => {
   const categoryMap: { [key: string]: string } = {
     "Agenda": "bg-category-agenda",
-    "Turkiye": "bg-category-turkiye",
+    "Türkiye": "bg-category-turkiye",
     "Defense": "bg-category-fp-defense",
     "FP & Defense": "bg-category-fp-defense",
     "Economy": "bg-category-business",

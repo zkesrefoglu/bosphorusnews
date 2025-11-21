@@ -14,7 +14,7 @@ interface NewsFeedItemProps {
 const getCategoryColor = (section: string): string => {
   const categoryMap: { [key: string]: string } = {
     "Agenda": "bg-category-agenda/20",
-    "Turkiye": "bg-category-turkiye/20",
+    "Türkiye": "bg-category-turkiye/20",
     "Economy": "bg-category-business/20",
     "Business & Economy": "bg-category-business/20",
     "Defense": "bg-category-fp-defense/20",
