@@ -81,8 +81,8 @@ const Index = () => {
         }))
       );
 
-      // 2. MATRIX SECTION: Economy, Defense, Life (3 articles each)
-      const matrixCats = ["Economy", "Defense", "Life"];
+      // 2. MATRIX SECTION: Turkiye, Economy, World (3 articles each)
+      const matrixCats = ["Turkiye", "Economy", "World"];
       const matrixData = await Promise.all(
         matrixCats.map(async (category) => {
           const { data, error } = await supabase
@@ -138,6 +138,19 @@ const Index = () => {
             year: "numeric",
           }),
           slug: dailyTopicData.slug,
+        });
+      } else {
+        // Placeholder content for Editor's Pick
+        setEditorsPick({
+          title: "The Shifting Landscape of Global Politics",
+          excerpt: "In an era of unprecedented change, we examine how geopolitical tensions, economic pressures, and technological disruption are reshaping international relations. From trade wars to climate negotiations, the world is witnessing a fundamental transformation in how nations interact and compete on the global stage.",
+          author: "Editorial Team",
+          date: new Date().toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          }),
+          slug: "editors-pick-placeholder",
         });
       }
     } catch (error: any) {

@@ -21,12 +21,14 @@ interface HomeMatrixSectionProps {
 
 const getCategoryColor = (category: string): string => {
   const categoryMap: { [key: string]: string } = {
-    "Politics": "bg-category-politics",
-    "FP & Defense": "bg-category-fp-defense",
-    "Business & Economy": "bg-category-business",
-    "Technology": "bg-category-technology",
+    "Agenda": "bg-category-agenda",
+    "Turkiye": "bg-category-turkiye",
+    "Defense": "bg-category-fp-defense",
+    "Economy": "bg-category-business",
     "Life": "bg-category-life",
     "Sports": "bg-category-sports",
+    "World": "bg-category-world",
+    "Xtra": "bg-category-xtra",
   };
   return categoryMap[category] || "bg-accent";
 };
