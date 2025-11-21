@@ -5,6 +5,7 @@ import xtraLogo from "@/assets/xtra-logo.png";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { LiveTicker } from "@/components/LiveTicker";
+import { formatCategoryDisplay } from "@/lib/contentUtils";
 
 const sections = [
   { name: "Agenda", slug: "agenda", isLogo: false },
@@ -40,7 +41,7 @@ export const Header = () => {
                     to={`/section/${section.slug}`}
                     className="hover-underline whitespace-nowrap text-foreground hover:text-accent transition-colors inline-block"
                   >
-                    {section.isLogo ? <img src={xtraLogo} alt="Xtra" className="h-16 w-auto" /> : section.name}
+                    {section.isLogo ? <img src={xtraLogo} alt="Xtra" className="h-16 w-auto" /> : formatCategoryDisplay(section.name)}
                   </Link>
                 </li>
               ))}
@@ -68,7 +69,7 @@ export const Header = () => {
                         to={`/section/${section.slug}`}
                         className="flex items-center text-lg font-medium text-foreground hover:text-primary hover:bg-primary/10 active:bg-primary/20 transition-colors py-3 px-4 rounded-md"
                       >
-                        {section.isLogo ? <img src={xtraLogo} alt="Xtra" className="h-6 w-auto" /> : section.name}
+                        {section.isLogo ? <img src={xtraLogo} alt="Xtra" className="h-6 w-auto" /> : formatCategoryDisplay(section.name)}
                       </Link>
                     </li>
                   ))}
