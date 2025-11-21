@@ -29,7 +29,7 @@ export const DailyTopic = ({ title, excerpt, author, date, slug, imageUrl }: Dai
           <time className="text-sm text-muted-foreground">{date}</time>
         </div>
         
-        <Link to={`/article/${slug}`}>
+        <Link to="/section/xtra">
           <h2 className="text-4xl md:text-6xl font-bold mb-6 leading-tight tracking-tight hover:text-primary transition-all duration-300 text-balance max-w-4xl animate-[fade-in_0.8s_ease-out_0.2s_both] hover:translate-x-2">
             {title}
           </h2>
