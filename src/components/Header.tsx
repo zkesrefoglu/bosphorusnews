@@ -21,6 +21,11 @@ export const Header = () => {
   return (
     <header className="border-b border-border bg-background sticky top-0 z-50">
       <div className="container mx-auto px-2 sm:px-4">
+        {/* Live Ticker Row */}
+        <div className="hidden lg:flex justify-end py-2 border-b border-border/50">
+          <LiveTicker />
+        </div>
+
         <div className="flex items-center justify-between py-2 sm:py-4 gap-2 sm:gap-4">
           <Link to="/" className="flex items-center flex-shrink-0">
             <img src={logo} alt="Bosphorus News" className="h-12 sm:h-16 md:h-20 lg:h-24 w-auto" />
@@ -41,11 +46,6 @@ export const Header = () => {
               ))}
             </ul>
           </nav>
-
-          {/* Live Ticker */}
-          <div className="hidden lg:block ml-4">
-            <LiveTicker />
-          </div>
 
           {/* Mobile/Tablet Menu */}
           <Sheet>
