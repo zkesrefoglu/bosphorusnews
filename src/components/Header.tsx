@@ -3,13 +3,7 @@ import { Menu } from "lucide-react";
 import logo from "@/assets/logo.png";
 import xtraLogo from "@/assets/xtra-logo.png";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const sections = [
   { name: "Agenda", slug: "agenda", isLogo: false },
@@ -22,7 +16,6 @@ const sections = [
 ];
 
 export const Header = () => {
-
   return (
     <header className="border-b border-border bg-background sticky top-0 z-50">
       <div className="container mx-auto px-2 sm:px-4">
@@ -30,7 +23,7 @@ export const Header = () => {
           <Link to="/" className="flex items-center flex-shrink-0">
             <img src={logo} alt="Bosphorus News" className="h-12 sm:h-16 md:h-20 lg:h-24 w-auto" />
           </Link>
-          
+
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex ml-auto overflow-x-auto scrollbar-hide">
             <ul className="flex space-x-8 text-sm font-medium items-center">
@@ -40,11 +33,7 @@ export const Header = () => {
                     to={`/section/${section.slug}`}
                     className="hover-underline whitespace-nowrap text-foreground hover:text-accent transition-colors inline-block"
                   >
-                    {section.isLogo ? (
-                      <img src={xtraLogo} alt="Xtra" className="h-8 w-auto" />
-                    ) : (
-                      section.name
-                    )}
+                    {section.isLogo ? <img src={xtraLogo} alt="Xtra" className="h-16 w-auto" /> : section.name}
                   </Link>
                 </li>
               ))}
@@ -72,11 +61,7 @@ export const Header = () => {
                         to={`/section/${section.slug}`}
                         className="flex items-center text-lg font-medium text-foreground hover:text-primary hover:bg-primary/10 active:bg-primary/20 transition-colors py-3 px-4 rounded-md"
                       >
-                        {section.isLogo ? (
-                          <img src={xtraLogo} alt="Xtra" className="h-6 w-auto" />
-                        ) : (
-                          section.name
-                        )}
+                        {section.isLogo ? <img src={xtraLogo} alt="Xtra" className="h-6 w-auto" /> : section.name}
                       </Link>
                     </li>
                   ))}
