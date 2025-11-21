@@ -11,7 +11,7 @@ const sections = [
   { name: "Economy", slug: "economy", isLogo: false },
   { name: "Defense", slug: "defense", isLogo: false },
   { name: "Life", slug: "life", isLogo: false },
-  { name: "Turkiye", slug: "turkiye", isLogo: false },
+  { name: "Türkiye", slug: "turkiye", isLogo: false },
   { name: "World", slug: "world", isLogo: false },
   { name: "Sports", slug: "sports", isLogo: false },
   { name: "Xtra", slug: "xtra", isLogo: true },

@@ -478,7 +478,23 @@ const Admin = () => {
       }
 
       const validData = validationResult.data;
-      const slug = `${validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
+      const baseSlug = validData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const slug = `${baseSlug}-${Date.now()}`;
+
+      // Handle image upload if file is selected
+      const imageInput = document.getElementById('editNewsImage') as HTMLInputElement;
+      let imageUrl = validData.image_url || editingArticle.image_url || null;
+      
+      if (imageInput?.files?.[0]) {
+        setUploadingImage(true);
+        try {
+          imageUrl = await handleImageUpload(imageInput.files[0], baseSlug);
+        } catch (err) {
+          throw new Error("Failed to upload image");
+        } finally {
+          setUploadingImage(false);
+        }
+      }
 
       const { error } = await supabase
         .from("news_articles")
@@ -488,7 +504,7 @@ const Admin = () => {
           category: validData.category,
           excerpt: validData.excerpt,
           content: validData.content,
-          image_url: validData.image_url || null,
+          image_url: imageUrl,
         })
         .eq("id", editingArticle.id);
 
@@ -644,7 +660,7 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle>Add Single News Article</CardTitle>
                 <CardDescription>
-                  Manually add one news article. All articles are part of Agenda but must have a specific category (Economy, Defense, Life, Turkiye, World, Xtra, or Editorial).
+                  Manually add one news article. All articles are part of Agenda but must have a specific category (Economy, Defense, Life, Türkiye, World, Sports, Xtra, or Editorial).
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -670,8 +686,9 @@ const Admin = () => {
                         <SelectItem value="Economy">Economy</SelectItem>
                         <SelectItem value="Defense">Defense</SelectItem>
                         <SelectItem value="Life">Life</SelectItem>
-                        <SelectItem value="Turkiye">Turkiye</SelectItem>
+                        <SelectItem value="Türkiye">Türkiye</SelectItem>
                         <SelectItem value="World">World</SelectItem>
+                        <SelectItem value="Sports">Sports</SelectItem>
                         <SelectItem value="Xtra">Xtra</SelectItem>
                         <SelectItem value="Editorial">Editorial</SelectItem>
                       </SelectContent>
@@ -970,11 +987,24 @@ const Admin = () => {
                           type="url"
                           value={newsImageUrl}
                           onChange={(e) => setNewsImageUrl(e.target.value)}
+                          placeholder="Enter image URL or upload a new image below"
                         />
                       </div>
 
-                      <Button type="submit" disabled={submitting}>
-                        {submitting ? "Updating..." : "Update Article"}
+                      <div className="space-y-2">
+                        <Label htmlFor="editNewsImage">Or Upload New Image</Label>
+                        <Input
+                          id="editNewsImage"
+                          type="file"
+                          accept="image/*"
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          Uploading a new image will replace the current one
+                        </p>
+                      </div>
+
+                      <Button type="submit" disabled={submitting || uploadingImage}>
+                        {uploadingImage ? "Uploading Image..." : submitting ? "Updating..." : "Update Article"}
                       </Button>
                     </form>
                   </div>

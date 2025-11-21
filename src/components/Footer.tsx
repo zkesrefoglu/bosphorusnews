@@ -19,7 +19,7 @@ export const Footer = () => {
     { name: "Economy", path: "/section/economy" },
     { name: "Defense", path: "/section/defense" },
     { name: "Life", path: "/section/life" },
-    { name: "Turkiye", path: "/section/turkiye" },
+    { name: "Türkiye", path: "/section/turkiye" },
     { name: "World", path: "/section/world" },
     { name: "Xtra", path: "/section/xtra" },
     { name: "Editorial", path: "/section/editorial" },

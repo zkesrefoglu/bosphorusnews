@@ -17,7 +17,7 @@ interface HomeFeaturedMidProps {
 const getCategoryColor = (category: string): string => {
   const categoryMap: { [key: string]: string } = {
     "Agenda": "bg-category-agenda",
-    "Turkiye": "bg-category-turkiye",
+    "Türkiye": "bg-category-turkiye",
     "Economy": "bg-category-business",
     "Business & Economy": "bg-category-business",
     "Defense": "bg-category-fp-defense",

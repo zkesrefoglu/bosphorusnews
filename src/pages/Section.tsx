@@ -33,7 +33,7 @@ const Section = () => {
       "economy": "Economy",
       "defense": "Defense",
       "life": "Life",
-      "turkiye": "Turkiye",
+      "turkiye": "Türkiye",
       "world": "World",
       "sports": "Sports",
       "xtra": "Xtra",
