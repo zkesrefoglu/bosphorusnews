@@ -82,31 +82,64 @@ export const LiveTicker = () => {
   return (
     <div className="hidden lg:flex items-center gap-3 text-xs font-medium">
       {/* USD/TRY */}
-      <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors animate-slide-in-right" style={{ animationDelay: '0.1s' }}>
+      <div 
+        className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors opacity-0"
+        style={{ 
+          animation: 'slideInFromRight 0.8s ease-out 0.2s forwards',
+        }}
+      >
         <span className="text-muted-foreground">$/₺</span>
         <span className="text-foreground font-semibold">{data.usdTry.toFixed(2)}</span>
         <TrendingUp className="w-3 h-3 text-green-500" />
       </div>
 
       {/* EUR/TRY */}
-      <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
+      <div 
+        className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors opacity-0"
+        style={{ 
+          animation: 'slideInFromRight 0.8s ease-out 0.4s forwards',
+        }}
+      >
         <span className="text-muted-foreground">€/₺</span>
         <span className="text-foreground font-semibold">{data.eurTry.toFixed(2)}</span>
         <TrendingDown className="w-3 h-3 text-red-500" />
       </div>
 
       {/* BIST 100 */}
-      <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors animate-slide-in-right" style={{ animationDelay: '0.3s' }}>
+      <div 
+        className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors opacity-0"
+        style={{ 
+          animation: 'slideInFromRight 0.8s ease-out 0.6s forwards',
+        }}
+      >
         <span className="text-muted-foreground">BIST</span>
         <span className="text-foreground font-semibold">{data.bist100.toFixed(0)}</span>
       </div>
 
       {/* Weather */}
-      <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors animate-slide-in-right" style={{ animationDelay: '0.4s' }}>
+      <div 
+        className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors opacity-0"
+        style={{ 
+          animation: 'slideInFromRight 0.8s ease-out 0.8s forwards',
+        }}
+      >
         <Cloud className="w-3 h-3 text-muted-foreground" />
         <span className="text-foreground font-semibold">{data.weather.temp}°C</span>
         <span className="text-muted-foreground text-[10px]">{data.weather.description}</span>
       </div>
+
+      <style>{`
+        @keyframes slideInFromRight {
+          0% {
+            transform: translateX(100px);
+            opacity: 0;
+          }
+          100% {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+      `}</style>
     </div>
   );
 };
