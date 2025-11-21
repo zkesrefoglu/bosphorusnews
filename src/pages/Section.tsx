@@ -6,6 +6,7 @@ import { DailyTopic } from "@/components/DailyTopic";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
+import xtraLogo from "@/assets/xtra-logo.png";
 
 interface NewsArticleData {
   title: string;
@@ -93,6 +94,9 @@ const Section = () => {
   // Check if this is the Editorial section - show as Daily Topic format
   const isEditorialSection = sectionName === "Editorial";
   const latestEditorialArticle = isEditorialSection && articles.length > 0 ? articles[0] : null;
+  
+  // Check if this is the Xtra section for special styling
+  const isXtraSection = sectionName === "Xtra";
 
   return (
     <div className="min-h-screen bg-background">
@@ -119,16 +123,42 @@ const Section = () => {
                 date={latestEditorialArticle.date}
                 slug={latestEditorialArticle.slug}
               />
-            ) : (
-              <>
-                <div className="mb-8">
-                  <h1 className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">{sectionName}</h1>
-                  <p className="text-muted-foreground">
-                    {articles.length} {articles.length === 1 ? 'article' : 'articles'} in this section
+        ) : (
+          <>
+            {isXtraSection ? (
+              // Special Xtra Banner
+              <div className="mb-12 relative overflow-hidden rounded-2xl border border-primary/20">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-background" />
+                <div className="relative px-8 py-16 md:py-20 flex flex-col items-center text-center">
+                  <div className="mb-6 relative">
+                    <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full" />
+                    <img 
+                      src={xtraLogo} 
+                      alt="Xtra" 
+                      className="relative w-40 h-40 md:w-48 md:h-48 object-contain animate-fade-in"
+                    />
+                  </div>
+                  <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                    Xtra
+                  </h1>
+                  <p className="text-lg text-muted-foreground max-w-2xl">
+                    Beyond the headlines. Deep dives, special features, and exclusive content.
                   </p>
+                  <div className="mt-4 text-sm text-muted-foreground/60">
+                    {articles.length} {articles.length === 1 ? 'article' : 'articles'}
+                  </div>
                 </div>
+              </div>
+            ) : (
+              <div className="mb-8">
+                <h1 className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">{sectionName}</h1>
+                <p className="text-muted-foreground">
+                  {articles.length} {articles.length === 1 ? 'article' : 'articles'} in this section
+                </p>
+              </div>
+            )}
 
-                {articles.length > 0 ? (
+            {articles.length > 0 ? (
                   <section>
                     <div className="space-y-0 rounded-lg overflow-hidden border border-border">
                       {articles.map((item, index) => (
