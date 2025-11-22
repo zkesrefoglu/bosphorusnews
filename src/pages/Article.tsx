@@ -22,6 +22,7 @@ interface ArticleData {
   category: string;
   created_at: string;
   image_url?: string;
+  photo_credit?: string;
 }
 
 const REACTIONS = [
@@ -306,13 +307,18 @@ const Article = () => {
           </div>
 
           {article.image_url && (
-            <div className="mb-8 rounded-lg overflow-hidden">
+            <figure className="mb-8 rounded-lg overflow-hidden">
               <img 
                 src={article.image_url} 
                 alt={article.title}
                 className="w-full h-auto object-cover"
               />
-            </div>
+              {article.photo_credit && (
+                <figcaption className="mt-2 text-xs text-muted-foreground text-right">
+                  Photo: {article.photo_credit}
+                </figcaption>
+              )}
+            </figure>
           )}
 
           <div className="prose prose-lg max-w-none">

@@ -36,6 +36,11 @@ const getCategoryColor = (category: string): string => {
   return categoryMap[category] || "bg-accent";
 };
 
+const formatCategoryLabel = (category: string): string => {
+  if (category === "Türkiye") return "TÜRKİYE";
+  return category.toUpperCase();
+};
+
 export const HomeMatrixSection = ({ categories }: HomeMatrixSectionProps) => {
   return (
     <section className="py-12">
@@ -46,7 +51,7 @@ export const HomeMatrixSection = ({ categories }: HomeMatrixSectionProps) => {
             <div className="flex items-center justify-between mb-4">
               <Link to={`/section/${categoryColumn.name.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}>
                 <h3 className="text-lg font-ui font-bold uppercase tracking-wider text-foreground hover:text-accent transition-colors">
-                  {categoryColumn.name.toLocaleUpperCase('tr-TR')}
+                  {formatCategoryLabel(categoryColumn.name)}
                 </h3>
               </Link>
             </div>
@@ -71,9 +76,9 @@ export const HomeMatrixSection = ({ categories }: HomeMatrixSectionProps) => {
                       <div className="absolute inset-0 gradient-overlay-dark opacity-80" />
                       
                       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                        <span className={`category-badge ${getCategoryColor(article.category)} text-white mb-3`}>
-                          {article.category.toLocaleUpperCase('tr-TR')}
-                        </span>
+                         <span className={`category-badge ${getCategoryColor(article.category)} text-white mb-3`}>
+                           {formatCategoryLabel(article.category)}
+                         </span>
                         <h4 className="font-headline text-2xl font-bold leading-tight mb-2 text-shadow-lg group-hover:text-accent-light transition-colors">
                           {article.title}
                         </h4>
