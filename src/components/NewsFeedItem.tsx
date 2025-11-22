@@ -8,8 +8,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface NewsFeedItemProps {
   title: string;
@@ -38,16 +40,93 @@ const getCategoryColor = (section: string): string => {
   return categoryMap[section] || "bg-muted/20";
 };
 
+const REACTIONS = ['😊', '🤣', '😒', '❤️', '👍', '🙌', '👌', '😢', '👎'];
+
 export const NewsFeedItem = ({ title, excerpt, content, section, author, date, slug }: NewsFeedItemProps) => {
   const categoryColor = getCategoryColor(section);
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
+  const isMobile = useIsMobile();
+  const [user, setUser] = useState<any>(null);
+  const [userReaction, setUserReaction] = useState<string | null>(null);
+  const [reactionCounts, setReactionCounts] = useState<Record<string, number>>({});
   
   const articleUrl = `${window.location.origin}/article/${slug}`;
   
-  const handleShare = (platform: 'twitter' | 'bluesky' | 'copy', e: React.MouseEvent) => {
+  useEffect(() => {
+    // Get current user
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+    
+    // Fetch reactions
+    fetchReactions();
+  }, [slug]);
+  
+  const fetchReactions = async () => {
+    const { data } = await supabase
+      .from('article_reactions')
+      .select('reaction, user_id')
+      .eq('article_slug', slug);
+    
+    if (data) {
+      // Count reactions
+      const counts: Record<string, number> = {};
+      data.forEach(r => {
+        counts[r.reaction] = (counts[r.reaction] || 0) + 1;
+        if (user && r.user_id === user.id) {
+          setUserReaction(r.reaction);
+        }
+      });
+      setReactionCounts(counts);
+    }
+  };
+  
+  const handleReaction = async (reaction: string) => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to react to articles",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // If clicking same reaction, remove it
+    if (userReaction === reaction) {
+      await supabase
+        .from('article_reactions')
+        .delete()
+        .eq('article_slug', slug)
+        .eq('user_id', user.id);
+      
+      setUserReaction(null);
+    } else {
+      // Insert or update reaction
+      await supabase
+        .from('article_reactions')
+        .upsert({
+          article_slug: slug,
+          user_id: user.id,
+          reaction,
+        });
+      
+      setUserReaction(reaction);
+    }
+    
+    fetchReactions();
+  };
+  
+  const handleShare = async (platform: 'twitter' | 'bluesky' | 'copy', e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Track share analytics
+    await supabase.from('share_analytics').insert({
+      article_slug: slug,
+      platform,
+      user_id: user?.id,
+    });
     
     switch (platform) {
       case 'twitter':
@@ -110,7 +189,7 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
             <Button 
               variant="outline" 
               size="sm"
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              className={`transition-opacity ${isMobile ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
               onClick={(e) => e.preventDefault()}
             >
               <Share2 className="w-4 h-4" />
@@ -131,6 +210,31 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
+      
+      {/* Reactions */}
+      <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-2" onClick={(e) => e.preventDefault()}>
+        {REACTIONS.map((reaction) => (
+          <button
+            key={reaction}
+            onClick={(e) => {
+              e.preventDefault();
+              handleReaction(reaction);
+            }}
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full border transition-all hover:scale-110 ${
+              userReaction === reaction
+                ? 'bg-primary/20 border-primary'
+                : 'bg-background border-border hover:border-primary/50'
+            }`}
+          >
+            <span className="text-lg">{reaction}</span>
+            {reactionCounts[reaction] > 0 && (
+              <span className="text-xs font-medium text-muted-foreground">
+                {reactionCounts[reaction]}
+              </span>
+            )}
+          </button>
+        ))}
       </div>
     </article>
   );

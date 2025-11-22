@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      article_reactions: {
+        Row: {
+          article_slug: string
+          created_at: string
+          id: string
+          reaction: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          article_slug: string
+          created_at?: string
+          id?: string
+          reaction: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          article_slug?: string
+          created_at?: string
+          id?: string
+          reaction?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_topics: {
         Row: {
           author: string
@@ -146,6 +173,30 @@ export type Database = {
           email?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      share_analytics: {
+        Row: {
+          article_slug: string
+          created_at: string
+          id: string
+          platform: string
+          user_id: string | null
+        }
+        Insert: {
+          article_slug: string
+          created_at?: string
+          id?: string
+          platform: string
+          user_id?: string | null
+        }
+        Update: {
+          article_slug?: string
+          created_at?: string
+          id?: string
+          platform?: string
+          user_id?: string | null
         }
         Relationships: []
       }
