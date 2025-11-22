@@ -34,6 +34,11 @@ const getCategoryColor = (category: string): string => {
   return categoryMap[category] || "bg-accent";
 };
 
+const formatCategoryLabel = (category: string): string => {
+  if (category === "Türkiye") return "TÜRKİYE";
+  return category.toUpperCase();
+};
+
 export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
   const plugin = React.useRef(Autoplay({ delay: 9000, stopOnInteraction: true }));
 
@@ -69,7 +74,7 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
                   <div className="max-w-4xl">
                     <div className="flex items-center gap-3 mb-4">
                       <span className={`category-badge ${getCategoryColor(article.category)} text-white`}>
-                        {article.category.toLocaleUpperCase('tr-TR')}
+                        {formatCategoryLabel(article.category)}
                       </span>
                       <time className="text-sm text-white/80 font-ui uppercase tracking-wide">{article.date}</time>
                     </div>
