@@ -1,5 +1,15 @@
 import { Link } from "react-router-dom";
 import { stripCategoryPlaceholders } from "@/lib/contentUtils";
+import { Share2, Twitter, Cloud, Link2, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface NewsFeedItemProps {
   title: string;
@@ -30,10 +40,52 @@ const getCategoryColor = (section: string): string => {
 
 export const NewsFeedItem = ({ title, excerpt, content, section, author, date, slug }: NewsFeedItemProps) => {
   const categoryColor = getCategoryColor(section);
+  const { toast } = useToast();
+  const [copied, setCopied] = useState(false);
+  
+  const articleUrl = `${window.location.origin}/article/${slug}`;
+  
+  const handleShare = (platform: 'twitter' | 'bluesky' | 'copy', e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    switch (platform) {
+      case 'twitter':
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(articleUrl)}`,
+          '_blank',
+          'width=550,height=420'
+        );
+        break;
+      case 'bluesky':
+        window.open(
+          `https://bsky.app/intent/compose?text=${encodeURIComponent(`${title}\n\n${articleUrl}`)}`,
+          '_blank',
+          'width=550,height=420'
+        );
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(articleUrl).then(() => {
+          setCopied(true);
+          toast({
+            title: "Link copied!",
+            description: "Article link copied to clipboard",
+          });
+          setTimeout(() => setCopied(false), 2000);
+        }).catch(() => {
+          toast({
+            title: "Failed to copy",
+            description: "Could not copy link to clipboard",
+            variant: "destructive",
+          });
+        });
+        break;
+    }
+  };
   
   return (
-    <Link to={`/article/${slug}`}>
-      <article className={`py-6 px-6 border-b border-border last:border-0 animate-fade-up hover:opacity-80 transition-opacity cursor-pointer ${categoryColor}`}>
+    <article className={`py-6 px-6 border-b border-border last:border-0 animate-fade-up ${categoryColor} relative group`}>
+      <Link to={`/article/${slug}`} className="block hover:opacity-80 transition-opacity">
         <div className="flex items-center space-x-3 mb-2">
           <time className="text-xs text-muted-foreground">{date}</time>
         </div>
@@ -49,7 +101,37 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
         <div className="text-foreground leading-relaxed whitespace-pre-wrap mt-4">
           {stripCategoryPlaceholders(content)}
         </div>
-      </article>
-    </Link>
+      </Link>
+      
+      {/* Share Button */}
+      <div className="absolute top-6 right-6">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={(e) => e.preventDefault()}
+            >
+              <Share2 className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+            <DropdownMenuItem onClick={(e) => handleShare('twitter', e)}>
+              <Twitter className="w-4 h-4 mr-2" />
+              Share on X
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => handleShare('bluesky', e)}>
+              <Cloud className="w-4 h-4 mr-2" />
+              Share on Bluesky
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => handleShare('copy', e)}>
+              {copied ? <Check className="w-4 h-4 mr-2" /> : <Link2 className="w-4 h-4 mr-2" />}
+              {copied ? "Copied!" : "Copy Link"}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </article>
   );
 };
