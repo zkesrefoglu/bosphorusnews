@@ -86,6 +86,59 @@ const Article = () => {
     }
   }, [slug, toast]);
 
+  // Update meta tags when article loads
+  useEffect(() => {
+    if (!article) return;
+
+    const articleUrl = `${window.location.origin}/article/${slug}`;
+    
+    // Update document title
+    document.title = `${article.title} - Bosphorus News`;
+    
+    // Helper to update or create meta tag
+    const updateMetaTag = (property: string, content: string, isName = false) => {
+      const attribute = isName ? 'name' : 'property';
+      let metaTag = document.querySelector(`meta[${attribute}="${property}"]`);
+      
+      if (!metaTag) {
+        metaTag = document.createElement('meta');
+        metaTag.setAttribute(attribute, property);
+        document.head.appendChild(metaTag);
+      }
+      
+      metaTag.setAttribute('content', content);
+    };
+
+    // Update Open Graph tags
+    updateMetaTag('og:title', article.title);
+    updateMetaTag('og:description', article.excerpt);
+    updateMetaTag('og:type', 'article');
+    updateMetaTag('og:url', articleUrl);
+    
+    if (article.image_url) {
+      updateMetaTag('og:image', article.image_url);
+      updateMetaTag('og:image:width', '1200');
+      updateMetaTag('og:image:height', '630');
+    }
+    
+    // Update Twitter Card tags
+    updateMetaTag('twitter:card', 'summary_large_image', true);
+    updateMetaTag('twitter:title', article.title, true);
+    updateMetaTag('twitter:description', article.excerpt, true);
+    
+    if (article.image_url) {
+      updateMetaTag('twitter:image', article.image_url, true);
+    }
+    
+    // Update description meta tag
+    updateMetaTag('description', article.excerpt, true);
+
+    // Cleanup function to reset meta tags when component unmounts
+    return () => {
+      document.title = 'Bosphorus News - Daily News & Analysis';
+    };
+  }, [article, slug]);
+
   const fetchReactions = async () => {
     if (!slug) return;
     
