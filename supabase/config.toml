@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.send-daily-newsletter]
 verify_jwt = false
+
+[functions.post-to-bluesky]
+verify_jwt = false
