@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { z } from "zod";
 import NewsConverter from "@/components/NewsConverter";
-import { Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { Pencil, Trash2, Eye, EyeOff, Send } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
@@ -51,6 +51,8 @@ const Admin = () => {
   const [newsExcerpt, setNewsExcerpt] = useState("");
   const [newsContent, setNewsContent] = useState("");
   const [newsImageUrl, setNewsImageUrl] = useState("");
+  const [postToBluesky, setPostToBluesky] = useState(false);
+  const [postingToBluesky, setPostingToBluesky] = useState(false);
 
   // Daily topic (Agenda) form state
   const [topicTitle, setTopicTitle] = useState("");
@@ -213,12 +215,35 @@ const Admin = () => {
         description: "News article has been uploaded successfully",
       });
 
+      // Post to Bluesky if checkbox is enabled
+      if (postToBluesky) {
+        try {
+          const { error: blueskyError } = await supabase.functions.invoke('post-to-bluesky', {
+            body: { title: validData.title, slug: slug }
+          });
+          
+          if (blueskyError) throw blueskyError;
+          
+          toast({
+            title: "Posted to Bluesky!",
+            description: "Article shared on Bluesky successfully",
+          });
+        } catch (blueskyErr: any) {
+          toast({
+            title: "Bluesky Post Failed",
+            description: blueskyErr.message || "Failed to post to Bluesky",
+            variant: "destructive",
+          });
+        }
+      }
+
       // Reset form
       setNewsTitle("");
       setNewsSection("");
       setNewsExcerpt("");
       setNewsContent("");
       setNewsImageUrl("");
+      setPostToBluesky(false);
       if (imageInput) imageInput.value = '';
     } catch (error: any) {
       toast({
@@ -741,6 +766,17 @@ const Admin = () => {
                     </p>
                   </div>
 
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="post-to-bluesky"
+                      checked={postToBluesky}
+                      onCheckedChange={setPostToBluesky}
+                    />
+                    <Label htmlFor="post-to-bluesky" className="cursor-pointer">
+                      Post to Bluesky when published
+                    </Label>
+                  </div>
+
                   <Button type="submit" disabled={submitting || uploadingImage}>
                     {uploadingImage ? "Uploading Image..." : submitting ? "Uploading..." : "Upload Article"}
                   </Button>
@@ -1074,6 +1110,37 @@ const Admin = () => {
                                   {article.published ? "Live" : "Hidden"}
                                 </span>
                               </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={async () => {
+                                  setPostingToBluesky(true);
+                                  try {
+                                    const { error } = await supabase.functions.invoke('post-to-bluesky', {
+                                      body: { title: article.title, slug: article.slug }
+                                    });
+                                    
+                                    if (error) throw error;
+                                    
+                                    toast({
+                                      title: "Posted to Bluesky!",
+                                      description: "Article shared on Bluesky successfully",
+                                    });
+                                  } catch (err: any) {
+                                    toast({
+                                      title: "Bluesky Post Failed",
+                                      description: err.message || "Failed to post to Bluesky",
+                                      variant: "destructive",
+                                    });
+                                  } finally {
+                                    setPostingToBluesky(false);
+                                  }
+                                }}
+                                disabled={postingToBluesky}
+                                title="Post to Bluesky"
+                              >
+                                <Send className="w-4 h-4" />
+                              </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
