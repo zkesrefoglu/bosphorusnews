@@ -40,7 +40,16 @@ const getCategoryColor = (section: string): string => {
   return categoryMap[section] || "bg-muted/20";
 };
 
-const REACTIONS = ['😊', '🤣', '😢', '😒', '😡', '👍', '🙌', '👎'];
+const REACTIONS = [
+  { emoji: '😊', icon: '/emojis/smiling.svg', name: 'smiling' },
+  { emoji: '🤣', icon: '/emojis/laughing.svg', name: 'laughing' },
+  { emoji: '😢', icon: '/emojis/crying.svg', name: 'crying' },
+  { emoji: '😒', icon: '/emojis/unamused.svg', name: 'unamused' },
+  { emoji: '😡', icon: '/emojis/angry.svg', name: 'angry' },
+  { emoji: '👍', icon: '/emojis/thumbs-up.svg', name: 'thumbs-up' },
+  { emoji: '🙌', icon: '/emojis/celebrating.svg', name: 'celebrating' },
+  { emoji: '👎', icon: '/emojis/thumbs-down.svg', name: 'thumbs-down' },
+];
 
 export const NewsFeedItem = ({ title, excerpt, content, section, author, date, slug }: NewsFeedItemProps) => {
   const categoryColor = getCategoryColor(section);
@@ -216,21 +225,21 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
       <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-2" onClick={(e) => e.preventDefault()}>
         {REACTIONS.map((reaction) => (
           <button
-            key={reaction}
+            key={reaction.name}
             onClick={(e) => {
               e.preventDefault();
-              handleReaction(reaction);
+              handleReaction(reaction.emoji);
             }}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-full border transition-all duration-200 hover:scale-105 hover:shadow-md ${
-              userReaction === reaction
+              userReaction === reaction.emoji
                 ? 'bg-primary/15 border-primary shadow-sm scale-105'
                 : 'bg-background/50 border-border/50 hover:border-primary/40 hover:bg-background'
             }`}
           >
-            <span className="text-xl">{reaction}</span>
-            {reactionCounts[reaction] > 0 && (
+            <img src={reaction.icon} alt={reaction.name} className="w-6 h-6" />
+            {reactionCounts[reaction.emoji] > 0 && (
               <span className="text-xs font-semibold text-foreground/70">
-                {reactionCounts[reaction]}
+                {reactionCounts[reaction.emoji]}
               </span>
             )}
           </button>

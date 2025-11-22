@@ -24,7 +24,16 @@ interface ArticleData {
   image_url?: string;
 }
 
-const REACTIONS = ['😊', '🤣', '😢', '😒', '😡', '👍', '🙌', '👎'];
+const REACTIONS = [
+  { emoji: '😊', icon: '/emojis/smiling.svg', name: 'smiling' },
+  { emoji: '🤣', icon: '/emojis/laughing.svg', name: 'laughing' },
+  { emoji: '😢', icon: '/emojis/crying.svg', name: 'crying' },
+  { emoji: '😒', icon: '/emojis/unamused.svg', name: 'unamused' },
+  { emoji: '😡', icon: '/emojis/angry.svg', name: 'angry' },
+  { emoji: '👍', icon: '/emojis/thumbs-up.svg', name: 'thumbs-up' },
+  { emoji: '🙌', icon: '/emojis/celebrating.svg', name: 'celebrating' },
+  { emoji: '👎', icon: '/emojis/thumbs-down.svg', name: 'thumbs-down' },
+];
 
 const Article = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -294,18 +303,18 @@ const Article = () => {
             <div className="flex flex-wrap gap-3">
               {REACTIONS.map((reaction) => (
                 <button
-                  key={reaction}
-                  onClick={() => handleReaction(reaction)}
+                  key={reaction.name}
+                  onClick={() => handleReaction(reaction.emoji)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all duration-200 hover:scale-105 hover:shadow-lg ${
-                    userReaction === reaction
+                    userReaction === reaction.emoji
                       ? 'bg-primary/15 border-primary shadow-md scale-105'
                       : 'bg-background/50 border-border/50 hover:border-primary/40 hover:bg-background'
                   }`}
                 >
-                  <span className="text-2xl">{reaction}</span>
-                  {reactionCounts[reaction] > 0 && (
+                  <img src={reaction.icon} alt={reaction.name} className="w-7 h-7" />
+                  {reactionCounts[reaction.emoji] > 0 && (
                     <span className="text-sm font-semibold text-foreground/70 ml-0.5">
-                      {reactionCounts[reaction]}
+                      {reactionCounts[reaction.emoji]}
                     </span>
                   )}
                 </button>
