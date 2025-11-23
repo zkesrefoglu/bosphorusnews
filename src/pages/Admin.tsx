@@ -780,7 +780,7 @@ const Admin = () => {
               </Button>
             </div>
             
-            <div className={`grid gap-6 ${showPreview ? 'lg:grid-cols-2' : 'grid-cols-1'}`}>
+            <div className={`grid gap-6 ${showPreview ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
               <Card>
                 <CardHeader>
                   <CardTitle>Article Editor</CardTitle>
@@ -891,7 +891,7 @@ const Admin = () => {
               </Card>
               
               {showPreview && (
-                <Card className="lg:sticky lg:top-4 h-fit max-h-[calc(100vh-8rem)] overflow-hidden">
+                <Card className="md:sticky md:top-4 h-fit max-h-[calc(100vh-8rem)] overflow-hidden">
                   <CardHeader>
                     <CardTitle>Live Preview</CardTitle>
                   </CardHeader>
@@ -928,7 +928,7 @@ const Admin = () => {
               </Button>
             </div>
             
-            <div className={`grid gap-6 ${showPreview ? 'lg:grid-cols-2' : 'grid-cols-1'}`}>
+            <div className={`grid gap-6 ${showPreview ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
               <Card>
                 <CardHeader>
                   <CardTitle>Article Editor</CardTitle>
@@ -998,7 +998,7 @@ const Admin = () => {
               </Card>
               
               {showPreview && (
-                <Card className="lg:sticky lg:top-4 h-fit max-h-[calc(100vh-8rem)] overflow-hidden">
+                <Card className="md:sticky md:top-4 h-fit max-h-[calc(100vh-8rem)] overflow-hidden">
                   <CardHeader>
                     <CardTitle>Live Preview</CardTitle>
                   </CardHeader>

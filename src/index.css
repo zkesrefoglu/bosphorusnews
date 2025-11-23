@@ -346,6 +346,10 @@
     color: hsl(var(--foreground));
   }
 
+  .rich-text-editor .ql-editor p {
+    margin-bottom: 0.5rem;
+  }
+
   .rich-text-editor .ql-editor.ql-blank::before {
     color: hsl(var(--muted-foreground));
     font-style: normal;
@@ -421,7 +425,7 @@
   }
 
   .rich-text-content p {
-    @apply mb-4;
+    @apply mb-2;
     white-space: normal;
   }
 }
