@@ -25,25 +25,12 @@ interface ArticleData {
   photo_credit?: string;
 }
 
-const REACTIONS = [
-  { emoji: '😊', icon: '/emojis/smiling.svg', name: 'smiling' },
-  { emoji: '🤣', icon: '/emojis/laughing.svg', name: 'laughing' },
-  { emoji: '😢', icon: '/emojis/crying.svg', name: 'crying' },
-  { emoji: '😒', icon: '/emojis/unamused.svg', name: 'unamused' },
-  { emoji: '😡', icon: '/emojis/angry.svg', name: 'angry' },
-  { emoji: '👍', icon: '/emojis/thumbs-up.svg', name: 'thumbs-up' },
-  { emoji: '🙌', icon: '/emojis/celebrating.svg', name: 'celebrating' },
-  { emoji: '👎', icon: '/emojis/thumbs-down.svg', name: 'thumbs-down' },
-];
-
 const Article = () => {
   const { slug } = useParams<{ slug: string }>();
   const { toast } = useToast();
   const [article, setArticle] = useState<ArticleData | null>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-  const [userReaction, setUserReaction] = useState<string | null>(null);
-  const [reactionCounts, setReactionCounts] = useState<Record<string, number>>({});
   const [copied, setCopied] = useState(false);
   const isMobile = useIsMobile();
 
@@ -80,11 +67,6 @@ const Article = () => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
     });
-    
-    // Fetch reactions
-    if (slug) {
-      fetchReactions();
-    }
   }, [slug, toast]);
 
   // Update meta tags when article loads
@@ -139,61 +121,6 @@ const Article = () => {
       document.title = 'Bosphorus News - Daily News & Analysis';
     };
   }, [article, slug]);
-
-  const fetchReactions = async () => {
-    if (!slug) return;
-    
-    const { data } = await supabase
-      .from('article_reactions')
-      .select('reaction, user_id')
-      .eq('article_slug', slug);
-    
-    if (data) {
-      const counts: Record<string, number> = {};
-      data.forEach(r => {
-        counts[r.reaction] = (counts[r.reaction] || 0) + 1;
-        if (user && r.user_id === user.id) {
-          setUserReaction(r.reaction);
-        }
-      });
-      setReactionCounts(counts);
-    }
-  };
-
-  const handleReaction = async (reaction: string) => {
-    if (!user) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to react to articles",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (!slug) return;
-    
-    if (userReaction === reaction) {
-      await supabase
-        .from('article_reactions')
-        .delete()
-        .eq('article_slug', slug)
-        .eq('user_id', user.id);
-      
-      setUserReaction(null);
-    } else {
-      await supabase
-        .from('article_reactions')
-        .upsert({
-          article_slug: slug,
-          user_id: user.id,
-          reaction,
-        });
-      
-      setUserReaction(reaction);
-    }
-    
-    fetchReactions();
-  };
 
   const handleShare = async (platform: 'twitter' | 'bluesky' | 'copy') => {
     if (!slug || !article) return;
@@ -330,9 +257,9 @@ const Article = () => {
         </div>
           </div>
 
-          {/* Share and Reactions Section */}
+          {/* Share Section */}
           <div className="mt-12 pt-8 border-t border-border">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Share this article</h3>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -356,28 +283,6 @@ const Article = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
-
-            <h3 className="text-lg font-semibold mb-4">React to this article</h3>
-            <div className="flex flex-wrap gap-3">
-              {REACTIONS.map((reaction) => (
-                <button
-                  key={reaction.name}
-                  onClick={() => handleReaction(reaction.emoji)}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all duration-200 hover:scale-105 hover:shadow-lg ${
-                    userReaction === reaction.emoji
-                      ? 'bg-primary/15 border-primary shadow-md scale-105'
-                      : 'bg-background/50 border-border/50 hover:border-primary/40 hover:bg-background'
-                  }`}
-                >
-                  <img src={reaction.icon} alt={reaction.name} className="w-7 h-7" />
-                  {reactionCounts[reaction.emoji] > 0 && (
-                    <span className="text-sm font-semibold text-foreground/70 ml-0.5">
-                      {reactionCounts[reaction.emoji]}
-                    </span>
-                  )}
-                </button>
-              ))}
             </div>
           </div>
         </article>

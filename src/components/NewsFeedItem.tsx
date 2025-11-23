@@ -40,25 +40,12 @@ const getCategoryColor = (section: string): string => {
   return categoryMap[section] || "bg-muted/20";
 };
 
-const REACTIONS = [
-  { emoji: '😊', icon: '/emojis/smiling.svg', name: 'smiling' },
-  { emoji: '🤣', icon: '/emojis/laughing.svg', name: 'laughing' },
-  { emoji: '😢', icon: '/emojis/crying.svg', name: 'crying' },
-  { emoji: '😒', icon: '/emojis/unamused.svg', name: 'unamused' },
-  { emoji: '😡', icon: '/emojis/angry.svg', name: 'angry' },
-  { emoji: '👍', icon: '/emojis/thumbs-up.svg', name: 'thumbs-up' },
-  { emoji: '🙌', icon: '/emojis/celebrating.svg', name: 'celebrating' },
-  { emoji: '👎', icon: '/emojis/thumbs-down.svg', name: 'thumbs-down' },
-];
-
 export const NewsFeedItem = ({ title, excerpt, content, section, author, date, slug }: NewsFeedItemProps) => {
   const categoryColor = getCategoryColor(section);
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const isMobile = useIsMobile();
   const [user, setUser] = useState<any>(null);
-  const [userReaction, setUserReaction] = useState<string | null>(null);
-  const [reactionCounts, setReactionCounts] = useState<Record<string, number>>({});
   
   const articleUrl = `${window.location.origin}/article/${slug}`;
   
@@ -67,64 +54,7 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
     });
-    
-    // Fetch reactions
-    fetchReactions();
   }, [slug]);
-  
-  const fetchReactions = async () => {
-    const { data } = await supabase
-      .from('article_reactions')
-      .select('reaction, user_id')
-      .eq('article_slug', slug);
-    
-    if (data) {
-      // Count reactions
-      const counts: Record<string, number> = {};
-      data.forEach(r => {
-        counts[r.reaction] = (counts[r.reaction] || 0) + 1;
-        if (user && r.user_id === user.id) {
-          setUserReaction(r.reaction);
-        }
-      });
-      setReactionCounts(counts);
-    }
-  };
-  
-  const handleReaction = async (reaction: string) => {
-    if (!user) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to react to articles",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // If clicking same reaction, remove it
-    if (userReaction === reaction) {
-      await supabase
-        .from('article_reactions')
-        .delete()
-        .eq('article_slug', slug)
-        .eq('user_id', user.id);
-      
-      setUserReaction(null);
-    } else {
-      // Insert or update reaction
-      await supabase
-        .from('article_reactions')
-        .upsert({
-          article_slug: slug,
-          user_id: user.id,
-          reaction,
-        });
-      
-      setUserReaction(reaction);
-    }
-    
-    fetchReactions();
-  };
   
   const handleShare = async (platform: 'twitter' | 'bluesky' | 'copy', e: React.MouseEvent) => {
     e.preventDefault();
@@ -219,31 +149,6 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
-      
-      {/* Reactions */}
-      <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-2" onClick={(e) => e.preventDefault()}>
-        {REACTIONS.map((reaction) => (
-          <button
-            key={reaction.name}
-            onClick={(e) => {
-              e.preventDefault();
-              handleReaction(reaction.emoji);
-            }}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-full border transition-all duration-200 hover:scale-105 hover:shadow-md ${
-              userReaction === reaction.emoji
-                ? 'bg-primary/15 border-primary shadow-sm scale-105'
-                : 'bg-background/50 border-border/50 hover:border-primary/40 hover:bg-background'
-            }`}
-          >
-            <img src={reaction.icon} alt={reaction.name} className="w-6 h-6" />
-            {reactionCounts[reaction.emoji] > 0 && (
-              <span className="text-xs font-semibold text-foreground/70">
-                {reactionCounts[reaction.emoji]}
-              </span>
-            )}
-          </button>
-        ))}
       </div>
     </article>
   );
