@@ -82,8 +82,9 @@ serve(async (req) => {
       );
     }
 
-    // Construct the article URL
-    const articleUrl = `https://your-site.com/article/${slug}`;
+    // Construct the article URL using the site's domain
+    const siteUrl = Deno.env.get('SITE_URL') || 'https://bosphorusnewsnetwork.com';
+    const articleUrl = `${siteUrl}/article/${slug}`;
     
     // Format the post text (Bluesky has a 300 character limit)
     const postText = `${title}\n\n${articleUrl}`;
