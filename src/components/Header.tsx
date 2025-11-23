@@ -3,12 +3,14 @@ import { Link } from "react-router-dom";
 import { Menu } from "lucide-react";
 import logo from "@/assets/logo.png";
 import xtraLogo from "@/assets/xtra-logo.png";
+import reyizImage from "@/assets/reyiz.png";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { LiveTicker } from "@/components/LiveTicker";
 
 const sections = [
   { name: "Home", slug: "", isLogo: false },
+  { name: "Reyiz", slug: "reyiz", isLogo: true, logoImage: reyizImage },
   { name: "Agenda", slug: "agenda", isLogo: false },
   { name: "Economy", slug: "economy", isLogo: false },
   { name: "Defense", slug: "defense", isLogo: false },
@@ -44,7 +46,15 @@ export const Header = () => {
                     to={section.slug === "" ? "/" : `/section/${section.slug}`}
                     className="hover-underline whitespace-nowrap text-foreground hover:text-accent transition-colors inline-block"
                   >
-                    {section.isLogo ? <img src={xtraLogo} alt="Xtra" className="h-16 w-auto" /> : section.name}
+                    {section.isLogo ? (
+                      section.slug === "xtra" ? (
+                        <img src={xtraLogo} alt="Xtra" className="h-16 w-auto" />
+                      ) : (
+                        <img src={section.logoImage} alt={section.name} className="h-12 w-auto rounded-full" />
+                      )
+                    ) : (
+                      section.name
+                    )}
                   </Link>
                 </li>
               ))}
@@ -78,10 +88,17 @@ export const Header = () => {
                         }`}
                       >
                         {section.isLogo ? (
-                          <>
-                            <img src={xtraLogo} alt="Xtra" className="h-10 w-auto" />
-                            <span className="font-bold">Xtra</span>
-                          </>
+                          section.slug === "xtra" ? (
+                            <>
+                              <img src={xtraLogo} alt="Xtra" className="h-10 w-auto" />
+                              <span className="font-bold">Xtra</span>
+                            </>
+                          ) : (
+                            <>
+                              <img src={section.logoImage} alt={section.name} className="h-10 w-auto rounded-full" />
+                              <span className="font-bold">{section.name}</span>
+                            </>
+                          )
                         ) : (
                           section.name
                         )}
