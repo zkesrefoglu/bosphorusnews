@@ -94,9 +94,9 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
         ))}
       </CarouselContent>
 
-      {/* Navigation Buttons */}
-      <CarouselPrevious className="left-6 w-12 h-12 bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white hover:text-foreground transition-all" />
-      <CarouselNext className="right-6 w-12 h-12 bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white hover:text-foreground transition-all" />
+      {/* Navigation Buttons - Smaller and positioned mid-height to avoid text */}
+      <CarouselPrevious className="left-2 md:left-4 top-1/3 w-8 h-8 md:w-10 md:h-10 bg-black/30 backdrop-blur-sm border-white/10 text-white hover:bg-white/90 hover:text-foreground transition-all opacity-60 hover:opacity-100" />
+      <CarouselNext className="right-2 md:right-4 top-1/3 w-8 h-8 md:w-10 md:h-10 bg-black/30 backdrop-blur-sm border-white/10 text-white hover:bg-white/90 hover:text-foreground transition-all opacity-60 hover:opacity-100" />
     </Carousel>
   );
 };
