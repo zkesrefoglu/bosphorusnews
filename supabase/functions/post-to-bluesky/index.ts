@@ -82,12 +82,40 @@ async function createBlueskyPost(
   excerpt: string,
   imageBlob?: any
 ): Promise<any> {
+  // Build post text: title or excerpt + link + brand, respecting Bluesky limits
+  const baseText = `${title} | Bosphorus News Network`;
+  const urlPart = `\n\n${articleUrl}`;
+  const maxLength = 300;
+
+  let middle = excerpt ? `\n\n${excerpt}` : '';
+  let fullText = baseText + middle + urlPart;
+
+  if (fullText.length > maxLength) {
+    if (!excerpt) {
+      const allowedBaseLength = maxLength - urlPart.length - 3; // 3 for '...'
+      const truncatedBase = allowedBaseLength > 0
+        ? baseText.slice(0, allowedBaseLength) + '...'
+        : baseText;
+      fullText = truncatedBase + urlPart;
+    } else {
+      const fixedLength = baseText.length + urlPart.length + 5; // 5 for "\n\n" and "..."
+      const allowedExcerptLength = maxLength - fixedLength;
+
+      if (allowedExcerptLength <= 0) {
+        fullText = baseText + urlPart;
+      } else {
+        const truncatedExcerpt = excerpt.slice(0, allowedExcerptLength) + '...';
+        middle = `\n\n${truncatedExcerpt}`;
+        fullText = baseText + middle + urlPart;
+      }
+    }
+  }
+
   const record: any = {
-    text: title,
+    text: fullText,
     createdAt: new Date().toISOString(),
     $type: 'app.bsky.feed.post',
   };
-
   // Add link card embed with thumbnail
   if (articleUrl) {
     record.embed = {
