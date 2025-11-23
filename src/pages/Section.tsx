@@ -1,7 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
-import { NewsFeedItem } from "@/components/NewsFeedItem";
 import { DailyTopic } from "@/components/DailyTopic";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +17,8 @@ interface NewsArticleData {
   date: string;
   slug: string;
   timestamp: Date;
+  imageUrl?: string;
+  photoCredit?: string;
 }
 
 const Section = () => {
@@ -77,6 +78,8 @@ const Section = () => {
               }),
               slug: article.slug,
               timestamp: new Date(article.created_at),
+              imageUrl: article.image_url,
+              photoCredit: article.photo_credit,
             }))
           );
 
@@ -237,16 +240,56 @@ const Section = () => {
             )}
 
             {articles.length > 0 ? (
-                  <section>
-                    <div className="space-y-0 rounded-lg overflow-hidden border border-border">
-                      {articles.map((item, index) => (
-                        <NewsFeedItem key={index} {...item} />
-                      ))}
-                    </div>
-                  </section>
-                ) : (
-                  <p className="text-muted-foreground text-center py-8">No articles in this section</p>
-                )}
+              <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {articles.map((item, index) => (
+                  <Link 
+                    key={index} 
+                    to={`/article/${item.slug}`}
+                    className="group block"
+                  >
+                    <article className="h-full border border-border rounded-lg overflow-hidden bg-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                      {/* Thumbnail */}
+                      <div className="relative aspect-[3/2] overflow-hidden bg-muted">
+                        <img
+                          src={item.imageUrl || `https://picsum.photos/seed/${item.slug}/600/400`}
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        {item.photoCredit && (
+                          <div className="absolute bottom-2 right-2 text-xs text-white/80 bg-black/40 px-2 py-1 rounded backdrop-blur-sm">
+                            {item.photoCredit}
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-4 space-y-2">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <time>{item.date}</time>
+                          {item.author && (
+                            <>
+                              <span>•</span>
+                              <span>{item.author}</span>
+                            </>
+                          )}
+                        </div>
+                        
+                        <h3 className="font-headline text-lg font-bold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                          {item.title}
+                        </h3>
+                        
+                        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                          {item.excerpt}
+                        </p>
+                      </div>
+                    </article>
+                  </Link>
+                ))}
+              </section>
+            ) : (
+              <p className="text-muted-foreground text-center py-8">No articles in this section</p>
+            )}
               </>
             )}
           </>
