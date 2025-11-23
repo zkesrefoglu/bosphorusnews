@@ -1095,12 +1095,11 @@ const Admin = () => {
 
                       <div className="space-y-2">
                         <Label htmlFor="edit-content">Full Content</Label>
-                        <Textarea
-                          id="edit-content"
+                        <RichTextEditor
+                          key={editingArticle ? `edit-news-${editingArticle.id}` : 'edit-news-new'}
                           value={newsContent}
-                          onChange={(e) => setNewsContent(e.target.value)}
-                          rows={8}
-                          required
+                          onChange={setNewsContent}
+                          placeholder="Edit the article content with formatting..."
                         />
                       </div>
 
