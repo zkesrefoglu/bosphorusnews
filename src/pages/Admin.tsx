@@ -54,7 +54,7 @@ const Admin = () => {
   const [postToBluesky, setPostToBluesky] = useState(false);
   const [postingToBluesky, setPostingToBluesky] = useState(false);
 
-  // Daily topic (Agenda) form state
+  // Xtra (Editorial) form state
   const [topicTitle, setTopicTitle] = useState("");
   const [topicExcerpt, setTopicExcerpt] = useState("");
   const [topicContent, setTopicContent] = useState("");
@@ -788,7 +788,7 @@ const Admin = () => {
           <TabsContent value="topic">
             <Card>
               <CardHeader>
-                <CardTitle>Editor's Pick (Daily Topic)</CardTitle>
+                <CardTitle>Editor's Pick (Xtra)</CardTitle>
                 <CardDescription>
                   Upload the main featured story that appears as "Editor's Pick" on the homepage. This is the big breaking news of the day.
                 </CardDescription>

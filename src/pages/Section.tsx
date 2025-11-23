@@ -86,7 +86,7 @@ const Section = () => {
           }
         }
 
-        // Fetch Daily Topic for Xtra section
+        // Fetch Xtra editorial for Xtra section
         if (sectionName === "Xtra") {
           const { data: dailyTopicData, error: dailyTopicError } = await supabase
             .from("daily_topics")
@@ -130,7 +130,7 @@ const Section = () => {
     fetchArticles();
   }, [sectionName, toast]);
 
-  // Check if this is the Editorial section - show as Daily Topic format
+  // Check if this is the Editorial section - show as Xtra format
   const isEditorialSection = sectionName === "Editorial";
   const latestEditorialArticle = isEditorialSection && articles.length > 0 ? articles[0] : null;
   
@@ -154,8 +154,8 @@ const Section = () => {
         ) : (
           <>
             {isEditorialSection && latestEditorialArticle ? (
-              // Show Editorial as Daily Topic format
-              <DailyTopic 
+              // Show Editorial as Xtra format
+              <DailyTopic
                 title={latestEditorialArticle.title}
                 excerpt={latestEditorialArticle.excerpt}
                 author={latestEditorialArticle.author}
@@ -223,7 +223,7 @@ const Section = () => {
               </div>
             )}
 
-            {/* Daily Topic for Xtra section */}
+            {/* Xtra editorial for Xtra section */}
             {isXtraSection && dailyTopic && (
               <div className="mb-12">
                 <DailyTopic 

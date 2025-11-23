@@ -24,7 +24,7 @@ export const DailyTopic = ({ title, excerpt, author, date, slug, imageUrl }: Dai
       <div className="relative px-8 md:px-12 py-16 md:py-20">
         <div className="mb-4 flex items-center space-x-3 animate-[fade-in_0.6s_ease-out]">
           <span className="inline-block px-3 py-1 text-xs font-semibold tracking-wide uppercase bg-primary text-primary-foreground rounded">
-            Daily Topic
+            Xtra
           </span>
           <time className="text-sm text-muted-foreground">{date}</time>
         </div>

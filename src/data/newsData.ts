@@ -20,7 +20,7 @@ export interface DailyTopicArticle {
   section: string;
 }
 
-// Daily Topic - Agenda category
+// Xtra - Agenda category
 export const dailyTopic: DailyTopicArticle = {
   title: "Indictment Controversy Surrounds Istanbul Municipality Investigation",
   excerpt: "The Yeni Şafak newspaper, known for its pro-government stance, published a story titled 'Indictment' regarding the Istanbul Metropolitan Municipality investigation, breaching confidentiality. The story claimed that the indictment would be 4,000 pages long and that Istanbul Mayor Ekrem İmamoğlu was listed as the 'number one suspect.'",

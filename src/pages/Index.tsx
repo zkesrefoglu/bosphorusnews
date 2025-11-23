@@ -136,7 +136,7 @@ const Index = () => {
       );
       setMatrixCategories(matrixData);
 
-      // 3. DAILY TOPIC: Latest from Xtra category
+      // 3. XTRA: Latest from Xtra category
       const { data: xtraArticle, error: xtraError } = await supabase
         .from("news_articles")
         .select("*")
@@ -212,7 +212,7 @@ const Index = () => {
           </div>
         )}
 
-        {/* DAILY TOPIC SECTION */}
+        {/* XTRA SECTION */}
         {editorsPick && (
           <div className="container-custom mt-16">
             <DailyTopic 
