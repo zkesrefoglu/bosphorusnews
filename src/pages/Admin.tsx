@@ -224,7 +224,12 @@ const Admin = () => {
       if (postToBluesky) {
         try {
           const { error: blueskyError } = await supabase.functions.invoke('post-to-bluesky', {
-            body: { title: validData.title, slug: slug }
+            body: { 
+              title: validData.title, 
+              slug: slug,
+              excerpt: validData.excerpt,
+              image_url: imageUrl
+            }
           });
           
           if (blueskyError) throw blueskyError;

@@ -40,7 +40,71 @@ async function authenticateBluesky(): Promise<BlueskySession> {
   return await response.json();
 }
 
-async function createBlueskyPost(session: BlueskySession, text: string): Promise<any> {
+async function uploadImageToBluesky(session: BlueskySession, imageUrl: string): Promise<any> {
+  try {
+    // Fetch the image
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      console.error('Failed to fetch image:', imageResponse.status);
+      return null;
+    }
+
+    const imageBlob = await imageResponse.blob();
+    const imageBuffer = await imageBlob.arrayBuffer();
+
+    // Upload to Bluesky
+    const uploadResponse = await fetch('https://bsky.social/xrpc/com.atproto.repo.uploadBlob', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.accessJwt}`,
+        'Content-Type': imageBlob.type,
+      },
+      body: imageBuffer,
+    });
+
+    if (!uploadResponse.ok) {
+      console.error('Failed to upload image to Bluesky:', await uploadResponse.text());
+      return null;
+    }
+
+    const result = await uploadResponse.json();
+    return result.blob;
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    return null;
+  }
+}
+
+async function createBlueskyPost(
+  session: BlueskySession, 
+  title: string, 
+  articleUrl: string, 
+  excerpt: string,
+  imageBlob?: any
+): Promise<any> {
+  const record: any = {
+    text: title,
+    createdAt: new Date().toISOString(),
+    $type: 'app.bsky.feed.post',
+  };
+
+  // Add link card embed with thumbnail
+  if (articleUrl) {
+    record.embed = {
+      $type: 'app.bsky.embed.external',
+      external: {
+        uri: articleUrl,
+        title: title,
+        description: excerpt || '',
+      }
+    };
+
+    // Add thumbnail if available
+    if (imageBlob) {
+      record.embed.external.thumb = imageBlob;
+    }
+  }
+
   const response = await fetch('https://bsky.social/xrpc/com.atproto.repo.createRecord', {
     method: 'POST',
     headers: {
@@ -50,11 +114,7 @@ async function createBlueskyPost(session: BlueskySession, text: string): Promise
     body: JSON.stringify({
       repo: session.did,
       collection: 'app.bsky.feed.post',
-      record: {
-        text: text,
-        createdAt: new Date().toISOString(),
-        $type: 'app.bsky.feed.post',
-      },
+      record: record,
     }),
   });
 
@@ -73,7 +133,7 @@ serve(async (req) => {
   }
 
   try {
-    const { title, slug } = await req.json();
+    const { title, slug, excerpt, image_url } = await req.json();
 
     if (!title || !slug) {
       return new Response(
@@ -86,30 +146,18 @@ serve(async (req) => {
     const siteUrl = Deno.env.get('SITE_URL') || 'https://bosphorusnewsnetwork.com';
     const articleUrl = `${siteUrl}/article/${slug}`;
     
-    // Format the post text (Bluesky has a 300 character limit)
-    const postText = `${title}\n\n${articleUrl}`;
-    
-    if (postText.length > 300) {
-      // Truncate title if needed
-      const maxTitleLength = 300 - articleUrl.length - 5; // 5 for "\n\n" and "..."
-      const truncatedTitle = title.substring(0, maxTitleLength) + '...';
-      const finalPostText = `${truncatedTitle}\n\n${articleUrl}`;
-      
-      console.log('Post truncated to:', finalPostText);
-      
-      const session = await authenticateBluesky();
-      const result = await createBlueskyPost(session, finalPostText);
-      
-      return new Response(
-        JSON.stringify({ success: true, post: result, truncated: true }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    console.log('Posting to Bluesky:', postText);
+    console.log('Posting to Bluesky with link card:', { title, articleUrl, excerpt, image_url });
     
     const session = await authenticateBluesky();
-    const result = await createBlueskyPost(session, postText);
+    
+    // Upload image if provided
+    let imageBlob = null;
+    if (image_url) {
+      imageBlob = await uploadImageToBluesky(session, image_url);
+    }
+    
+    // Create post with link card embed
+    const result = await createBlueskyPost(session, title, articleUrl, excerpt || '', imageBlob);
 
     return new Response(
       JSON.stringify({ success: true, post: result }),
