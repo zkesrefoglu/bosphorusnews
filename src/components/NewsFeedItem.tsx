@@ -67,6 +67,36 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
       user_id: user?.id,
     });
     
+    const getBlueskyText = () => {
+      const baseText = `${title} | Bosphorus News Network`;
+      const urlPart = `\n\n${articleUrl}`;
+      const maxLength = 300;
+
+      let middle = excerpt ? `\n\n${excerpt}` : '';
+      let fullText = baseText + middle + urlPart;
+
+      if (fullText.length <= maxLength) return fullText;
+
+      if (!excerpt) {
+        const allowedBaseLength = maxLength - urlPart.length - 3; // 3 for '...'
+        const truncatedBase = allowedBaseLength > 0
+          ? baseText.slice(0, allowedBaseLength) + '...'
+          : baseText;
+        return truncatedBase + urlPart;
+      }
+
+      const fixedLength = baseText.length + urlPart.length + 5; // 5 for "\n\n" and "..."
+      const allowedExcerptLength = maxLength - fixedLength;
+
+      if (allowedExcerptLength <= 0) {
+        return baseText + urlPart;
+      }
+
+      const truncatedExcerpt = excerpt.slice(0, allowedExcerptLength) + '...';
+      middle = `\n\n${truncatedExcerpt}`;
+      return baseText + middle + urlPart;
+    };
+    
     switch (platform) {
       case 'twitter':
         window.open(
@@ -75,13 +105,15 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
           'width=550,height=420'
         );
         break;
-      case 'bluesky':
+      case 'bluesky': {
+        const text = getBlueskyText();
         window.open(
-          `https://bsky.app/intent/compose?text=${encodeURIComponent(`${title} | Bosphorus News Network\n\n${articleUrl}`)}`,
+          `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`,
           '_blank',
           'width=550,height=420'
         );
         break;
+      }
       case 'copy':
         navigator.clipboard.writeText(articleUrl).then(() => {
           setCopied(true);
