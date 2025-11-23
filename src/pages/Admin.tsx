@@ -609,6 +609,78 @@ const Admin = () => {
     }
   };
 
+  const handleToggleCarouselFeatured = async (articleId: string, currentStatus: boolean | null) => {
+    try {
+      const { error } = await supabase
+        .from("news_articles")
+        .update({ is_carousel_featured: !currentStatus })
+        .eq("id", articleId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Article ${!currentStatus ? "added to" : "removed from"} homepage carousel`,
+      });
+
+      fetchArticles();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleToggleCarouselPinned = async (articleId: string, currentStatus: boolean | null) => {
+    try {
+      const { error } = await supabase
+        .from("news_articles")
+        .update({ is_carousel_pinned: !currentStatus })
+        .eq("id", articleId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Article ${!currentStatus ? "pinned as first" : "unpinned"} in carousel`,
+      });
+
+      fetchArticles();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateCategoryOrder = async (articleId: string, order: number | null) => {
+    try {
+      const { error } = await supabase
+        .from("news_articles")
+        .update({ category_pin_order: order })
+        .eq("id", articleId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Category order updated",
+      });
+
+      fetchArticles();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const cancelEdit = () => {
     setEditingArticle(null);
     setNewsTitle("");
@@ -1082,79 +1154,127 @@ const Admin = () => {
                         {filteredArticles.map((article) => (
                           <div
                             key={article.id}
-                            className="flex items-start justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
+                            className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors space-y-3"
                           >
-                            <div className="flex-1 space-y-1">
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-semibold">{article.title}</h4>
-                                {article.published ? (
-                                  <Eye className="w-4 h-4 text-green-600" />
-                                ) : (
-                                  <EyeOff className="w-4 h-4 text-muted-foreground" />
-                                )}
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1 space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <h4 className="font-semibold">{article.title}</h4>
+                                  {article.published ? (
+                                    <Eye className="w-4 h-4 text-green-600" />
+                                  ) : (
+                                    <EyeOff className="w-4 h-4 text-muted-foreground" />
+                                  )}
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                  {article.category} • {new Date(article.created_at).toLocaleDateString()} • {article.published ? "Published" : "Unpublished"}
+                                </p>
+                                <p className="text-sm text-muted-foreground line-clamp-2">
+                                  {article.excerpt}
+                                </p>
                               </div>
-                              <p className="text-sm text-muted-foreground">
-                                {article.category} • {new Date(article.created_at).toLocaleDateString()} • {article.published ? "Published" : "Unpublished"}
-                              </p>
-                              <p className="text-sm text-muted-foreground line-clamp-2">
-                                {article.excerpt}
-                              </p>
+                              <div className="flex gap-2 ml-4 items-start">
+                                <div className="flex flex-col items-center gap-1">
+                                  <Switch
+                                    checked={article.published}
+                                    onCheckedChange={() => handleTogglePublish(article.id, article.published)}
+                                  />
+                                  <span className="text-xs text-muted-foreground">
+                                    {article.published ? "Live" : "Hidden"}
+                                  </span>
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={async () => {
+                                    setPostingToBluesky(true);
+                                    try {
+                                      const { error } = await supabase.functions.invoke('post-to-bluesky', {
+                                        body: { title: article.title, slug: article.slug }
+                                      });
+                                      
+                                      if (error) throw error;
+                                      
+                                      toast({
+                                        title: "Posted to Bluesky!",
+                                        description: "Article shared on Bluesky successfully",
+                                      });
+                                    } catch (err: any) {
+                                      toast({
+                                        title: "Bluesky Post Failed",
+                                        description: err.message || "Failed to post to Bluesky",
+                                        variant: "destructive",
+                                      });
+                                    } finally {
+                                      setPostingToBluesky(false);
+                                    }
+                                  }}
+                                  disabled={postingToBluesky}
+                                  title="Post to Bluesky"
+                                >
+                                  <Send className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleEditArticle(article)}
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setDeleteArticleId(article.id)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
                             </div>
-                            <div className="flex gap-2 ml-4 items-start">
-                              <div className="flex flex-col items-center gap-1">
+
+                            {/* Homepage Controls */}
+                            <div className="flex flex-wrap gap-4 pt-3 border-t border-border">
+                              <div className="flex items-center gap-2">
                                 <Switch
-                                  checked={article.published}
-                                  onCheckedChange={() => handleTogglePublish(article.id, article.published)}
+                                  id={`carousel-${article.id}`}
+                                  checked={article.is_carousel_featured || false}
+                                  onCheckedChange={() => handleToggleCarouselFeatured(article.id, article.is_carousel_featured)}
                                 />
-                                <span className="text-xs text-muted-foreground">
-                                  {article.published ? "Live" : "Hidden"}
-                                </span>
+                                <Label htmlFor={`carousel-${article.id}`} className="text-xs cursor-pointer">
+                                  Show in carousel
+                                </Label>
                               </div>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={async () => {
-                                  setPostingToBluesky(true);
-                                  try {
-                                    const { error } = await supabase.functions.invoke('post-to-bluesky', {
-                                      body: { title: article.title, slug: article.slug }
-                                    });
-                                    
-                                    if (error) throw error;
-                                    
-                                    toast({
-                                      title: "Posted to Bluesky!",
-                                      description: "Article shared on Bluesky successfully",
-                                    });
-                                  } catch (err: any) {
-                                    toast({
-                                      title: "Bluesky Post Failed",
-                                      description: err.message || "Failed to post to Bluesky",
-                                      variant: "destructive",
-                                    });
-                                  } finally {
-                                    setPostingToBluesky(false);
-                                  }
-                                }}
-                                disabled={postingToBluesky}
-                                title="Post to Bluesky"
-                              >
-                                <Send className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleEditArticle(article)}
-                              >
-                                <Pencil className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setDeleteArticleId(article.id)}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
+
+                              {article.is_carousel_featured && (
+                                <div className="flex items-center gap-2">
+                                  <Switch
+                                    id={`pin-${article.id}`}
+                                    checked={article.is_carousel_pinned || false}
+                                    onCheckedChange={() => handleToggleCarouselPinned(article.id, article.is_carousel_pinned)}
+                                  />
+                                  <Label htmlFor={`pin-${article.id}`} className="text-xs cursor-pointer">
+                                    Pin as first
+                                  </Label>
+                                </div>
+                              )}
+
+                              <div className="flex items-center gap-2">
+                                <Label htmlFor={`order-${article.id}`} className="text-xs whitespace-nowrap">
+                                  Category order:
+                                </Label>
+                                <Input
+                                  id={`order-${article.id}`}
+                                  type="number"
+                                  min="1"
+                                  max="999"
+                                  value={article.category_pin_order || ""}
+                                  onChange={(e) => {
+                                    const value = e.target.value ? parseInt(e.target.value) : null;
+                                    handleUpdateCategoryOrder(article.id, value);
+                                  }}
+                                  placeholder="Auto"
+                                  className="w-20 h-8 text-xs"
+                                />
+                              </div>
                             </div>
                           </div>
                         ))}

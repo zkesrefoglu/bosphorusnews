@@ -61,7 +61,7 @@ const Index = () => {
           .from("news_articles")
           .select("*")
           .eq("published", true)
-          .eq("is_carousel_featured", false)
+          .or("is_carousel_featured.is.null,is_carousel_featured.eq.false")
           .not("image_url", "is", null)
           .order("created_at", { ascending: false })
           .limit(5 - carouselFinal.length);
@@ -110,7 +110,6 @@ const Index = () => {
             .select("*")
             .eq("published", true)
             .eq("category", category)
-            .eq("is_carousel_featured", false)
             .order("category_pin_order", { ascending: true, nullsFirst: false })
             .order("created_at", { ascending: false })
             .limit(3);
