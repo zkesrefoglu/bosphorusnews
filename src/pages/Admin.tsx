@@ -15,6 +15,7 @@ import { z } from "zod";
 import NewsConverter from "@/components/NewsConverter";
 import { Pencil, Trash2, Eye, EyeOff, Send } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { ArticlePreview } from "@/components/ArticlePreview";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -69,6 +70,7 @@ const Admin = () => {
   const [loadingArticles, setLoadingArticles] = useState(false);
   const [filterPublished, setFilterPublished] = useState<"all" | "published" | "unpublished">("all");
   const [sendingNewsletter, setSendingNewsletter] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
 
   useEffect(() => {
     checkAdmin();
@@ -761,190 +763,257 @@ const Admin = () => {
           </TabsList>
 
           <TabsContent value="news">
-            <Card>
-              <CardHeader>
-                <CardTitle>Add Single News Article</CardTitle>
-                <CardDescription>
-                  Manually add one news article. All articles are part of Agenda but must have a specific category (Economy, Defense, Life, Türkiye, World, Sports, Xtra, or Editorial).
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleNewsSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="news-title">Title</Label>
-                    <Input
-                      id="news-title"
-                      value={newsTitle}
-                      onChange={(e) => setNewsTitle(e.target.value)}
-                      required
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-2xl font-bold">Add Single News Article</h2>
+                <p className="text-sm text-muted-foreground">
+                  Manually add one news article. All articles are part of Agenda but must have a specific category.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPreview(!showPreview)}
+              >
+                {showPreview ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+                {showPreview ? "Hide Preview" : "Show Preview"}
+              </Button>
+            </div>
+            
+            <div className={`grid gap-6 ${showPreview ? 'lg:grid-cols-2' : 'grid-cols-1'}`}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Article Editor</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleNewsSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="news-title">Title</Label>
+                      <Input
+                        id="news-title"
+                        value={newsTitle}
+                        onChange={(e) => setNewsTitle(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="news-section">Section</Label>
+                      <Select value={newsSection} onValueChange={setNewsSection} required>
+                        <SelectTrigger id="news-section">
+                          <SelectValue placeholder="Select a section" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Agenda">Agenda</SelectItem>
+                          <SelectItem value="Economy">Economy</SelectItem>
+                          <SelectItem value="Defense">Defense</SelectItem>
+                          <SelectItem value="Life">Life</SelectItem>
+                          <SelectItem value="Türkiye">Türkiye</SelectItem>
+                          <SelectItem value="World">World</SelectItem>
+                          <SelectItem value="Sports">Sports</SelectItem>
+                          <SelectItem value="Xtra">Xtra</SelectItem>
+                          <SelectItem value="Editorial">Editorial</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="news-excerpt">Excerpt</Label>
+                      <Textarea
+                        id="news-excerpt"
+                        value={newsExcerpt}
+                        onChange={(e) => setNewsExcerpt(e.target.value)}
+                        rows={2}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="news-content">Full Content</Label>
+                      <RichTextEditor
+                        key={editingArticle ? `news-${editingArticle.id}` : 'news-new'}
+                        value={newsContent}
+                        onChange={setNewsContent}
+                        placeholder="Write your article content with formatting..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="news-image">Image URL (optional)</Label>
+                      <Input
+                        id="news-image"
+                        type="url"
+                        value={newsImageUrl}
+                        onChange={(e) => setNewsImageUrl(e.target.value)}
+                      />
+                      <div className="text-xs text-muted-foreground">Or upload an image below:</div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="newsImage">Upload Image (optional)</Label>
+                      <Input
+                        id="newsImage"
+                        type="file"
+                        accept="image/*"
+                        disabled={uploadingImage}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Image will be auto-named based on article title slug
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="news-photo-credit">Photo Credit (optional)</Label>
+                      <Input
+                        id="news-photo-credit"
+                        value={newsPhotoCredit}
+                        onChange={(e) => setNewsPhotoCredit(e.target.value)}
+                        placeholder="e.g., AP Photo/John Doe"
+                      />
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="post-to-bluesky"
+                        checked={postToBluesky}
+                        onCheckedChange={setPostToBluesky}
+                      />
+                      <Label htmlFor="post-to-bluesky" className="cursor-pointer">
+                        Post to Bluesky when published
+                      </Label>
+                    </div>
+
+                    <Button type="submit" disabled={submitting || uploadingImage}>
+                      {uploadingImage ? "Uploading Image..." : submitting ? "Uploading..." : "Upload Article"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+              
+              {showPreview && (
+                <Card className="lg:sticky lg:top-4 h-fit max-h-[calc(100vh-8rem)] overflow-hidden">
+                  <CardHeader>
+                    <CardTitle>Live Preview</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <ArticlePreview
+                      title={newsTitle}
+                      excerpt={newsExcerpt}
+                      content={newsContent}
+                      category={newsSection}
+                      imageUrl={newsImageUrl}
+                      photoCredit={newsPhotoCredit}
                     />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="news-section">Section</Label>
-                    <Select value={newsSection} onValueChange={setNewsSection} required>
-                      <SelectTrigger id="news-section">
-                        <SelectValue placeholder="Select a section" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Agenda">Agenda</SelectItem>
-                        <SelectItem value="Economy">Economy</SelectItem>
-                        <SelectItem value="Defense">Defense</SelectItem>
-                        <SelectItem value="Life">Life</SelectItem>
-                        <SelectItem value="Türkiye">Türkiye</SelectItem>
-                        <SelectItem value="World">World</SelectItem>
-                        <SelectItem value="Sports">Sports</SelectItem>
-                        <SelectItem value="Xtra">Xtra</SelectItem>
-                        <SelectItem value="Editorial">Editorial</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="news-excerpt">Excerpt</Label>
-                    <Textarea
-                      id="news-excerpt"
-                      value={newsExcerpt}
-                      onChange={(e) => setNewsExcerpt(e.target.value)}
-                      rows={2}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="news-content">Full Content</Label>
-                    <RichTextEditor
-                      key={editingArticle ? `news-${editingArticle.id}` : 'news-new'}
-                      value={newsContent}
-                      onChange={setNewsContent}
-                      placeholder="Write your article content with formatting..."
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="news-image">Image URL (optional)</Label>
-                    <Input
-                      id="news-image"
-                      type="url"
-                      value={newsImageUrl}
-                      onChange={(e) => setNewsImageUrl(e.target.value)}
-                    />
-                    <div className="text-xs text-muted-foreground">Or upload an image below:</div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="newsImage">Upload Image (optional)</Label>
-                    <Input
-                      id="newsImage"
-                      type="file"
-                      accept="image/*"
-                      disabled={uploadingImage}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Image will be auto-named based on article title slug
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="news-photo-credit">Photo Credit (optional)</Label>
-                    <Input
-                      id="news-photo-credit"
-                      value={newsPhotoCredit}
-                      onChange={(e) => setNewsPhotoCredit(e.target.value)}
-                      placeholder="e.g., AP Photo/John Doe"
-                    />
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="post-to-bluesky"
-                      checked={postToBluesky}
-                      onCheckedChange={setPostToBluesky}
-                    />
-                    <Label htmlFor="post-to-bluesky" className="cursor-pointer">
-                      Post to Bluesky when published
-                    </Label>
-                  </div>
-
-                  <Button type="submit" disabled={submitting || uploadingImage}>
-                    {uploadingImage ? "Uploading Image..." : submitting ? "Uploading..." : "Upload Article"}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="topic">
-            <Card>
-              <CardHeader>
-                <CardTitle>Editor's Pick (Xtra)</CardTitle>
-                <CardDescription>
-                  Upload the main featured story that appears as "Editor's Pick" on the homepage. This is the big breaking news of the day.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleTopicSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="topic-title">Title</Label>
-                    <Input
-                      id="topic-title"
-                      value={topicTitle}
-                      onChange={(e) => setTopicTitle(e.target.value)}
-                      required
-                    />
-                  </div>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-2xl font-bold">Editor's Pick (Xtra)</h2>
+                <p className="text-sm text-muted-foreground">
+                  Upload the main featured story that appears as "Editor's Pick" on the homepage.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPreview(!showPreview)}
+              >
+                {showPreview ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+                {showPreview ? "Hide Preview" : "Show Preview"}
+              </Button>
+            </div>
+            
+            <div className={`grid gap-6 ${showPreview ? 'lg:grid-cols-2' : 'grid-cols-1'}`}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Article Editor</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleTopicSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="topic-title">Title</Label>
+                      <Input
+                        id="topic-title"
+                        value={topicTitle}
+                        onChange={(e) => setTopicTitle(e.target.value)}
+                        required
+                      />
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="topic-excerpt">Excerpt</Label>
-                    <Textarea
-                      id="topic-excerpt"
-                      value={topicExcerpt}
-                      onChange={(e) => setTopicExcerpt(e.target.value)}
-                      rows={2}
-                      required
-                    />
-                  </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="topic-excerpt">Excerpt</Label>
+                      <Textarea
+                        id="topic-excerpt"
+                        value={topicExcerpt}
+                        onChange={(e) => setTopicExcerpt(e.target.value)}
+                        rows={2}
+                        required
+                      />
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="topic-content">Full Content</Label>
-                    <RichTextEditor
-                      key={topicContent.substring(0, 20)}
-                      value={topicContent}
-                      onChange={setTopicContent}
-                      placeholder="Write the Editor's Pick content with formatting..."
-                    />
-                  </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="topic-content">Full Content</Label>
+                      <RichTextEditor
+                        key={topicContent.substring(0, 20)}
+                        value={topicContent}
+                        onChange={setTopicContent}
+                        placeholder="Write the Editor's Pick content with formatting..."
+                      />
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="topic-image">Image URL (optional)</Label>
-                    <Input
-                      id="topic-image"
-                      type="url"
-                      value={topicImageUrl}
-                      onChange={(e) => setTopicImageUrl(e.target.value)}
-                    />
-                    <div className="text-xs text-muted-foreground">Or upload an image below:</div>
-                  </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="topic-image">Image URL (optional)</Label>
+                      <Input
+                        id="topic-image"
+                        type="url"
+                        value={topicImageUrl}
+                        onChange={(e) => setTopicImageUrl(e.target.value)}
+                      />
+                      <div className="text-xs text-muted-foreground">Or upload an image below:</div>
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="topicImage">Upload Image (optional)</Label>
-                    <Input
-                      id="topicImage"
-                      type="file"
-                      accept="image/*"
-                      disabled={uploadingImage}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Image will be auto-named based on article title slug
-                    </p>
-                  </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="topicImage">Upload Image (optional)</Label>
+                      <Input
+                        id="topicImage"
+                        type="file"
+                        accept="image/*"
+                        disabled={uploadingImage}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Image will be auto-named based on article title slug
+                      </p>
+                    </div>
 
-                  <Button type="submit" disabled={submitting || uploadingImage}>
-                    {uploadingImage ? "Uploading Image..." : submitting ? "Uploading..." : "Upload Editor's Pick"}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+                    <Button type="submit" disabled={submitting || uploadingImage}>
+                      {uploadingImage ? "Uploading Image..." : submitting ? "Uploading..." : "Upload Editor's Pick"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+              
+              {showPreview && (
+                <Card className="lg:sticky lg:top-4 h-fit max-h-[calc(100vh-8rem)] overflow-hidden">
+                  <CardHeader>
+                    <CardTitle>Live Preview</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <ArticlePreview
+                      title={topicTitle}
+                      excerpt={topicExcerpt}
+                      content={topicContent}
+                      category="Xtra"
+                      imageUrl={topicImageUrl}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="bulk">
