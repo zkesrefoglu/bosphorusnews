@@ -72,6 +72,7 @@ export default {
         "category-sports": "hsl(var(--category-sports))",
         "category-world": "hsl(var(--category-world))",
         "category-xtra": "hsl(var(--category-xtra))",
+        "xtra-light": "hsl(var(--xtra-light))",
       },
       borderRadius: {
         lg: "var(--radius)",
