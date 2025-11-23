@@ -41,7 +41,7 @@ export const Header = () => {
               {sections.map((section) => (
                 <li key={section.slug}>
                   <Link
-                    to={`/section/${section.slug}`}
+                    to={section.slug === "" ? "/" : `/section/${section.slug}`}
                     className="hover-underline whitespace-nowrap text-foreground hover:text-accent transition-colors inline-block"
                   >
                     {section.isLogo ? <img src={xtraLogo} alt="Xtra" className="h-16 w-auto" /> : section.name}
