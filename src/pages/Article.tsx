@@ -252,9 +252,10 @@ const Article = () => {
         <p className="text-xl leading-relaxed text-foreground mb-8">
           {article.excerpt}
         </p>
-        <div className="whitespace-pre-wrap text-foreground">
-          {sanitizeArticleContent(article.content)}
-        </div>
+        <div 
+          className="rich-text-content text-foreground"
+          dangerouslySetInnerHTML={{ __html: sanitizeArticleContent(article.content) }}
+        />
           </div>
 
           {/* Share Section */}

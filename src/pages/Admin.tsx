@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/RichTextEditor";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -812,12 +813,10 @@ const Admin = () => {
 
                   <div className="space-y-2">
                     <Label htmlFor="news-content">Full Content</Label>
-                    <Textarea
-                      id="news-content"
+                    <RichTextEditor
                       value={newsContent}
-                      onChange={(e) => setNewsContent(e.target.value)}
-                      rows={8}
-                      required
+                      onChange={setNewsContent}
+                      placeholder="Write your article content with formatting..."
                     />
                   </div>
 
@@ -907,12 +906,10 @@ const Admin = () => {
 
                   <div className="space-y-2">
                     <Label htmlFor="topic-content">Full Content</Label>
-                    <Textarea
-                      id="topic-content"
+                    <RichTextEditor
                       value={topicContent}
-                      onChange={(e) => setTopicContent(e.target.value)}
-                      rows={8}
-                      required
+                      onChange={setTopicContent}
+                      placeholder="Write the Editor's Pick content with formatting..."
                     />
                   </div>
 
