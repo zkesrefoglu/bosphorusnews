@@ -202,26 +202,26 @@ const Article = () => {
       <Header />
       
       <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <Link to="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors">
+        <Link to="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6 sm:mb-8 transition-colors min-h-[44px]">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Link>
 
         <article className="animate-fade-in">
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <Link
               to={`/section/${article.category.toLowerCase().replace(/\s&\s/g, '-').replace(/\s/g, '-')}`}
-              className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wide bg-primary text-primary-foreground rounded hover:opacity-80 transition-opacity"
+              className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wide bg-primary text-primary-foreground rounded hover:opacity-80 transition-opacity min-h-[44px] inline-flex items-center"
             >
               {article.category}
             </Link>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 leading-tight tracking-tight">
             {article.title}
           </h1>
 
-          <div className="flex items-center space-x-4 mb-8 pb-8 border-b border-border">
+          <div className="flex items-center space-x-4 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-border">
             <time className="text-sm text-muted-foreground">
               {new Date(article.created_at).toLocaleDateString("en-US", {
                 year: "numeric",
