@@ -51,6 +51,7 @@ const Admin = () => {
   const [newsExcerpt, setNewsExcerpt] = useState("");
   const [newsContent, setNewsContent] = useState("");
   const [newsImageUrl, setNewsImageUrl] = useState("");
+  const [newsPhotoCredit, setNewsPhotoCredit] = useState("");
   const [postToBluesky, setPostToBluesky] = useState(false);
   const [postingToBluesky, setPostingToBluesky] = useState(false);
 
@@ -205,6 +206,7 @@ const Admin = () => {
           content: validData.content,
           author: session.user.email || "Admin",
           image_url: imageUrl,
+          photo_credit: newsPhotoCredit || null,
           published: true,
         });
 
@@ -243,6 +245,7 @@ const Admin = () => {
       setNewsExcerpt("");
       setNewsContent("");
       setNewsImageUrl("");
+      setNewsPhotoCredit("");
       setPostToBluesky(false);
       if (imageInput) imageInput.value = '';
     } catch (error: any) {
@@ -481,6 +484,7 @@ const Admin = () => {
     setNewsExcerpt(article.excerpt);
     setNewsContent(article.content);
     setNewsImageUrl(article.image_url || "");
+    setNewsPhotoCredit(article.photo_credit || "");
   };
 
   const handleUpdateArticle = async (e: React.FormEvent) => {
@@ -530,6 +534,7 @@ const Admin = () => {
           excerpt: validData.excerpt,
           content: validData.content,
           image_url: imageUrl,
+          photo_credit: newsPhotoCredit || null,
         })
         .eq("id", editingArticle.id);
 
@@ -545,6 +550,7 @@ const Admin = () => {
       setNewsExcerpt("");
       setNewsContent("");
       setNewsImageUrl("");
+      setNewsPhotoCredit("");
       setEditingArticle(null);
       fetchArticles();
     } catch (error: any) {
@@ -688,6 +694,7 @@ const Admin = () => {
     setNewsExcerpt("");
     setNewsContent("");
     setNewsImageUrl("");
+    setNewsPhotoCredit("");
   };
 
   const filteredArticles = articles.filter((article) => {
@@ -836,6 +843,16 @@ const Admin = () => {
                     <p className="text-xs text-muted-foreground">
                       Image will be auto-named based on article title slug
                     </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="news-photo-credit">Photo Credit (optional)</Label>
+                    <Input
+                      id="news-photo-credit"
+                      value={newsPhotoCredit}
+                      onChange={(e) => setNewsPhotoCredit(e.target.value)}
+                      placeholder="e.g., AP Photo/John Doe"
+                    />
                   </div>
 
                   <div className="flex items-center space-x-2">
