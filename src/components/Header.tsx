@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu } from "lucide-react";
 import logo from "@/assets/logo.png";
@@ -18,6 +19,8 @@ const sections = [
 ];
 
 export const Header = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <header className="border-b border-border bg-background sticky top-0 z-50">
       <div className="container mx-auto px-2 sm:px-4">
@@ -48,7 +51,7 @@ export const Header = () => {
           </nav>
 
           {/* Mobile/Tablet Menu */}
-          <Sheet>
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden">
                 <Menu className="h-6 w-6" />
@@ -66,9 +69,21 @@ export const Header = () => {
                     <li key={section.slug}>
                       <Link
                         to={`/section/${section.slug}`}
-                        className="flex items-center text-lg font-medium text-foreground hover:text-primary hover:bg-primary/10 active:bg-primary/20 transition-colors py-3 px-4 rounded-md"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-3 text-lg font-medium hover:text-primary hover:bg-primary/10 active:bg-primary/20 transition-colors py-3 px-4 rounded-md ${
+                          section.slug === 'xtra' 
+                            ? 'bg-red-600 hover:bg-red-700 text-white hover:text-white' 
+                            : 'text-foreground'
+                        }`}
                       >
-                        {section.isLogo ? <img src={xtraLogo} alt="Xtra" className="h-6 w-auto" /> : section.name}
+                        {section.isLogo ? (
+                          <>
+                            <img src={xtraLogo} alt="Xtra" className="h-8 w-auto" />
+                            <span className="font-bold">Xtra</span>
+                          </>
+                        ) : (
+                          section.name
+                        )}
                       </Link>
                     </li>
                   ))}

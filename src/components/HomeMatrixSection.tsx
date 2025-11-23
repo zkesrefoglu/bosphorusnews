@@ -42,10 +42,13 @@ const formatCategoryLabel = (category: string): string => {
 };
 
 export const HomeMatrixSection = ({ categories }: HomeMatrixSectionProps) => {
+  // Filter out Xtra category as it's displayed separately
+  const filteredCategories = categories.filter(cat => cat.name.toLowerCase() !== 'xtra');
+  
   return (
     <section className="py-12">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {categories.map((categoryColumn) => (
+        {filteredCategories.map((categoryColumn) => (
           <div key={categoryColumn.name} className="space-y-6">
             {/* Category Header */}
             <div className="flex items-center justify-between mb-4">
