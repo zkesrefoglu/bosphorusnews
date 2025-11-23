@@ -144,8 +144,8 @@ const Section = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-8 max-w-5xl">
-        <Link to="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors">
+      <main className="container mx-auto px-4 py-6 sm:py-8 max-w-5xl">
+        <Link to="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6 sm:mb-8 transition-colors min-h-[44px]">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Link>
@@ -218,9 +218,9 @@ const Section = () => {
                 </div>
               </div>
             ) : (
-              <div className="mb-8">
-                <h1 className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">{sectionName}</h1>
-                <p className="text-muted-foreground">
+              <div className="mb-6 sm:mb-8">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 tracking-tight">{sectionName}</h1>
+                <p className="text-sm sm:text-base text-muted-foreground">
                   {articles.length} {articles.length === 1 ? 'article' : 'articles'} in this section
                 </p>
               </div>
@@ -247,14 +247,14 @@ const Section = () => {
                     to={`/article/${item.slug}`}
                     className="group block"
                   >
-                    <article className="flex flex-col sm:flex-row gap-4 border border-border rounded-lg overflow-hidden bg-card hover:shadow-xl transition-all duration-300 hover:border-primary/50">
+                    <article className="flex flex-col sm:flex-row gap-3 sm:gap-4 border border-border rounded-lg overflow-hidden bg-card hover:shadow-xl transition-all duration-300 hover:border-primary/50">
                       {/* Content - Left Side */}
-                      <div className="flex-1 p-6 space-y-3">
+                      <div className="flex-1 p-4 sm:p-5 md:p-6 space-y-2 sm:space-y-3">
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <time>{item.date}</time>
                         </div>
                         
-                        <h3 className="font-headline text-xl md:text-2xl font-bold leading-tight group-hover:text-primary transition-colors">
+                        <h3 className="font-headline text-lg sm:text-xl md:text-2xl font-bold leading-tight group-hover:text-primary transition-colors">
                           {item.title}
                         </h3>
                         
@@ -264,7 +264,7 @@ const Section = () => {
                       </div>
 
                       {/* Image - Right Side */}
-                      <div className="relative w-full sm:w-64 md:w-80 h-48 sm:h-auto overflow-hidden bg-muted flex-shrink-0">
+                      <div className="relative w-full sm:w-48 md:w-64 lg:w-80 h-40 sm:h-auto overflow-hidden bg-muted flex-shrink-0">
                         <img
                           src={item.imageUrl || `https://picsum.photos/seed/${item.slug}/600/400`}
                           alt={item.title}

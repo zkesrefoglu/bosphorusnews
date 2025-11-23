@@ -234,7 +234,7 @@ const Article = () => {
           </div>
 
           {article.image_url && (
-            <figure className="mb-8 rounded-lg overflow-hidden">
+            <figure className="mb-6 sm:mb-8 rounded-lg overflow-hidden">
               <img 
                 src={article.image_url} 
                 alt={article.title}
@@ -248,22 +248,22 @@ const Article = () => {
             </figure>
           )}
 
-          <div className="prose prose-lg max-w-none">
-        <p className="text-xl leading-relaxed text-foreground mb-8">
+          <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none">
+        <p className="text-lg sm:text-xl leading-relaxed text-foreground mb-6 sm:mb-8">
           {article.excerpt}
         </p>
-        <div className="whitespace-pre-wrap text-foreground">
+        <div className="whitespace-pre-wrap text-foreground text-base sm:text-lg leading-relaxed">
           {sanitizeArticleContent(article.content)}
         </div>
           </div>
 
           {/* Share Section */}
-          <div className="mt-12 pt-8 border-t border-border">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Share this article</h3>
+          <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-border">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <h3 className="text-base sm:text-lg font-semibold">Share this article</h3>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="min-h-[44px] w-full sm:w-auto">
                     <Share2 className="w-4 h-4 mr-2" />
                     Share
                   </Button>
