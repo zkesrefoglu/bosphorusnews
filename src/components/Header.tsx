@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { LiveTicker } from "@/components/LiveTicker";
 
 const sections = [
-  { name: "Reyiz", slug: "", isLogo: false },
+  { name: "Home", slug: "", isLogo: false },
   { name: "Agenda", slug: "agenda", isLogo: false },
   { name: "Economy", slug: "economy", isLogo: false },
   { name: "Defense", slug: "defense", isLogo: false },
