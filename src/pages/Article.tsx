@@ -136,14 +136,14 @@ const Article = () => {
     switch (platform) {
       case 'twitter':
         window.open(
-          `https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(articleUrl)}`,
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${article.title} | Bosphorus News Network`)}&url=${encodeURIComponent(articleUrl)}`,
           '_blank',
           'width=550,height=420'
         );
         break;
       case 'bluesky':
         window.open(
-          `https://bsky.app/intent/compose?text=${encodeURIComponent(`${article.title}\n\n${articleUrl}`)}`,
+          `https://bsky.app/intent/compose?text=${encodeURIComponent(`${article.title} | Bosphorus News Network\n\n${articleUrl}`)}`,
           '_blank',
           'width=550,height=420'
         );
