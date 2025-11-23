@@ -70,20 +70,20 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
                 <div className="absolute inset-0 gradient-overlay-dark" />
 
                 {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 container-custom">
+                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-12 container-custom">
                   <div className="max-w-4xl">
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className={`category-badge ${getCategoryColor(article.category)} text-white`}>
+                    <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4">
+                      <span className={`category-badge text-xs sm:text-sm ${getCategoryColor(article.category)} text-white`}>
                         {formatCategoryLabel(article.category)}
                       </span>
-                      <time className="text-sm text-white/80 font-ui uppercase tracking-wide">{article.date}</time>
+                      <time className="text-xs sm:text-sm text-white/80 font-ui uppercase tracking-wide">{article.date}</time>
                     </div>
 
-                    <h2 className="font-headline text-4xl md:text-6xl font-bold text-white leading-tight mb-6 text-shadow-lg text-balance group-hover:text-white/90 transition-colors">
+                    <h2 className="font-headline text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-3 sm:mb-4 md:mb-6 text-shadow-lg text-balance group-hover:text-white/90 transition-colors">
                       {article.title}
                     </h2>
 
-                    <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-3xl line-clamp-3">
+                    <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 leading-relaxed max-w-3xl line-clamp-2 sm:line-clamp-3">
                       {article.excerpt}
                     </p>
                   </div>
@@ -94,9 +94,9 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
         ))}
       </CarouselContent>
 
-      {/* Navigation Buttons - Smaller and positioned mid-height to avoid text */}
-      <CarouselPrevious className="left-2 md:left-4 top-1/3 w-8 h-8 md:w-10 md:h-10 bg-black/30 backdrop-blur-sm border-white/10 text-white hover:bg-white/90 hover:text-foreground transition-all opacity-60 hover:opacity-100" />
-      <CarouselNext className="right-2 md:right-4 top-1/3 w-8 h-8 md:w-10 md:h-10 bg-black/30 backdrop-blur-sm border-white/10 text-white hover:bg-white/90 hover:text-foreground transition-all opacity-60 hover:opacity-100" />
+      {/* Navigation Buttons - Mobile optimized, positioned higher to avoid text */}
+      <CarouselPrevious className="left-2 md:left-4 top-[40%] w-10 h-10 md:w-11 md:h-11 bg-black/40 backdrop-blur-sm border-white/20 text-white hover:bg-white/95 hover:text-foreground transition-all opacity-70 hover:opacity-100 touch-manipulation" />
+      <CarouselNext className="right-2 md:right-4 top-[40%] w-10 h-10 md:w-11 md:h-11 bg-black/40 backdrop-blur-sm border-white/20 text-white hover:bg-white/95 hover:text-foreground transition-all opacity-70 hover:opacity-100 touch-manipulation" />
     </Carousel>
   );
 };

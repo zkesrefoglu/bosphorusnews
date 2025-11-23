@@ -153,30 +153,30 @@ export const Footer = () => {
           </div>
         </div>
 
-        {/* Auth Buttons, Social & Contact - Single Line */}
-        <div className="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-border gap-4 md:gap-6">
+        {/* Auth Buttons, Social & Contact - Mobile Optimized */}
+        <div className="flex flex-col sm:flex-row justify-between items-center pt-6 border-t border-border gap-4 sm:gap-6">
           {/* Auth Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start">
             {user ? (
               <>
                 {isAdmin && (
-                  <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+                  <Button variant="outline" size="sm" onClick={() => navigate("/admin")} className="min-h-[44px] px-4">
                     Admin
                   </Button>
                 )}
-                <Button variant="outline" size="sm" onClick={handleSignOut}>
+                <Button variant="outline" size="sm" onClick={handleSignOut} className="min-h-[44px] px-4">
                   Sign Out
                 </Button>
               </>
             ) : (
-              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+              <Button variant="outline" size="sm" onClick={() => navigate("/auth")} className="min-h-[44px] px-4">
                 Sign In
               </Button>
             )}
           </div>
 
           {/* Social Icons */}
-          <div className="flex gap-4">
+          <div className="flex gap-6">
             <a
               href="https://x.com/BosphorusNN"
               target="_blank"
@@ -228,19 +228,19 @@ export const Footer = () => {
           </div>
 
           {/* Email */}
-          <div className="text-sm text-muted-foreground">
-            <a href="mailto:info@bosphorusnews.com" className="hover:text-foreground transition-colors">
+          <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+            <a href="mailto:info@bosphorusnews.com" className="hover:text-foreground transition-colors min-h-[44px] inline-flex items-center">
               info@bosphorusnews.com
             </a>
           </div>
 
           {/* Copyright */}
-          <div className="text-sm text-muted-foreground">© 2025 Bosphorus News. All rights reserved.</div>
+          <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">© 2025 Bosphorus News. All rights reserved.</div>
         </div>
 
         {/* Navigation Links - Center Aligned */}
         <div className="flex justify-center pt-6 border-t border-border">
-          <div className="text-xs text-muted-foreground flex flex-wrap justify-center gap-x-2">
+          <div className="text-xs text-muted-foreground flex flex-wrap justify-center gap-x-2 gap-y-1">
             <Link to="/" className="hover:text-foreground transition-colors">
               HOME
             </Link>

@@ -97,6 +97,22 @@
   }
 }
 
+/* Mobile Optimization - Touch Targets & Responsive Spacing */
+@layer utilities {
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Ensure minimum touch target size on mobile */
+  @media (max-width: 768px) {
+    button, a[role="button"], .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
