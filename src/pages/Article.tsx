@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Share2, Twitter, Cloud, Link2, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { stripCategoryPlaceholders } from "@/lib/contentUtils";
+import { stripCategoryPlaceholders, sanitizeArticleContent } from "@/lib/contentUtils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -322,12 +322,12 @@ const Article = () => {
           )}
 
           <div className="prose prose-lg max-w-none">
-            <p className="text-xl leading-relaxed text-foreground mb-8">
-              {article.excerpt}
-            </p>
-            <div className="whitespace-pre-wrap text-foreground">
-              {stripCategoryPlaceholders(article.content)}
-            </div>
+        <p className="text-xl leading-relaxed text-foreground mb-8">
+          {article.excerpt}
+        </p>
+        <div className="whitespace-pre-wrap text-foreground">
+          {sanitizeArticleContent(article.content)}
+        </div>
           </div>
 
           {/* Share and Reactions Section */}

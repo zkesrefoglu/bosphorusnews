@@ -255,7 +255,7 @@ const Section = () => {
                           {item.author && (
                             <>
                               <span>•</span>
-                              <span>{item.author}</span>
+                              <span>{item.author.includes("@") ? item.author.split("@")[0] : item.author}</span>
                             </>
                           )}
                         </div>

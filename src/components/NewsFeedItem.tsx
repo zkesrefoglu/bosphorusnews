@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { stripCategoryPlaceholders } from "@/lib/contentUtils";
+import { stripCategoryPlaceholders, sanitizeArticleContent } from "@/lib/contentUtils";
 import { Share2, Twitter, Cloud, Link2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -187,7 +187,7 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
         </p>
         
         <div className="text-foreground leading-relaxed whitespace-pre-wrap mt-4">
-          {stripCategoryPlaceholders(content)}
+          {sanitizeArticleContent(content)}
         </div>
       </Link>
       
