@@ -393,6 +393,7 @@
   /* Rich Text Content Display */
   .rich-text-content {
     @apply text-foreground;
+    white-space: normal;
   }
 
   .rich-text-content strong {
@@ -421,6 +422,7 @@
 
   .rich-text-content p {
     @apply mb-4;
+    white-space: normal;
   }
 }
 
