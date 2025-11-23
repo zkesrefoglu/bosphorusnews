@@ -1139,13 +1139,13 @@ const Admin = () => {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="Agenda">Agenda</SelectItem>
-                            <SelectItem value="Politics">Politics</SelectItem>
-                            <SelectItem value="FP & Defense">FP & Defense</SelectItem>
-                            <SelectItem value="Business">Business</SelectItem>
+                            <SelectItem value="Economy">Economy</SelectItem>
+                            <SelectItem value="Defense">Defense</SelectItem>
                             <SelectItem value="Life">Life</SelectItem>
-                            <SelectItem value="Health">Health</SelectItem>
-                            <SelectItem value="Sports">Sports</SelectItem>
+                            <SelectItem value="Türkiye">Türkiye</SelectItem>
                             <SelectItem value="World">World</SelectItem>
+                            <SelectItem value="Sports">Sports</SelectItem>
+                            <SelectItem value="Xtra">Xtra</SelectItem>
                             <SelectItem value="Editorial">Editorial</SelectItem>
                           </SelectContent>
                         </Select>
