@@ -335,12 +335,12 @@
 .carousel-slide .carousel-image {
   @apply w-full h-full object-cover;
   filter: brightness(0.7) contrast(1.1);
-  transform: scale(1.05);
-  transition: transform 8s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(1);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .carousel-slide:hover .carousel-image {
-  transform: scale(1.15);
+  transform: scale(1.02);
 }
 
 /* Header Scroll Effect */
