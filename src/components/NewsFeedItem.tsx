@@ -116,9 +116,10 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
           {excerpt}
         </p>
         
-        <div className="text-foreground leading-relaxed whitespace-pre-wrap mt-4">
-          {sanitizeArticleContent(content)}
-        </div>
+        <div 
+          className="rich-text-content text-foreground leading-relaxed mt-4"
+          dangerouslySetInnerHTML={{ __html: sanitizeArticleContent(content) }}
+        />
       </Link>
       
       {/* Share Button */}

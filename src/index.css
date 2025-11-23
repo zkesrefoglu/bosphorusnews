@@ -323,6 +323,104 @@
     background-size: 1000px 100%;
     animation: shimmer 2s infinite linear;
   }
+
+  /* Rich Text Editor Styles */
+  .rich-text-editor .ql-toolbar {
+    background: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .rich-text-editor .ql-container {
+    background: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    border-top: none;
+    border-radius: 0 0 0.5rem 0.5rem;
+    min-height: 200px;
+    font-size: 0.875rem;
+  }
+
+  .rich-text-editor .ql-editor {
+    min-height: 200px;
+    color: hsl(var(--foreground));
+  }
+
+  .rich-text-editor .ql-editor.ql-blank::before {
+    color: hsl(var(--muted-foreground));
+    font-style: normal;
+  }
+
+  .rich-text-editor .ql-stroke {
+    stroke: hsl(var(--foreground));
+  }
+
+  .rich-text-editor .ql-fill {
+    fill: hsl(var(--foreground));
+  }
+
+  .rich-text-editor .ql-picker-label {
+    color: hsl(var(--foreground));
+  }
+
+  .rich-text-editor .ql-toolbar button:hover,
+  .rich-text-editor .ql-toolbar button:focus {
+    color: hsl(var(--primary));
+  }
+
+  .rich-text-editor .ql-toolbar button:hover .ql-stroke,
+  .rich-text-editor .ql-toolbar button:focus .ql-stroke {
+    stroke: hsl(var(--primary));
+  }
+
+  .rich-text-editor .ql-toolbar button:hover .ql-fill,
+  .rich-text-editor .ql-toolbar button:focus .ql-fill {
+    fill: hsl(var(--primary));
+  }
+
+  .rich-text-editor .ql-toolbar button.ql-active {
+    color: hsl(var(--primary));
+  }
+
+  .rich-text-editor .ql-toolbar button.ql-active .ql-stroke {
+    stroke: hsl(var(--primary));
+  }
+
+  .rich-text-editor .ql-toolbar button.ql-active .ql-fill {
+    fill: hsl(var(--primary));
+  }
+
+  /* Rich Text Content Display */
+  .rich-text-content {
+    @apply text-foreground;
+  }
+
+  .rich-text-content strong {
+    @apply font-bold;
+  }
+
+  .rich-text-content em {
+    @apply italic;
+  }
+
+  .rich-text-content u {
+    @apply underline;
+  }
+
+  .rich-text-content ol {
+    @apply list-decimal list-inside mb-4;
+  }
+
+  .rich-text-content ul {
+    @apply list-disc list-inside mb-4;
+  }
+
+  .rich-text-content li {
+    @apply mb-2;
+  }
+
+  .rich-text-content p {
+    @apply mb-4;
+  }
 }
 
 /* Carousel Specific Styles */
