@@ -1,55 +1,76 @@
 import { useEffect, useState } from "react";
-import { TrendingUp, TrendingDown, Cloud } from "lucide-react";
+import { TrendingUp, TrendingDown, Cloud, Minus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface TickerData {
   usdTry: number;
   eurTry: number;
-  bist100: number;
+  bist100: {
+    price: number;
+    change: number;
+    changePercent: number;
+  };
   weather: {
     temp: number;
     description: string;
   };
+  timestamp: string;
+  cached?: boolean;
+}
+
+interface PreviousData {
+  usdTry: number;
+  eurTry: number;
+  bist100: number;
 }
 
 export const LiveTicker = () => {
   const [data, setData] = useState<TickerData | null>(null);
+  const [previousData, setPreviousData] = useState<PreviousData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<string>("");
+
+  useEffect(() => {
+    // Load cached data from localStorage on mount
+    const cached = localStorage.getItem('ticker-data');
+    if (cached) {
+      try {
+        const parsedData = JSON.parse(cached);
+        setData(parsedData);
+        setLoading(false);
+      } catch (e) {
+        console.error('Error parsing cached ticker data:', e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch currency rates from exchangerate-api.com (free tier)
-        const currencyResponse = await fetch(
-          'https://api.exchangerate-api.com/v4/latest/USD'
-        );
-        const currencyData = await currencyResponse.json();
-        
-        // Fetch EUR/TRY rate
-        const eurResponse = await fetch(
-          'https://api.exchangerate-api.com/v4/latest/EUR'
-        );
-        const eurData = await eurResponse.json();
+        const { data: tickerData, error } = await supabase.functions.invoke('fetch-ticker-data');
 
-        // Fetch Istanbul weather from Open-Meteo (free, no API key needed)
-        const weatherResponse = await fetch(
-          'https://api.open-meteo.com/v1/forecast?latitude=41.0082&longitude=28.9784&current=temperature_2m,weather_code&timezone=Europe%2FIstanbul'
-        );
-        const weatherData = await weatherResponse.json();
+        if (error) throw error;
 
-        // Mock BIST 100 data (would need a real API or edge function for actual data)
-        // You can replace this with a real API later
-        const bist100Value = 9500 + Math.random() * 100;
+        if (tickerData && !tickerData.error) {
+          // Store previous values for trend calculation
+          if (data) {
+            setPreviousData({
+              usdTry: data.usdTry,
+              eurTry: data.eurTry,
+              bist100: data.bist100.price,
+            });
+          }
 
-        setData({
-          usdTry: currencyData.rates.TRY,
-          eurTry: eurData.rates.TRY,
-          bist100: bist100Value,
-          weather: {
-            temp: weatherData.current.temperature_2m,
-            description: getWeatherDescription(weatherData.current.weather_code),
-          },
-        });
-        setLoading(false);
+          setData(tickerData);
+          setLastUpdated(new Date().toLocaleTimeString('tr-TR', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          }));
+
+          // Persist to localStorage
+          localStorage.setItem('ticker-data', JSON.stringify(tickerData));
+          setLoading(false);
+        }
       } catch (error) {
         console.error('Error fetching ticker data:', error);
         setLoading(false);
@@ -57,18 +78,22 @@ export const LiveTicker = () => {
     };
 
     fetchData();
-    // Refresh data every 5 minutes
-    const interval = setInterval(fetchData, 5 * 60 * 1000);
+    // Refresh data every 30 seconds
+    const interval = setInterval(fetchData, 30 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [data]);
 
-  const getWeatherDescription = (code: number): string => {
-    if (code === 0) return 'Clear';
-    if (code <= 3) return 'Partly Cloudy';
-    if (code <= 48) return 'Foggy';
-    if (code <= 67) return 'Rainy';
-    if (code <= 77) return 'Snowy';
-    return 'Stormy';
+  const getTrendIcon = (current: number, previous: number | undefined) => {
+    if (!previous) return <Minus className="w-3 h-3 text-muted-foreground" />;
+    if (current > previous) return <TrendingUp className="w-3 h-3 text-green-500" />;
+    if (current < previous) return <TrendingDown className="w-3 h-3 text-red-500" />;
+    return <Minus className="w-3 h-3 text-muted-foreground" />;
+  };
+
+  const getChangePercent = (current: number, previous: number | undefined) => {
+    if (!previous || previous === 0) return null;
+    const change = ((current - previous) / previous) * 100;
+    return change.toFixed(2);
   };
 
   if (loading || !data) {
@@ -83,37 +108,57 @@ export const LiveTicker = () => {
     <div className="hidden lg:flex items-center gap-3 text-xs font-medium">
       {/* USD/TRY */}
       <div 
-        className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors opacity-0"
+        className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors opacity-0 group relative"
         style={{ 
           animation: 'slideInFromRight 0.8s ease-out 0.2s forwards',
         }}
       >
         <span className="text-muted-foreground">$/₺</span>
         <span className="text-foreground font-semibold">{data.usdTry.toFixed(2)}</span>
-        <TrendingUp className="w-3 h-3 text-green-500" />
+        {getTrendIcon(data.usdTry, previousData?.usdTry)}
+        {previousData && getChangePercent(data.usdTry, previousData.usdTry) && (
+          <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
+            {getChangePercent(data.usdTry, previousData.usdTry)}%
+          </span>
+        )}
       </div>
 
       {/* EUR/TRY */}
       <div 
-        className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors opacity-0"
+        className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors opacity-0 group relative"
         style={{ 
           animation: 'slideInFromRight 0.8s ease-out 0.4s forwards',
         }}
       >
         <span className="text-muted-foreground">€/₺</span>
         <span className="text-foreground font-semibold">{data.eurTry.toFixed(2)}</span>
-        <TrendingDown className="w-3 h-3 text-red-500" />
+        {getTrendIcon(data.eurTry, previousData?.eurTry)}
+        {previousData && getChangePercent(data.eurTry, previousData.eurTry) && (
+          <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
+            {getChangePercent(data.eurTry, previousData.eurTry)}%
+          </span>
+        )}
       </div>
 
       {/* BIST 100 */}
       <div 
-        className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors opacity-0"
+        className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors opacity-0 group relative"
         style={{ 
           animation: 'slideInFromRight 0.8s ease-out 0.6s forwards',
         }}
       >
         <span className="text-muted-foreground">BIST</span>
-        <span className="text-foreground font-semibold">{data.bist100.toFixed(0)}</span>
+        <span className="text-foreground font-semibold">{data.bist100.price.toFixed(0)}</span>
+        {data.bist100.changePercent > 0 ? (
+          <TrendingUp className="w-3 h-3 text-green-500" />
+        ) : data.bist100.changePercent < 0 ? (
+          <TrendingDown className="w-3 h-3 text-red-500" />
+        ) : (
+          <Minus className="w-3 h-3 text-muted-foreground" />
+        )}
+        <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
+          {data.bist100.changePercent.toFixed(2)}%
+        </span>
       </div>
 
       {/* Weather */}
@@ -127,6 +172,18 @@ export const LiveTicker = () => {
         <span className="text-foreground font-semibold">{data.weather.temp}°C</span>
         <span className="text-muted-foreground text-[10px]">{data.weather.description}</span>
       </div>
+
+      {/* Last Updated */}
+      {lastUpdated && (
+        <div 
+          className="flex items-center gap-1 px-2 py-1 text-[10px] text-muted-foreground opacity-0"
+          style={{ 
+            animation: 'slideInFromRight 0.8s ease-out 1s forwards',
+          }}
+        >
+          Son: {lastUpdated}
+        </div>
+      )}
 
       <style>{`
         @keyframes slideInFromRight {
