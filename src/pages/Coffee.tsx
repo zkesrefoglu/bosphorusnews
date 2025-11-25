@@ -86,7 +86,7 @@ const Coffee = () => {
                     <img 
                       src={method.logo} 
                       alt={method.name} 
-                      className={`object-contain ${method.name === 'Wise' ? 'h-15' : 'h-10'} ${method.name !== 'Wise' ? 'bg-white px-4 py-2 rounded-lg' : ''}`}
+                      className={`h-10 object-contain ${method.name !== 'Wise' ? 'bg-white px-4 py-2 rounded-lg' : ''}`}
                     />
                   </div>
 
