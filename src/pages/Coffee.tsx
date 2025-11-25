@@ -48,7 +48,7 @@ const Coffee = () => {
               <CoffeeIcon className="w-16 h-16 text-[#F54927]" />
             </div>
             <h1 className="text-4xl md:text-5xl font-headline font-bold mb-4">
-              Buy Me a Coffee ☕
+              Buy Me a Coffee
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Support independent journalism from the Bosphorus. Your contribution helps us continue
@@ -132,7 +132,7 @@ const Coffee = () => {
 
           {/* Thank You Message */}
           <div className="text-center">
-            <h2 className="text-2xl font-headline font-bold mb-4">Thank You! 🙏</h2>
+            <h2 className="text-2xl font-headline font-bold mb-4">Thank You</h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
               Every contribution, no matter the size, makes a real difference. Your support allows us
               to maintain editorial independence and continue delivering the news that matters most to
