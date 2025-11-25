@@ -163,28 +163,8 @@ export const Footer = () => {
           </div>
         </div>
 
-        {/* Auth Buttons, Social & Contact - Single Line */}
+        {/* Social & Contact - Single Line */}
         <div className="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-border gap-4 md:gap-6">
-          {/* Auth Buttons */}
-          <div className="flex items-center gap-2">
-            {user ? (
-              <>
-                {isAdmin && (
-                  <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
-                    Admin
-                  </Button>
-                )}
-                <Button variant="outline" size="sm" onClick={handleSignOut}>
-                  Sign Out
-                </Button>
-              </>
-            ) : (
-              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
-                Sign In
-              </Button>
-            )}
-          </div>
-
           {/* Social Icons */}
           <div className="flex gap-4">
             <a
@@ -257,9 +237,10 @@ export const Footer = () => {
           <div className="text-sm text-muted-foreground">© 2025 Bosphorus News. All rights reserved.</div>
         </div>
 
-        {/* Navigation Links - Center Aligned */}
-        <div className="flex justify-center pt-6 border-t border-border">
-          <div className="text-xs text-muted-foreground flex flex-wrap justify-center gap-x-2">
+        {/* Navigation Links & Auth Buttons */}
+        <div className="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-border gap-4">
+          {/* Navigation Links - Center on mobile, left on desktop */}
+          <div className="text-xs text-muted-foreground flex flex-wrap justify-center md:justify-start gap-x-2">
             <Link to="/" className="hover:text-foreground transition-colors">
               HOME
             </Link>
@@ -272,6 +253,26 @@ export const Footer = () => {
                 {index < sections.length - 1 && <span>|</span>}
               </span>
             ))}
+          </div>
+
+          {/* Auth Buttons - Right Aligned */}
+          <div className="flex items-center gap-2">
+            {user ? (
+              <>
+                {isAdmin && (
+                  <Button variant="outline" size="sm" onClick={() => navigate("/admin")}>
+                    Admin
+                  </Button>
+                )}
+                <Button variant="outline" size="sm" onClick={handleSignOut}>
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
       </div>
