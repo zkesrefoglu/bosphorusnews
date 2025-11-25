@@ -171,7 +171,7 @@ export const Footer = () => {
               href="https://x.com/BosphorusNN"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-[#F54927] transition-all duration-300 hover:scale-110"
               aria-label="Twitter"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -182,7 +182,7 @@ export const Footer = () => {
               href="https://bsky.app/profile/bosphorusnn.bsky.social"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-[#F54927] transition-all duration-300 hover:scale-110"
               aria-label="Bluesky"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -193,7 +193,7 @@ export const Footer = () => {
               href="https://www.instagram.com/bosphorusnn/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-[#F54927] transition-all duration-300 hover:scale-110"
               aria-label="Instagram"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -208,7 +208,7 @@ export const Footer = () => {
               href="https://www.tiktok.com/@bosphorusnn"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-[#F54927] transition-all duration-300 hover:scale-110"
               aria-label="TikTok"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -219,7 +219,7 @@ export const Footer = () => {
               href="https://www.youtube.com/channel/UCNNSvQIhr88-Ig0wmzk3MfQ"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-[#F54927] transition-all duration-300 hover:scale-110"
               aria-label="YouTube"
             >
               <Youtube className="w-5 h-5" />
