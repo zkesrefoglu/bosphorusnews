@@ -6,6 +6,7 @@ const Coffee = () => {
   const paymentMethods = [
     {
       name: "Venmo",
+      logo: "/images/venmo-logo.png",
       username: "@ZiyaKEsrefoglu",
       qrCode: "/images/qr-venmo.png",
       link: "https://venmo.com/u/ZiyaKEsrefoglu",
@@ -13,6 +14,7 @@ const Coffee = () => {
     },
     {
       name: "CashApp",
+      logo: "/images/cashapp-logo.png",
       username: "$ZiyaEsrefoglu",
       qrCode: "/images/qr-cashapp.png",
       link: "https://cash.app/$ZiyaEsrefoglu",
@@ -20,6 +22,7 @@ const Coffee = () => {
     },
     {
       name: "Wise",
+      logo: "/images/wise-logo.png",
       username: "ziyae28",
       qrCode: "/images/qr-wise.png",
       link: "https://apps.apple.com/us/app/wise-global-money/id612261027",
@@ -79,8 +82,12 @@ const Coffee = () => {
                   className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-all hover:scale-[1.02]"
                 >
                   {/* Gradient Header */}
-                  <div className={`bg-gradient-to-r ${method.color} rounded-t-lg -mx-6 -mt-6 px-6 py-4 mb-6`}>
-                    <h3 className="text-xl font-bold text-white text-center">{method.name}</h3>
+                  <div className={`bg-gradient-to-r ${method.color} rounded-t-lg -mx-6 -mt-6 px-6 py-6 mb-6 flex justify-center items-center`}>
+                    <img 
+                      src={method.logo} 
+                      alt={method.name} 
+                      className="h-10 object-contain"
+                    />
                   </div>
 
                   {/* QR Code */}
