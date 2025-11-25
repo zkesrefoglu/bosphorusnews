@@ -102,7 +102,7 @@ serve(async (req) => {
 
     // Send the email using Resend
     const { data, error } = await resend.emails.send({
-      from: "Bosphorus News <newsletter@send.newsletter>",
+      from: "Bosphorus News <newsletter@bosphorusnews.com>",
       to: [email],
       subject: "Welcome to Bosphorus News - Your Daily News Source",
       html,
