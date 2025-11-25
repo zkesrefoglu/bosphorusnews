@@ -22,7 +22,7 @@ const Coffee = () => {
       name: "Wise",
       username: "ziyae28",
       qrCode: "/images/qr-wise.png",
-      link: null,
+      link: "https://apps.apple.com/us/app/wise-global-money/id612261027",
       color: "from-[#9FE870] to-[#7FBA56]",
     },
   ];
