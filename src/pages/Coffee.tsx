@@ -95,11 +95,18 @@ const Coffee = () => {
                 >
                   {/* Gradient Header */}
                   <div className={`bg-gradient-to-r ${method.color} rounded-t-lg -mx-6 -mt-6 px-6 py-6 mb-6 flex justify-center items-center`}>
-                    <img 
-                      src={method.logo} 
-                      alt={method.name} 
-                      className={`h-10 object-contain ${method.name !== 'Wise' ? 'bg-white px-4 py-2 rounded-lg' : ''}`}
-                    />
+                    <a 
+                      href={method.name === 'Venmo' ? 'https://venmo.com' : method.name === 'CashApp' ? 'https://cash.app' : 'https://wise.com'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:opacity-80 transition-opacity"
+                    >
+                      <img 
+                        src={method.logo} 
+                        alt={method.name} 
+                        className={`h-10 object-contain ${method.name !== 'Wise' ? 'bg-white px-4 py-2 rounded-lg' : ''}`}
+                      />
+                    </a>
                   </div>
 
                   {/* QR Code */}
