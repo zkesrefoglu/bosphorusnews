@@ -6,11 +6,11 @@ import { useEffect } from "react";
 const Coffee = () => {
   useEffect(() => {
     // Load GoFundMe embed script
-    const script = document.createElement('script');
-    script.src = 'https://www.gofundme.com/static/js/embed.js';
+    const script = document.createElement("script");
+    script.src = "https://www.gofundme.com/static/js/embed.js";
     script.defer = true;
     document.body.appendChild(script);
-    
+
     return () => {
       document.body.removeChild(script);
     };
@@ -60,11 +60,15 @@ const Coffee = () => {
             <div className="flex justify-center mb-4">
               <CoffeeIcon className="w-16 h-16 text-[#F54927]" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-headline font-bold mb-4">
-              Buy Me a Coffee
-            </h1>
+            <h1 className="text-4xl md:text-5xl font-headline font-bold mb-4">Buy me a cup of coffee</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-justify">
-              Bosphorus News is an independent, ad-free news platform committed to delivering unbiased journalism from Türkiye and beyond. In an era of misinformation and media consolidation, we stand as a beacon of free press—beholden to no government, corporation, or special interest. Our mission is to provide accurate, in-depth reporting that empowers readers with the truth. Every contribution, no matter how small, helps us maintain our editorial independence, cover critical stories, and continue serving as a vital voice in the global media landscape. By supporting us, you are not just funding journalism—you are defending the principles of a free and independent press.
+              Bosphorus News is an independent, ad-free news platform committed to delivering unbiased journalism from
+              Türkiye and beyond. In an era of misinformation and media consolidation, we stand as a beacon of free
+              press—beholden to no government, corporation, or special interest. Our mission is to provide accurate,
+              in-depth reporting that empowers readers with the truth. Every contribution, no matter how small, helps us
+              maintain our editorial independence, cover critical stories, and continue serving as a vital voice in the
+              global media landscape. By supporting us, you are not just funding journalism—you are defending the
+              principles of a free and independent press. THANK YOU!
             </p>
           </div>
 
@@ -94,17 +98,25 @@ const Coffee = () => {
                   className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-all hover:scale-[1.02]"
                 >
                   {/* Gradient Header */}
-                  <div className={`bg-gradient-to-r ${method.color} rounded-t-lg -mx-6 -mt-6 px-6 py-6 mb-6 flex justify-center items-center`}>
-                    <a 
-                      href={method.name === 'Venmo' ? 'https://venmo.com' : method.name === 'CashApp' ? 'https://cash.app' : 'https://wise.com'}
+                  <div
+                    className={`bg-gradient-to-r ${method.color} rounded-t-lg -mx-6 -mt-6 px-6 py-6 mb-6 flex justify-center items-center`}
+                  >
+                    <a
+                      href={
+                        method.name === "Venmo"
+                          ? "https://venmo.com"
+                          : method.name === "CashApp"
+                            ? "https://cash.app"
+                            : "https://wise.com"
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"
                     >
-                      <img 
-                        src={method.logo} 
-                        alt={method.name} 
-                        className={`h-10 object-contain ${method.name !== 'Wise' ? 'bg-white px-4 py-2 rounded-lg' : ''}`}
+                      <img
+                        src={method.logo}
+                        alt={method.name}
+                        className={`h-10 object-contain ${method.name !== "Wise" ? "bg-white px-4 py-2 rounded-lg" : ""}`}
                       />
                     </a>
                   </div>
@@ -129,9 +141,7 @@ const Coffee = () => {
                       Open {method.name}
                     </a>
                   ) : (
-                    <div className="text-center text-sm text-muted-foreground py-2">
-                      Use the username above
-                    </div>
+                    <div className="text-center text-sm text-muted-foreground py-2">Use the username above</div>
                   )}
                 </div>
               ))}
@@ -157,7 +167,10 @@ const Coffee = () => {
               >
                 Open GoFundMe
               </a>
-              <div className="gfm-embed" data-url="https://www.gofundme.com/f/keep-independent-journalism-alive-donate-now/widget/large?sharesheet=undefined&attribution_id=sl:dc7f98e0-bacc-4752-ac00-2cc735a75c6e"></div>
+              <div
+                className="gfm-embed"
+                data-url="https://www.gofundme.com/f/keep-independent-journalism-alive-donate-now/widget/large?sharesheet=undefined&attribution_id=sl:dc7f98e0-bacc-4752-ac00-2cc735a75c6e"
+              ></div>
             </div>
           </div>
 
@@ -176,9 +189,9 @@ const Coffee = () => {
           <div className="text-center">
             <h2 className="text-2xl font-headline font-bold mb-4">Thank You</h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Every contribution, no matter the size, makes a real difference. Your support allows us
-              to maintain editorial independence and continue delivering the news that matters most to
-              our readers. We're grateful for your generosity!
+              Every contribution, no matter the size, makes a real difference. Your support allows us to maintain
+              editorial independence and continue delivering the news that matters most to our readers. We're grateful
+              for your generosity!
             </p>
           </div>
         </div>
