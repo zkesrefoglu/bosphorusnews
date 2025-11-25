@@ -8,7 +8,7 @@ const Coffee = () => {
       name: "Venmo",
       logo: "/images/venmo-logo.png",
       username: "@ZiyaKEsrefoglu",
-      qrCode: "/images/qr-venmo.png",
+      qrCode: "/images/qr-venmo-new.png",
       link: "https://venmo.com/u/ZiyaKEsrefoglu",
       color: "from-[#008CFF] to-[#0074CC]",
     },
