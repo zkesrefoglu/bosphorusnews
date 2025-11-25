@@ -32,21 +32,16 @@ async function fetchCurrencyRates() {
 async function fetchBIST100() {
   try {
     const response = await fetch(
-      'https://query1.finance.yahoo.com/v7/finance/quote?symbols=XU100.IS'
+      'https://query1.finance.yahoo.com/v7/finance/quote?symbols=XU100.IS',
+      {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        }
+      }
     );
     
     if (!response.ok) {
-      console.error('Yahoo Finance API error:', response.status);
-      throw new Error(`API returned ${response.status}`);
-    }
-    
-    const data = await response.json();
-    console.log('Yahoo Finance response:', JSON.stringify(data));
-    
-    // Check if we have valid data structure - Note: it's "result" not "results"
-    if (!data.quoteResponse || !data.quoteResponse.result || data.quoteResponse.result.length === 0) {
-      console.error('Invalid Yahoo Finance response structure');
-      // Return fallback data instead of throwing
+      console.error('Yahoo Finance API error:', response.status, await response.text());
       return {
         price: 9500,
         change: 0,
@@ -54,16 +49,30 @@ async function fetchBIST100() {
       };
     }
     
-    const result = data.quoteResponse.result[0];
+    const data = await response.json();
+    console.log('Yahoo Finance full response:', JSON.stringify(data, null, 2));
+    
+    // Check if we have the expected structure
+    if (!data?.quoteResponse?.result?.[0]) {
+      console.error('Invalid Yahoo Finance structure. Got:', Object.keys(data || {}));
+      return {
+        price: 9500,
+        change: 0,
+        changePercent: 0,
+      };
+    }
+    
+    const quote = data.quoteResponse.result[0];
+    console.log('BIST quote data:', JSON.stringify(quote, null, 2));
     
     return {
-      price: result.regularMarketPrice || 9500,
-      change: result.regularMarketChange || 0,
-      changePercent: result.regularMarketChangePercent || 0,
+      price: quote.regularMarketPrice || 9500,
+      change: quote.regularMarketChange || 0,
+      changePercent: quote.regularMarketChangePercent || 0,
     };
   } catch (error) {
-    console.error('Error fetching BIST 100:', error);
-    // Return fallback data instead of throwing
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error fetching BIST 100:', errorMessage);
     return {
       price: 9500,
       change: 0,
