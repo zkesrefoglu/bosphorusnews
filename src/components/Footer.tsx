@@ -153,8 +153,7 @@ export const Footer = () => {
                 <Button 
                   type="button" 
                   size="sm" 
-                  className="w-full"
-                  style={{ backgroundColor: '#F54927' }}
+                  className="w-full bg-gray-200 hover:bg-[#F54927] text-gray-900 hover:text-white transition-colors"
                 >
                   Buy Me a Cup ☕
                 </Button>
