@@ -140,8 +140,8 @@ export const LiveTicker = () => {
         )}
       </div>
 
-      {/* BIST 100 */}
-      <div 
+      {/* BIST 100 - Hidden until reliable data source is found */}
+      {/* <div 
         className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors opacity-0 group relative"
         style={{ 
           animation: 'slideInFromRight 0.8s ease-out 0.6s forwards',
@@ -159,13 +159,13 @@ export const LiveTicker = () => {
         <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
           {data.bist100.changePercent.toFixed(2)}%
         </span>
-      </div>
+      </div> */}
 
       {/* Weather */}
       <div 
         className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded hover:bg-muted transition-colors opacity-0"
         style={{ 
-          animation: 'slideInFromRight 0.8s ease-out 0.8s forwards',
+          animation: 'slideInFromRight 0.8s ease-out 0.6s forwards',
         }}
       >
         <Cloud className="w-3 h-3 text-muted-foreground" />
@@ -178,10 +178,10 @@ export const LiveTicker = () => {
         <div 
           className="flex items-center gap-1 px-2 py-1 text-[10px] text-muted-foreground opacity-0"
           style={{ 
-            animation: 'slideInFromRight 0.8s ease-out 1s forwards',
+            animation: 'slideInFromRight 0.8s ease-out 0.8s forwards',
           }}
         >
-          Son: {lastUpdated}
+          IST: {lastUpdated}
         </div>
       )}
 
