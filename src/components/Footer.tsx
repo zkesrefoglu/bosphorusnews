@@ -241,13 +241,13 @@ export const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-border gap-4">
           {/* Navigation Links - Center on mobile, left on desktop */}
           <div className="text-xs text-muted-foreground flex flex-wrap justify-center md:justify-start gap-x-2">
-            <Link to="/" className="hover:text-foreground transition-colors">
+            <Link to="/" className="hover:text-[#F54927] transition-colors">
               HOME
             </Link>
             <span>-</span>
             {sections.map((section, index) => (
               <span key={section.path} className="flex items-center gap-x-2">
-                <Link to={section.path} className="hover:text-foreground transition-colors">
+                <Link to={section.path} className="hover:text-[#F54927] transition-colors">
                   {section.name}
                 </Link>
                 {index < sections.length - 1 && <span>|</span>}
