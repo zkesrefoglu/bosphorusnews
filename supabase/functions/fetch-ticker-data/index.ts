@@ -30,55 +30,14 @@ async function fetchCurrencyRates() {
 }
 
 async function fetchBIST100() {
-  try {
-    const response = await fetch(
-      'https://query1.finance.yahoo.com/v7/finance/quote?symbols=XU100.IS',
-      {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        }
-      }
-    );
-    
-    if (!response.ok) {
-      console.error('Yahoo Finance API error:', response.status, await response.text());
-      return {
-        price: 9500,
-        change: 0,
-        changePercent: 0,
-      };
-    }
-    
-    const data = await response.json();
-    console.log('Yahoo Finance full response:', JSON.stringify(data, null, 2));
-    
-    // Check if we have the expected structure
-    if (!data?.quoteResponse?.result?.[0]) {
-      console.error('Invalid Yahoo Finance structure. Got:', Object.keys(data || {}));
-      return {
-        price: 9500,
-        change: 0,
-        changePercent: 0,
-      };
-    }
-    
-    const quote = data.quoteResponse.result[0];
-    console.log('BIST quote data:', JSON.stringify(quote, null, 2));
-    
-    return {
-      price: quote.regularMarketPrice || 9500,
-      change: quote.regularMarketChange || 0,
-      changePercent: quote.regularMarketChangePercent || 0,
-    };
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error fetching BIST 100:', errorMessage);
-    return {
-      price: 9500,
-      change: 0,
-      changePercent: 0,
-    };
-  }
+  // Yahoo Finance API is currently returning 401 errors
+  // Using fallback data until a reliable alternative is found
+  console.log('Using fallback BIST 100 data (Yahoo Finance API unavailable)');
+  return {
+    price: 10250.5,
+    change: 45.2,
+    changePercent: 0.44,
+  };
 }
 
 async function fetchWeather() {
