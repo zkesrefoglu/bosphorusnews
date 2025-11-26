@@ -10,7 +10,7 @@ export const BreakingNewsBadge = ({ className = "" }: BreakingNewsBadgeProps) =>
       <img 
         src={breakingNewsGif} 
         alt="Breaking News" 
-        className="w-8 h-8 animate-pulse"
+        className="w-24 h-24"
       />
       <span className="font-bold text-destructive text-sm uppercase tracking-wide">
         Breaking News
