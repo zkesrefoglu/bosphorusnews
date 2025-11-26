@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Share2, Twitter, Cloud, Link2, Check } from "lucide-react";
+import { ArrowLeft, Share2, Twitter, Cloud, Link2, Check, Facebook } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { stripCategoryPlaceholders, sanitizeArticleContent } from "@/lib/contentUtils";
 import { Button } from "@/components/ui/button";
@@ -122,7 +122,7 @@ const Article = () => {
     };
   }, [article, slug]);
 
-  const handleShare = async (platform: 'twitter' | 'bluesky' | 'copy') => {
+  const handleShare = async (platform: 'twitter' | 'bluesky' | 'facebook' | 'copy') => {
     if (!slug || !article) return;
     
     const articleUrl = `${window.location.origin}/article/${slug}`;
@@ -182,6 +182,13 @@ const Article = () => {
         );
         break;
       }
+      case 'facebook':
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`,
+          '_blank',
+          'width=550,height=420'
+        );
+        break;
       case 'copy':
         navigator.clipboard.writeText(articleUrl).then(() => {
           setCopied(true);
@@ -311,6 +318,10 @@ const Article = () => {
                   <DropdownMenuItem onClick={() => handleShare('bluesky')}>
                     <Cloud className="w-4 h-4 mr-2" />
                     Share on Bluesky
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleShare('facebook')}>
+                    <Facebook className="w-4 h-4 mr-2" />
+                    Share on Facebook
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleShare('copy')}>
                     {copied ? <Check className="w-4 h-4 mr-2" /> : <Link2 className="w-4 h-4 mr-2" />}

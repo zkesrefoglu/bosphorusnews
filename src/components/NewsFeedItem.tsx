@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { stripCategoryPlaceholders, sanitizeArticleContent } from "@/lib/contentUtils";
-import { Share2, Twitter, Cloud, Link2, Check } from "lucide-react";
+import { Share2, Twitter, Cloud, Link2, Check, Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -56,7 +56,7 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
     });
   }, [slug]);
   
-  const handleShare = async (platform: 'twitter' | 'bluesky' | 'copy', e: React.MouseEvent) => {
+  const handleShare = async (platform: 'twitter' | 'bluesky' | 'facebook' | 'copy', e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -114,6 +114,13 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
         );
         break;
       }
+      case 'facebook':
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`,
+          '_blank',
+          'width=550,height=420'
+        );
+        break;
       case 'copy':
         navigator.clipboard.writeText(articleUrl).then(() => {
           setCopied(true);
@@ -175,6 +182,10 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
             <DropdownMenuItem onClick={(e) => handleShare('bluesky', e)}>
               <Cloud className="w-4 h-4 mr-2" />
               Share on Bluesky
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => handleShare('facebook', e)}>
+              <Facebook className="w-4 h-4 mr-2" />
+              Share on Facebook
             </DropdownMenuItem>
             <DropdownMenuItem onClick={(e) => handleShare('copy', e)}>
               {copied ? <Check className="w-4 h-4 mr-2" /> : <Link2 className="w-4 h-4 mr-2" />}
