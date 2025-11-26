@@ -73,8 +73,8 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
 
                 {/* Breaking News Badge - Top Right */}
                 {article.breakingNews && (
-                  <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
-                    <BreakingNewsBadge />
+                  <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10 h-[20%]">
+                    <BreakingNewsBadge className="h-full w-auto" />
                   </div>
                 )}
 
