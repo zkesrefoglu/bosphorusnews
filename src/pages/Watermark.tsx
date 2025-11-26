@@ -5,10 +5,10 @@ import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
 import { Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 
 export default function Watermark() {
   const [mainImage, setMainImage] = useState<HTMLImageElement | null>(null);
