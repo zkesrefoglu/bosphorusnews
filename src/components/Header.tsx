@@ -9,7 +9,7 @@ import { LiveTicker } from "@/components/LiveTicker";
 
 const sections = [
   { name: "Home", slug: "", isLogo: false },
-  { name: "Agenda", slug: "agenda", isLogo: false },
+  // { name: "Agenda", slug: "agenda", isLogo: false }, // Hidden until further notice
   { name: "Economy", slug: "economy", isLogo: false },
   { name: "Defense", slug: "defense", isLogo: false },
   { name: "Life", slug: "life", isLogo: false },
