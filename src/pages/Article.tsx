@@ -264,7 +264,7 @@ const Article = () => {
           </div>
 
           {article.breaking_news && (
-            <div className="mb-6 w-1/2">
+            <div className="mb-6 w-1/4">
               <BreakingNewsBadge className="w-full h-auto" />
             </div>
           )}
