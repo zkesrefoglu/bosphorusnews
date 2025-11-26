@@ -858,7 +858,7 @@ const Admin = () => {
                     <div className="space-y-2">
                       <Label htmlFor="news-content">Full Content</Label>
                       <RichTextEditor
-                        key={editingArticle ? `news-${editingArticle.id}` : 'news-new'}
+                        key="news-article-editor"
                         value={newsContent}
                         onChange={setNewsContent}
                         placeholder="Write your article content with formatting..."
@@ -998,7 +998,7 @@ const Admin = () => {
                     <div className="space-y-2">
                       <Label htmlFor="topic-content">Full Content</Label>
                       <RichTextEditor
-                        key={topicContent.substring(0, 20)}
+                        key="topic-article-editor"
                         value={topicContent}
                         onChange={setTopicContent}
                         placeholder="Write the Editor's Pick content with formatting..."
@@ -1205,7 +1205,7 @@ const Admin = () => {
                       <div className="space-y-2">
                         <Label htmlFor="edit-content">Full Content</Label>
                         <RichTextEditor
-                          key={editingArticle ? `edit-news-${editingArticle.id}` : 'edit-news-new'}
+                          key={`edit-article-${editingArticle?.id}`}
                           value={newsContent}
                           onChange={setNewsContent}
                           placeholder="Edit the article content with formatting..."
