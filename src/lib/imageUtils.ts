@@ -6,8 +6,12 @@ export const bustImageCache = (url: string | null | undefined): string => {
   if (!url) return '';
   
   // If URL already has cache-busting parameter, update it
-  if (url.includes('?t=') || url.includes('&t=')) {
-    return url.replace(/[?&]t=\d+/, `${url.includes('?') ? '&' : '?'}t=${Date.now()}`);
+  // Handle ?t= and &t= separately to preserve the correct separator
+  if (url.includes('?t=')) {
+    return url.replace(/\?t=\d+/, `?t=${Date.now()}`);
+  }
+  if (url.includes('&t=')) {
+    return url.replace(/&t=\d+/, `&t=${Date.now()}`);
   }
   
   // Add cache-busting parameter

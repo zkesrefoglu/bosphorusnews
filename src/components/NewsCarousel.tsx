@@ -71,10 +71,10 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 gradient-overlay-dark" />
 
-                {/* Breaking News Badge - Top Left */}
+                {/* Breaking News Badge - Top Right */}
                 {article.breakingNews && (
-                  <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
-                    <BreakingNewsBadge className="[&_span]:text-white [&_span]:drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] [&_img]:backdrop-blur-[2px] [&_img]:backdrop-brightness-[1.2] [&_img]:rounded [&_img]:p-1 [&_img]:w-12 [&_img]:h-12 md:[&_img]:w-16 md:[&_img]:h-16" />
+                  <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
+                    <BreakingNewsBadge className="[&_span]:text-white [&_span]:text-2xl [&_span]:drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] [&_img]:backdrop-blur-[2px] [&_img]:backdrop-brightness-[1.2] [&_img]:rounded [&_img]:p-1 [&_img]:w-16 [&_img]:h-16 md:[&_img]:w-24 md:[&_img]:h-24" />
                   </div>
                 )}
 
