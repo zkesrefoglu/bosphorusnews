@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 
 const RESOLUTIONS = [
+  { name: "CinemaScope 2.35:1", width: 1920, height: 820 },
   { name: "HD 16:10", width: 1920, height: 1200 },
   { name: "Full HD 16:9", width: 1920, height: 1080 },
   { name: "WSXGA+ 16:10", width: 1680, height: 1050 },
@@ -18,7 +19,7 @@ const RESOLUTIONS = [
 
 export const ImageSizeFix = () => {
   const [sourceImage, setSourceImage] = useState<HTMLImageElement | null>(null);
-  const [currentRes, setCurrentRes] = useState(RESOLUTIONS[1]);
+  const [currentRes, setCurrentRes] = useState(RESOLUTIONS[0]);
   const [scale, setScale] = useState(100);
   const [posX, setPosX] = useState(0);
   const [posY, setPosY] = useState(0);
