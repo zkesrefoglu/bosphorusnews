@@ -25,6 +25,7 @@ export const ImageSizeFix = () => {
   const [posY, setPosY] = useState(0);
   const [bgMode, setBgMode] = useState<'color' | 'transparent'>('color');
   const [bgColor, setBgColor] = useState('#ffffff');
+  const [colorPalette, setColorPalette] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [imageInfo, setImageInfo] = useState<any>(null);
@@ -34,16 +35,58 @@ export const ImageSizeFix = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadZoneRef = useRef<HTMLDivElement>(null);
 
-  const getDominantColor = (img: HTMLImageElement): string => {
+  const getDominantColors = (img: HTMLImageElement, count: number = 5): string[] => {
     const tempCanvas = document.createElement('canvas');
     const tempCtx = tempCanvas.getContext('2d');
-    if (!tempCtx) return '#ffffff';
+    if (!tempCtx) return ['#ffffff', '#f0f0f0', '#e0e0e0', '#d0d0d0', '#c0c0c0'];
 
-    tempCanvas.width = 1;
-    tempCanvas.height = 1;
-    tempCtx.drawImage(img, 0, 0, 1, 1);
-    const pixel = tempCtx.getImageData(0, 0, 1, 1).data;
-    return `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+    // Sample at reasonable resolution for performance
+    const maxSampleSize = 200;
+    const scale = Math.min(maxSampleSize / img.width, maxSampleSize / img.height, 1);
+    tempCanvas.width = img.width * scale;
+    tempCanvas.height = img.height * scale;
+    tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
+
+    const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+    const pixels = imageData.data;
+    
+    // Color frequency map
+    const colorMap = new Map<string, number>();
+    
+    // Sample every 4th pixel for performance
+    for (let i = 0; i < pixels.length; i += 16) { // RGBA = 4 bytes per pixel, skip 4 pixels
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+      const a = pixels[i + 3];
+      
+      // Skip transparent pixels
+      if (a < 128) continue;
+      
+      // Round to nearest 32 to group similar colors
+      const rRounded = Math.round(r / 32) * 32;
+      const gRounded = Math.round(g / 32) * 32;
+      const bRounded = Math.round(b / 32) * 32;
+      
+      const colorKey = `${rRounded},${gRounded},${bRounded}`;
+      colorMap.set(colorKey, (colorMap.get(colorKey) || 0) + 1);
+    }
+    
+    // Sort by frequency and get top colors
+    const sortedColors = Array.from(colorMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, count)
+      .map(([color]) => {
+        const [r, g, b] = color.split(',').map(Number);
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+      });
+    
+    // Fill remaining slots if we don't have enough colors
+    while (sortedColors.length < count) {
+      sortedColors.push('#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
+    }
+    
+    return sortedColors;
   };
 
   const analyzeImage = (img: HTMLImageElement, file: File) => {
@@ -86,7 +129,9 @@ export const ImageSizeFix = () => {
       const img = new Image();
       img.onload = () => {
         setSourceImage(img);
-        setBgColor(getDominantColor(img));
+        const palette = getDominantColors(img, 5);
+        setColorPalette(palette);
+        setBgColor(palette[0]);
         analyzeImage(img, file);
         resetPosition(img);
       };
@@ -114,6 +159,22 @@ export const ImageSizeFix = () => {
     setPosX(0);
     setPosY(0);
     setScale(Math.round(newScale * 100));
+  };
+
+  const fitWithoutCrop = () => {
+    if (!sourceImage) return;
+
+    // Calculate scale to fit entire image within canvas (opposite of resetPosition)
+    const scaleX = currentRes.width / sourceImage.width;
+    const scaleY = currentRes.height / sourceImage.height;
+    
+    // Use the smaller scale to ensure entire image fits
+    const newScale = Math.min(scaleX, scaleY);
+
+    setPosX(0);
+    setPosY(0);
+    setScale(Math.round(newScale * 100));
+    toast.success("Image fitted without cropping!");
   };
 
   const drawCanvas = () => {
@@ -382,7 +443,7 @@ export const ImageSizeFix = () => {
                       <label className="font-semibold text-sm mb-3 block flex items-center gap-2">
                         🎨 Background
                       </label>
-                      <div className="flex gap-3">
+                      <div className="flex gap-3 mb-4">
                         <button
                           onClick={() => setBgMode('color')}
                           className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all font-semibold text-sm ${
@@ -400,6 +461,36 @@ export const ImageSizeFix = () => {
                           Transparent
                         </button>
                       </div>
+                      
+                      {bgMode === 'color' && colorPalette.length > 0 && (
+                        <div>
+                          <label className="text-xs font-semibold text-muted-foreground mb-2 block">
+                            Dominant Colors
+                          </label>
+                          <div className="flex gap-2 mb-3">
+                            {colorPalette.map((color, index) => (
+                              <button
+                                key={index}
+                                onClick={() => setBgColor(color)}
+                                className={`w-10 h-10 rounded-lg border-4 transition-all hover:scale-110 ${
+                                  bgColor === color ? 'border-primary shadow-lg' : 'border-border hover:border-primary/50'
+                                }`}
+                                style={{ backgroundColor: color }}
+                                title={color}
+                              />
+                            ))}
+                          </div>
+                          <label className="text-xs font-semibold text-muted-foreground mb-2 block">
+                            Custom Color
+                          </label>
+                          <input
+                            type="color"
+                            value={bgColor}
+                            onChange={(e) => setBgColor(e.target.value)}
+                            className="w-full h-10 rounded-lg border-2 border-border cursor-pointer"
+                          />
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </div>
@@ -409,6 +500,9 @@ export const ImageSizeFix = () => {
                   <Button variant="outline" onClick={() => resetPosition()}>
                     <RotateCcw className="w-4 h-4 mr-2" />
                     Reset Position
+                  </Button>
+                  <Button variant="outline" onClick={fitWithoutCrop}>
+                    Fit to Canvas (No Crop)
                   </Button>
                   <Button onClick={downloadImage}>
                     <Download className="w-4 h-4 mr-2" />
