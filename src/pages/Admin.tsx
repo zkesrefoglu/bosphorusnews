@@ -829,12 +829,12 @@ const Admin = () => {
           if (value === "manage") fetchArticles();
         }}>
             <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="news" className="hover:bg-admin-red hover:text-white transition-all duration-300">Latest News</TabsTrigger>
-            <TabsTrigger value="topic" className="hover:bg-admin-red hover:text-white transition-all duration-300">Editor's Pick</TabsTrigger>
-            <TabsTrigger value="bulk" className="hover:bg-admin-red hover:text-white transition-all duration-300">Bulk Upload</TabsTrigger>
-            <TabsTrigger value="converter" className="hover:bg-admin-red hover:text-white transition-all duration-300">News Converter</TabsTrigger>
-            <TabsTrigger value="manage" className="hover:bg-admin-red hover:text-white transition-all duration-300">Manage Articles</TabsTrigger>
-            <TabsTrigger value="newsletter" className="hover:bg-admin-red hover:text-white transition-all duration-300">Newsletter</TabsTrigger>
+            <TabsTrigger value="news" className="hover:bg-admin-red hover:text-white transition-all duration-300 data-[state=active]:bg-admin-red data-[state=active]:text-white">Latest News</TabsTrigger>
+            <TabsTrigger value="topic" className="hover:bg-admin-red hover:text-white transition-all duration-300 data-[state=active]:bg-admin-red data-[state=active]:text-white">Editor's Pick</TabsTrigger>
+            <TabsTrigger value="bulk" className="hover:bg-admin-red hover:text-white transition-all duration-300 data-[state=active]:bg-admin-red data-[state=active]:text-white">Bulk Upload</TabsTrigger>
+            <TabsTrigger value="converter" className="hover:bg-admin-red hover:text-white transition-all duration-300 data-[state=active]:bg-admin-red data-[state=active]:text-white">News Converter</TabsTrigger>
+            <TabsTrigger value="manage" className="hover:bg-admin-red hover:text-white transition-all duration-300 data-[state=active]:bg-admin-red data-[state=active]:text-white">Manage Articles</TabsTrigger>
+            <TabsTrigger value="newsletter" className="hover:bg-admin-red hover:text-white transition-all duration-300 data-[state=active]:bg-admin-red data-[state=active]:text-white">Newsletter</TabsTrigger>
             <button
               onClick={() => navigate("/watermark")}
               className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-admin-red hover:text-white hover:scale-105 hover:shadow-lg duration-300"
