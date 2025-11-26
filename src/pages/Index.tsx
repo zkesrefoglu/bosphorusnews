@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import carouselTestImage from "@/assets/carousel-test-1920x820.png";
 
 interface Article {
   title: string;
@@ -71,8 +72,24 @@ const Index = () => {
         carouselFinal = [...carouselFinal, ...(fillData || [])];
       }
 
-      setCarouselArticles(
-        carouselFinal.map((article) => ({
+      const testArticle: Article = {
+        title: "CinemaScope 2.35:1 Test Image",
+        excerpt: "Testing the perfect 1920×820 aspect ratio display in carousel",
+        slug: "test-cinemascope",
+        imageUrl: carouselTestImage,
+        category: "World",
+        date: new Date().toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
+        photoCredit: "Test Image",
+        breakingNews: false,
+      };
+
+      setCarouselArticles([
+        testArticle,
+        ...carouselFinal.map((article) => ({
           title: article.title,
           excerpt: article.excerpt,
           slug: article.slug,
@@ -86,7 +103,7 @@ const Index = () => {
           photoCredit: article.photo_credit,
           breakingNews: article.breaking_news || false,
         }))
-      );
+      ]);
 
       // 2. MATRIX SECTION: Get all categories dynamically (3 articles each)
       // First get distinct categories excluding Xtra
