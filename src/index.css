@@ -436,16 +436,14 @@
 
 /* Carousel Specific Styles */
 .carousel-slide {
-  @apply relative overflow-hidden;
-  aspect-ratio: 16 / 10;
-  max-height: 75vh;
-  min-height: 400px;
+  @apply relative overflow-hidden w-full;
+  height: 600px;
   background-color: hsl(var(--primary));
 }
 
 .carousel-slide .carousel-image {
   @apply w-full h-full;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   filter: brightness(0.85) contrast(1.1);
   transform: scale(1);
