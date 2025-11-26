@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { z } from "zod";
 import NewsConverter from "@/components/NewsConverter";
-import { Pencil, Trash2, Eye, EyeOff, Send, Search } from "lucide-react";
+import { Pencil, Trash2, Eye, EyeOff, Send, Search, Image } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { ArticlePreview } from "@/components/ArticlePreview";
 import {
@@ -775,7 +775,17 @@ const Admin = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/watermark")}
+            className="flex items-center gap-2"
+          >
+            <Image className="w-4 h-4" />
+            Watermark Tool
+          </Button>
+        </div>
 
         <Tabs defaultValue="news" className="w-full" onValueChange={(value) => {
           if (value === "manage") fetchArticles();
