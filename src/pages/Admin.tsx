@@ -825,53 +825,26 @@ const Admin = () => {
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         </div>
 
-        {/* Navigation Section */}
-        <nav className="flex flex-wrap gap-3 mb-12 p-4 bg-background rounded-lg shadow-sm">
-          {["Agenda", "Türkiye", "FP & Defense", "Business", "Life", "Sports", "World", "Xtra"].map((section) => (
-            <Button
-              key={section}
-              variant="outline"
-              onClick={() => {
-                const sectionMap: Record<string, string> = {
-                  "Agenda": "agenda",
-                  "Türkiye": "turkiye",
-                  "FP & Defense": "fp-defense",
-                  "Business": "business",
-                  "Life": "life",
-                  "Sports": "sports",
-                  "World": "world",
-                  "Xtra": "xtra"
-                };
-                navigate(`/section/${sectionMap[section]}`);
-              }}
-              className="capitalize transition-all duration-200"
-            >
-              {section}
-            </Button>
-          ))}
-          <Button
-            variant="outline"
-            onClick={() => navigate("/watermark")}
-            className="flex items-center gap-2 hover:bg-admin-red hover:text-white hover:border-admin-red transition-all duration-300 hover:scale-105 hover:shadow-lg"
-          >
-            <Image className="w-4 h-4" />
-            Watermark
-          </Button>
-        </nav>
-
         <Tabs defaultValue="news" className="w-full" onValueChange={(value) => {
           if (value === "manage") fetchArticles();
         }}>
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="news">Latest News</TabsTrigger>
             <TabsTrigger value="topic">Editor's Pick</TabsTrigger>
             <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
             <TabsTrigger value="converter">News Converter</TabsTrigger>
             <TabsTrigger value="manage">Manage Articles</TabsTrigger>
             <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
+            <button
+              onClick={() => navigate("/watermark")}
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-admin-red hover:text-white hover:scale-105 hover:shadow-lg duration-300"
+            >
+              <Image className="w-4 h-4" />
+              Watermark
+            </button>
           </TabsList>
 
-          <TabsContent value="news">
+          <TabsContent value="news" className="mt-8">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-2xl font-bold">Add Single News Article</h2>
@@ -1031,7 +1004,7 @@ const Admin = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="topic">
+          <TabsContent value="topic" className="mt-8">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-2xl font-bold">Editor's Pick (Xtra)</h2>
@@ -1138,7 +1111,7 @@ const Admin = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="bulk">
+          <TabsContent value="bulk" className="mt-8">
             <Card>
               <CardHeader>
                 <CardTitle>Bulk Upload News Articles</CardTitle>
@@ -1213,7 +1186,7 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="converter">
+          <TabsContent value="converter" className="mt-8">
             <Card>
               <CardHeader>
                 <CardTitle>AI-Powered News Converter</CardTitle>
@@ -1227,7 +1200,7 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="manage">
+          <TabsContent value="manage" className="mt-8">
             <Card>
               <CardHeader>
                 <CardTitle>Manage Articles</CardTitle>
@@ -1598,7 +1571,7 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="newsletter">
+          <TabsContent value="newsletter" className="mt-8">
             <Card>
               <CardHeader>
                 <CardTitle>Send Daily Newsletter</CardTitle>
