@@ -12,7 +12,7 @@ export const BreakingNewsBadge = ({ className = "" }: BreakingNewsBadgeProps) =>
         alt="Breaking News" 
         className="w-24 h-24"
       />
-      <span className="font-bold text-destructive text-sm uppercase tracking-wide">
+      <span className="font-bold text-destructive text-xl uppercase tracking-wide">
         Breaking News
       </span>
     </div>
