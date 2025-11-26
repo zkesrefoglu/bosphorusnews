@@ -146,7 +146,9 @@ const Admin = () => {
 
   const handleImageUpload = async (file: File, slug: string) => {
     const fileExt = file.name.split('.').pop();
-    const fileName = `${slug}.${fileExt}`;
+    const timestamp = Date.now();
+    // Use unique filename with timestamp to prevent caching issues
+    const fileName = `${slug}-${timestamp}.${fileExt}`;
     const filePath = `${fileName}`;
 
     const { error: uploadError } = await supabase.storage
@@ -159,7 +161,8 @@ const Admin = () => {
       .from('article-images')
       .getPublicUrl(filePath);
 
-    return publicUrl;
+    // Add cache-busting parameter to force fresh image load
+    return `${publicUrl}?t=${timestamp}`;
   };
 
   const handleNewsSubmit = async (e: React.FormEvent) => {

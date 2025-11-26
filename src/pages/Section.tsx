@@ -8,6 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import xtraLogo from "@/assets/xtra-logo.png";
 import bannerImage from "@/assets/banner-diplomatic.jpg";
 import { BreakingNewsBadge } from "@/components/BreakingNewsBadge";
+import { bustImageCache } from "@/lib/imageUtils";
 
 interface NewsArticleData {
   title: string;
@@ -80,7 +81,7 @@ const Section = () => {
               }),
               slug: article.slug,
               timestamp: new Date(article.created_at),
-              imageUrl: article.image_url,
+              imageUrl: bustImageCache(article.image_url),
               photoCredit: article.photo_credit,
               breakingNews: article.breaking_news || false,
             }))
@@ -88,7 +89,7 @@ const Section = () => {
 
           // For Xtra section, get the latest article's image
           if (sectionName === "Xtra" && data.length > 0 && data[0].image_url) {
-            setLatestXtraImage(data[0].image_url);
+            setLatestXtraImage(bustImageCache(data[0].image_url));
           }
         }
 
@@ -275,7 +276,7 @@ const Section = () => {
                       {/* Image - Right Side */}
                       <div className="relative w-full sm:w-64 md:w-80 h-48 sm:h-auto overflow-hidden bg-muted flex-shrink-0">
                         <img
-                          src={item.imageUrl || `https://picsum.photos/seed/${item.slug}/600/400`}
+                          src={bustImageCache(item.imageUrl) || `https://picsum.photos/seed/${item.slug}/600/400`}
                           alt={item.title}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />

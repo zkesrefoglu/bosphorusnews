@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Share2, Twitter, Cloud, Link2, Check, Facebook, Coffee } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { stripCategoryPlaceholders, sanitizeArticleContent } from "@/lib/contentUtils";
+import { bustImageCache } from "@/lib/imageUtils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -287,7 +288,7 @@ const Article = () => {
           {article.image_url && (
             <figure className="mb-8 rounded-lg overflow-hidden bg-muted">
               <img 
-                src={article.image_url} 
+                src={bustImageCache(article.image_url)} 
                 alt={article.title}
                 className="w-full h-auto object-contain max-h-[70vh]"
               />

@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { bustImageCache } from "@/lib/imageUtils";
 
 interface Article {
   title: string;
@@ -76,7 +77,7 @@ const Index = () => {
           title: article.title,
           excerpt: article.excerpt,
           slug: article.slug,
-          imageUrl: article.image_url || `https://picsum.photos/seed/${article.slug}/1200/600`,
+          imageUrl: bustImageCache(article.image_url) || `https://picsum.photos/seed/${article.slug}/1200/600`,
           category: article.category,
           date: new Date(article.created_at).toLocaleDateString("en-US", {
             month: "short",
@@ -124,7 +125,7 @@ const Index = () => {
               title: article.title,
               excerpt: article.excerpt,
               slug: article.slug,
-              imageUrl: article.image_url || `https://picsum.photos/seed/${article.slug}/600/400`,
+              imageUrl: bustImageCache(article.image_url) || `https://picsum.photos/seed/${article.slug}/600/400`,
               category: article.category,
               date: new Date(article.created_at).toLocaleDateString("en-US", {
                 month: "short",
