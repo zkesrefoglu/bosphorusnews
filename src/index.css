@@ -445,7 +445,7 @@
 
 .carousel-slide .carousel-image {
   @apply w-full h-full;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   filter: brightness(0.85) contrast(1.1);
   transform: scale(1);
