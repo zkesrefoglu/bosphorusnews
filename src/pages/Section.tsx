@@ -210,8 +210,9 @@ const Section = () => {
 
                   {/* Content Section */}
                   <div className="flex-grow text-center md:text-left">
-                    <p className="text-xl md:text-2xl lg:text-3xl font-medium mb-4 leading-relaxed text-foreground">
-                      Beyond the headlines. Deep dives, special features, and exclusive content.
+                    <p className="text-xl md:text-2xl lg:text-3xl font-medium mb-4 leading-relaxed text-[hsl(var(--accent))]">
+                      Beyond the headlines.<br />
+                      Deep dives, special features, and exclusive content.
                     </p>
                     <div className="flex items-center justify-center md:justify-start gap-4 text-sm text-muted-foreground">
                       <div className="px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
@@ -276,7 +277,7 @@ const Section = () => {
                       {/* Image - Right Side */}
                       <div className="relative w-full sm:w-64 md:w-80 h-48 sm:h-auto overflow-hidden bg-muted flex-shrink-0">
                         <img
-                          src={bustImageCache(item.imageUrl) || `https://picsum.photos/seed/${item.slug}/600/400`}
+                          src={item.imageUrl || `https://picsum.photos/seed/${item.slug}/600/400`}
                           alt={item.title}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
