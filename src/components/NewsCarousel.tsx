@@ -71,6 +71,13 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 gradient-overlay-dark" />
 
+                {/* Breaking News Badge - Top Left */}
+                {article.breakingNews && (
+                  <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
+                    <BreakingNewsBadge className="[&_span]:text-white [&_span]:drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] [&_img]:backdrop-blur-[2px] [&_img]:backdrop-brightness-[1.2] [&_img]:rounded [&_img]:p-1 [&_img]:w-12 [&_img]:h-12 md:[&_img]:w-16 md:[&_img]:h-16" />
+                  </div>
+                )}
+
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 lg:p-12 container-custom">
                   <div className="max-w-4xl">
@@ -80,13 +87,6 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
                       </span>
                       <time className="text-xs md:text-sm text-white/80 font-ui uppercase tracking-wide">{article.date}</time>
                     </div>
-                    
-                    {article.breakingNews && (
-                      <div className="mb-3 md:mb-4">
-                        <BreakingNewsBadge className="[&_span]:text-white [&_span]:drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] [&_img]:backdrop-blur-[2px] [&_img]:backdrop-brightness-[1.2] [&_img]:rounded [&_img]:p-1 [&_img]:w-16 [&_img]:h-16" />
-                      </div>
-                    )}
-
 
                     <h2 className="font-headline text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight mb-3 md:mb-6 text-shadow-lg text-balance group-hover:text-white/90 transition-colors">
                       {article.title}
