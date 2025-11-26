@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { cn } from '@/lib/utils';
@@ -68,24 +68,6 @@ const imageHandler = (quillRef: React.RefObject<ReactQuill>, toast: any) => {
   };
 };
 
-const modules = (quillRef: React.RefObject<ReactQuill>, toast: any) => ({
-  toolbar: {
-    container: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'indent': '-1'}, { 'indent': '+1' }],
-      [{ 'align': [] }],
-      ['blockquote', 'code-block'],
-      [{ 'color': [] }, { 'background': [] }],
-      ['link', 'image'],
-      ['clean']
-    ],
-    handlers: {
-      image: imageHandler(quillRef, toast)
-    }
-  }
-});
 
 const formats = [
   'header',
@@ -101,6 +83,25 @@ export const RichTextEditor = ({ value, onChange, placeholder, className, minHei
   const quillRef = useRef<ReactQuill>(null);
   const { toast } = useToast();
   const [editorId] = useState(() => `editor-${Math.random().toString(36).substr(2, 9)}`);
+
+  const editorModules = useMemo(() => ({
+    toolbar: {
+      container: [
+        [{ 'header': [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'indent': '-1'}, { 'indent': '+1' }],
+        [{ 'align': [] }],
+        ['blockquote', 'code-block'],
+        [{ 'color': [] }, { 'background': [] }],
+        ['link', 'image'],
+        ['clean']
+      ],
+      handlers: {
+        image: imageHandler(quillRef, toast)
+      }
+    }
+  }), []);
 
   useEffect(() => {
     // Inject custom styles for this editor instance
@@ -146,7 +147,7 @@ export const RichTextEditor = ({ value, onChange, placeholder, className, minHei
         theme="snow"
         value={value}
         onChange={onChange}
-        modules={modules(quillRef, toast)}
+        modules={editorModules}
         formats={formats}
         placeholder={placeholder}
         className="bg-background"
