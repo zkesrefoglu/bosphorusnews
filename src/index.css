@@ -435,11 +435,14 @@
   @apply relative overflow-hidden;
   height: 75vh;
   min-height: 500px;
+  background-color: hsl(var(--primary));
 }
 
 .carousel-slide .carousel-image {
-  @apply w-full h-full object-cover;
-  filter: brightness(0.7) contrast(1.1);
+  @apply w-full h-full;
+  object-fit: contain;
+  object-position: center;
+  filter: brightness(0.85) contrast(1.1);
   transform: scale(1);
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }

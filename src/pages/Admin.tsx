@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { z } from "zod";
 import NewsConverter from "@/components/NewsConverter";
-import { Pencil, Trash2, Eye, EyeOff, Send } from "lucide-react";
+import { Pencil, Trash2, Eye, EyeOff, Send, Search } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { ArticlePreview } from "@/components/ArticlePreview";
 import {
@@ -70,6 +70,8 @@ const Admin = () => {
   const [deleteArticleId, setDeleteArticleId] = useState<string | null>(null);
   const [loadingArticles, setLoadingArticles] = useState(false);
   const [filterPublished, setFilterPublished] = useState<"all" | "published" | "unpublished">("all");
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
   const [sendingNewsletter, setSendingNewsletter] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
 
@@ -712,8 +714,22 @@ const Admin = () => {
   };
 
   const filteredArticles = articles.filter((article) => {
-    if (filterPublished === "published") return article.published;
-    if (filterPublished === "unpublished") return !article.published;
+    // Filter by published status
+    if (filterPublished === "published" && !article.published) return false;
+    if (filterPublished === "unpublished" && article.published) return false;
+    
+    // Filter by category
+    if (filterCategory !== "all" && article.category !== filterCategory) return false;
+    
+    // Filter by keyword search (title, excerpt, or content)
+    if (searchKeyword.trim()) {
+      const keyword = searchKeyword.toLowerCase();
+      const matchesTitle = article.title.toLowerCase().includes(keyword);
+      const matchesExcerpt = article.excerpt.toLowerCase().includes(keyword);
+      const matchesContent = article.content.toLowerCase().includes(keyword);
+      if (!matchesTitle && !matchesExcerpt && !matchesContent) return false;
+    }
+    
     return true;
   });
 
@@ -758,7 +774,7 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
         <Tabs defaultValue="news" className="w-full" onValueChange={(value) => {
@@ -846,6 +862,7 @@ const Admin = () => {
                         value={newsContent}
                         onChange={setNewsContent}
                         placeholder="Write your article content with formatting..."
+                        minHeight="500px"
                       />
                     </div>
 
@@ -985,6 +1002,7 @@ const Admin = () => {
                         value={topicContent}
                         onChange={setTopicContent}
                         placeholder="Write the Editor's Pick content with formatting..."
+                        minHeight="500px"
                       />
                     </div>
 
@@ -1191,6 +1209,7 @@ const Admin = () => {
                           value={newsContent}
                           onChange={setNewsContent}
                           placeholder="Edit the article content with formatting..."
+                          minHeight="500px"
                         />
                       </div>
 
@@ -1234,37 +1253,90 @@ const Admin = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-4 mb-4">
-                      <Label>Filter:</Label>
-                      <div className="flex gap-2">
-                        <Button
-                          variant={filterPublished === "all" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setFilterPublished("all")}
-                        >
-                          All
-                        </Button>
-                        <Button
-                          variant={filterPublished === "published" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setFilterPublished("published")}
-                        >
-                          Published
-                        </Button>
-                        <Button
-                          variant={filterPublished === "unpublished" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setFilterPublished("unpublished")}
-                        >
-                          Unpublished
-                        </Button>
+                    {/* Search and Filter Controls */}
+                    <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                      {/* Keyword Search */}
+                      <div className="space-y-2">
+                        <Label htmlFor="search" className="text-sm font-medium">Search Articles</Label>
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <Input
+                            id="search"
+                            type="text"
+                            placeholder="Search by title, excerpt, or content..."
+                            value={searchKeyword}
+                            onChange={(e) => setSearchKeyword(e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Filters Row */}
+                      <div className="flex flex-wrap items-center gap-4">
+                        {/* Category Filter */}
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm whitespace-nowrap">Category:</Label>
+                          <Select value={filterCategory} onValueChange={setFilterCategory}>
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Categories</SelectItem>
+                              <SelectItem value="Agenda">Agenda</SelectItem>
+                              <SelectItem value="Türkiye">Türkiye</SelectItem>
+                              <SelectItem value="Business & Economy">Business & Economy</SelectItem>
+                              <SelectItem value="FP & Defense">FP & Defense</SelectItem>
+                              <SelectItem value="Life">Life</SelectItem>
+                              <SelectItem value="Sports">Sports</SelectItem>
+                              <SelectItem value="World">World</SelectItem>
+                              <SelectItem value="Xtra">Xtra</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        {/* Published Status Filter */}
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm">Status:</Label>
+                          <div className="flex gap-2">
+                            <Button
+                              variant={filterPublished === "all" ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setFilterPublished("all")}
+                            >
+                              All
+                            </Button>
+                            <Button
+                              variant={filterPublished === "published" ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setFilterPublished("published")}
+                            >
+                              Published
+                            </Button>
+                            <Button
+                              variant={filterPublished === "unpublished" ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setFilterPublished("unpublished")}
+                            >
+                              Unpublished
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Results count */}
+                      <div className="text-sm text-muted-foreground">
+                        Showing {filteredArticles.length} of {articles.length} articles
                       </div>
                     </div>
 
                     {loadingArticles ? (
                       <p className="text-center py-8 text-muted-foreground">Loading articles...</p>
                     ) : filteredArticles.length === 0 ? (
-                      <p className="text-center py-8 text-muted-foreground">No articles found</p>
+                      <p className="text-center py-8 text-muted-foreground">
+                        {searchKeyword || filterCategory !== "all" || filterPublished !== "all" 
+                          ? "No articles match your filters" 
+                          : "No articles found"}
+                      </p>
                     ) : (
                       <div className="space-y-2">
                         {filteredArticles.map((article) => (

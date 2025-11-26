@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Share2, Twitter, Cloud, Link2, Check, Facebook } from "lucide-react";
+import { ArrowLeft, Share2, Twitter, Cloud, Link2, Check, Facebook, Coffee } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { stripCategoryPlaceholders, sanitizeArticleContent } from "@/lib/contentUtils";
 import { Button } from "@/components/ui/button";
@@ -283,11 +283,11 @@ const Article = () => {
           </div>
 
           {article.image_url && (
-            <figure className="mb-8 rounded-lg overflow-hidden">
+            <figure className="mb-8 rounded-lg overflow-hidden bg-muted">
               <img 
                 src={article.image_url} 
                 alt={article.title}
-                className="w-full h-auto object-cover"
+                className="w-full h-auto object-contain max-h-[70vh]"
               />
               {article.photo_credit && (
                 <figcaption className="mt-2 text-xs text-muted-foreground text-right">
@@ -311,32 +311,40 @@ const Article = () => {
           <div className="mt-12 pt-8 border-t border-border">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Share this article</h3>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-2">
+                <Link to="/coffee">
                   <Button variant="outline" size="sm">
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Share
+                    <Coffee className="w-4 h-4 mr-2" />
+                    Buy Me a Cup
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => handleShare('twitter')}>
-                    <Twitter className="w-4 h-4 mr-2" />
-                    Share on X
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleShare('bluesky')}>
-                    <Cloud className="w-4 h-4 mr-2" />
-                    Share on Bluesky
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleShare('facebook')}>
-                    <Facebook className="w-4 h-4 mr-2" />
-                    Share on Facebook
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleShare('copy')}>
-                    {copied ? <Check className="w-4 h-4 mr-2" /> : <Link2 className="w-4 h-4 mr-2" />}
-                    {copied ? "Copied!" : "Copy Link"}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Share
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleShare('twitter')}>
+                      <Twitter className="w-4 h-4 mr-2" />
+                      Share on X
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleShare('bluesky')}>
+                      <Cloud className="w-4 h-4 mr-2" />
+                      Share on Bluesky
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleShare('facebook')}>
+                      <Facebook className="w-4 h-4 mr-2" />
+                      Share on Facebook
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleShare('copy')}>
+                      {copied ? <Check className="w-4 h-4 mr-2" /> : <Link2 className="w-4 h-4 mr-2" />}
+                      {copied ? "Copied!" : "Copy Link"}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </div>
         </article>

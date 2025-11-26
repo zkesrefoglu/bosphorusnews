@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { stripCategoryPlaceholders, sanitizeArticleContent } from "@/lib/contentUtils";
-import { Share2, Twitter, Cloud, Link2, Check, Facebook } from "lucide-react";
+import { Share2, Twitter, Cloud, Link2, Check, Facebook, Coffee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -169,8 +169,18 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
         />
       </Link>
       
-      {/* Share Button */}
-      <div className="absolute top-6 right-6">
+      {/* Action Buttons */}
+      <div className="absolute top-6 right-6 flex items-center gap-2">
+        <Link to="/coffee" onClick={(e) => e.stopPropagation()}>
+          <Button 
+            variant="outline" 
+            size="sm"
+            className={`transition-opacity ${isMobile ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+            onClick={(e) => e.preventDefault()}
+          >
+            <Coffee className="w-4 h-4" />
+          </Button>
+        </Link>
         <DropdownMenu>
           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
             <Button 
