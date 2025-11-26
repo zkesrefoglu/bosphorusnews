@@ -361,7 +361,17 @@ export const ImageSizeFix = () => {
                         >
                           <ZoomIn className="w-4 h-4" />
                         </Button>
-                        <span className="font-bold min-w-[55px] text-right">{scale}%</span>
+                        <input
+                          type="number"
+                          min="50"
+                          max="300"
+                          value={scale}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            if (val >= 50 && val <= 300) setScale(val);
+                          }}
+                          className="font-bold w-[70px] text-right bg-background border border-border rounded px-2 py-1"
+                        />
                       </div>
                     </CardContent>
                   </Card>
@@ -398,10 +408,6 @@ export const ImageSizeFix = () => {
                   <Button variant="outline" onClick={() => resetPosition()}>
                     <RotateCcw className="w-4 h-4 mr-2" />
                     Reset Position
-                  </Button>
-                  <Button variant="default" className="bg-green-600 hover:bg-green-700" onClick={downloadOriginal}>
-                    <Download className="w-4 h-4 mr-2" />
-                    Download Original
                   </Button>
                   <Button onClick={downloadImage}>
                     <Download className="w-4 h-4 mr-2" />
