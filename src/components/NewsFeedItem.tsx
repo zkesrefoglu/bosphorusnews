@@ -116,13 +116,15 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
         );
         break;
       }
-      case 'facebook':
+      case 'facebook': {
+        const facebookText = `${title}\n\n${excerpt}`;
         window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`,
+          `https://www.facebook.com/share.php?u=${encodeURIComponent(articleUrl)}&quote=${encodeURIComponent(facebookText)}`,
           '_blank',
-          'width=550,height=420'
+          'width=550,height=680'
         );
         break;
+      }
       case 'copy':
         navigator.clipboard.writeText(articleUrl).then(() => {
           setCopied(true);
