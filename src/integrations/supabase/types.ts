@@ -87,6 +87,8 @@ export type Database = {
           created_at: string
           display_order: number | null
           excerpt: string
+          extra_image_credit: string | null
+          extra_image_url: string | null
           id: string
           image_url: string | null
           is_carousel_featured: boolean | null
@@ -107,6 +109,8 @@ export type Database = {
           created_at?: string
           display_order?: number | null
           excerpt: string
+          extra_image_credit?: string | null
+          extra_image_url?: string | null
           id?: string
           image_url?: string | null
           is_carousel_featured?: boolean | null
@@ -127,6 +131,8 @@ export type Database = {
           created_at?: string
           display_order?: number | null
           excerpt?: string
+          extra_image_credit?: string | null
+          extra_image_url?: string | null
           id?: string
           image_url?: string | null
           is_carousel_featured?: boolean | null

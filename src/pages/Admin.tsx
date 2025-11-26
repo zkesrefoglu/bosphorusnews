@@ -54,6 +54,8 @@ const Admin = () => {
   const [newsContent, setNewsContent] = useState("");
   const [newsImageUrl, setNewsImageUrl] = useState("");
   const [newsPhotoCredit, setNewsPhotoCredit] = useState("");
+  const [newsExtraImageUrl, setNewsExtraImageUrl] = useState("");
+  const [newsExtraImageCredit, setNewsExtraImageCredit] = useState("");
   const [postToBluesky, setPostToBluesky] = useState(false);
   const [postingToBluesky, setPostingToBluesky] = useState(false);
   const [isBreakingNews, setIsBreakingNews] = useState(false);
@@ -202,6 +204,21 @@ const Admin = () => {
         }
       }
       
+      // Handle extra image upload if file is selected
+      const extraImageInput = document.getElementById('newsExtraImage') as HTMLInputElement;
+      let extraImageUrl = newsExtraImageUrl || null;
+      
+      if (extraImageInput?.files?.[0]) {
+        setUploadingImage(true);
+        try {
+          extraImageUrl = await handleImageUpload(extraImageInput.files[0], `${baseSlug}-extra`);
+        } catch (err) {
+          throw new Error("Failed to upload extra image");
+        } finally {
+          setUploadingImage(false);
+        }
+      }
+      
       const { error } = await supabase
         .from("news_articles")
         .insert({
@@ -213,6 +230,8 @@ const Admin = () => {
           author: session.user.email || "Admin",
           image_url: imageUrl,
           photo_credit: newsPhotoCredit || null,
+          extra_image_url: extraImageUrl,
+          extra_image_credit: newsExtraImageCredit || null,
           published: true,
           breaking_news: isBreakingNews,
         });
@@ -258,9 +277,12 @@ const Admin = () => {
       setNewsContent("");
       setNewsImageUrl("");
       setNewsPhotoCredit("");
+      setNewsExtraImageUrl("");
+      setNewsExtraImageCredit("");
       setPostToBluesky(false);
       setIsBreakingNews(false);
       if (imageInput) imageInput.value = '';
+      if (extraImageInput) extraImageInput.value = '';
     } catch (error: any) {
       toast({
         title: "Validation Error",
@@ -498,6 +520,8 @@ const Admin = () => {
     setNewsContent(article.content);
     setNewsImageUrl(article.image_url || "");
     setNewsPhotoCredit(article.photo_credit || "");
+    setNewsExtraImageUrl(article.extra_image_url || "");
+    setNewsExtraImageCredit(article.extra_image_credit || "");
     setIsBreakingNews(article.breaking_news || false);
   };
 
@@ -539,6 +563,21 @@ const Admin = () => {
         }
       }
 
+      // Handle extra image upload if file is selected
+      const extraImageInput = document.getElementById('editNewsExtraImage') as HTMLInputElement;
+      let extraImageUrl = newsExtraImageUrl || editingArticle.extra_image_url || null;
+      
+      if (extraImageInput?.files?.[0]) {
+        setUploadingImage(true);
+        try {
+          extraImageUrl = await handleImageUpload(extraImageInput.files[0], `${baseSlug}-extra`);
+        } catch (err) {
+          throw new Error("Failed to upload extra image");
+        } finally {
+          setUploadingImage(false);
+        }
+      }
+
       const { error } = await supabase
         .from("news_articles")
         .update({
@@ -549,6 +588,8 @@ const Admin = () => {
           content: validData.content,
           image_url: imageUrl,
           photo_credit: newsPhotoCredit || null,
+          extra_image_url: extraImageUrl,
+          extra_image_credit: newsExtraImageCredit || null,
           breaking_news: isBreakingNews,
         })
         .eq("id", editingArticle.id);
@@ -566,6 +607,8 @@ const Admin = () => {
       setNewsContent("");
       setNewsImageUrl("");
       setNewsPhotoCredit("");
+      setNewsExtraImageUrl("");
+      setNewsExtraImageCredit("");
       setIsBreakingNews(false);
       setEditingArticle(null);
       fetchArticles();
@@ -711,6 +754,9 @@ const Admin = () => {
     setNewsContent("");
     setNewsImageUrl("");
     setNewsPhotoCredit("");
+    setNewsExtraImageUrl("");
+    setNewsExtraImageCredit("");
+    setIsBreakingNews(false);
   };
 
   const filteredArticles = articles.filter((article) => {
@@ -1254,6 +1300,48 @@ const Admin = () => {
                           onChange={(e) => setNewsPhotoCredit(e.target.value)}
                           placeholder="e.g., AP Photo/John Doe"
                         />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-extra-image">Extra Image URL (optional)</Label>
+                        <Input
+                          id="edit-extra-image"
+                          type="url"
+                          value={newsExtraImageUrl}
+                          onChange={(e) => setNewsExtraImageUrl(e.target.value)}
+                          placeholder="Enter extra image URL or upload below"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="editNewsExtraImage">Or Upload Extra Image</Label>
+                        <Input
+                          id="editNewsExtraImage"
+                          type="file"
+                          accept="image/*"
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          Upload an additional image for this article
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-extra-photo-credit">Extra Photo Credit (optional)</Label>
+                        <Input
+                          id="edit-extra-photo-credit"
+                          value={newsExtraImageCredit}
+                          onChange={(e) => setNewsExtraImageCredit(e.target.value)}
+                          placeholder="e.g., Reuters/Jane Smith"
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="edit-breaking-news"
+                          checked={isBreakingNews}
+                          onCheckedChange={setIsBreakingNews}
+                        />
+                        <Label htmlFor="edit-breaking-news">Mark as Breaking News</Label>
                       </div>
 
                       <Button type="submit" disabled={submitting || uploadingImage}>
