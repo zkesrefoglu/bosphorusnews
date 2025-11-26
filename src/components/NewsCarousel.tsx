@@ -83,9 +83,10 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
                     
                     {article.breakingNews && (
                       <div className="mb-3 md:mb-4">
-                        <BreakingNewsBadge className="[&_span]:text-white [&_img]:brightness-0 [&_img]:invert" />
+                        <BreakingNewsBadge className="[&_span]:text-white" />
                       </div>
                     )}
+
 
                     <h2 className="font-headline text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight mb-3 md:mb-6 text-shadow-lg text-balance group-hover:text-white/90 transition-colors">
                       {article.title}
