@@ -434,17 +434,19 @@
   }
 
   .rich-text-content a {
-    @apply text-accent font-semibold relative inline-block transition-all duration-300;
+    @apply font-semibold relative inline-block transition-all duration-300;
+    color: hsl(210 100% 50%);
   }
 
   .rich-text-content a::after {
     content: '';
-    @apply absolute w-full h-0.5 bottom-0 left-0 bg-accent origin-bottom-right transition-transform duration-300 scale-x-0;
+    @apply absolute w-full h-0.5 bottom-0 left-0 origin-bottom-right transition-transform duration-300 scale-x-0;
+    background: hsl(210 100% 50%);
   }
 
   .rich-text-content a:hover {
-    @apply text-accent-foreground;
-    text-shadow: 0 0 12px hsl(var(--accent)), 0 0 24px hsl(var(--accent) / 0.5);
+    color: hsl(210 100% 65%);
+    text-shadow: 0 0 12px hsl(210 100% 50%), 0 0 24px hsl(210 100% 50% / 0.5);
   }
 
   .rich-text-content a:hover::after {
