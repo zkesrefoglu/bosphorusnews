@@ -432,6 +432,24 @@
     @apply mb-2;
     white-space: normal;
   }
+
+  .rich-text-content a {
+    @apply text-accent font-semibold relative inline-block transition-all duration-300;
+  }
+
+  .rich-text-content a::after {
+    content: '';
+    @apply absolute w-full h-0.5 bottom-0 left-0 bg-accent origin-bottom-right transition-transform duration-300 scale-x-0;
+  }
+
+  .rich-text-content a:hover {
+    @apply text-accent-foreground;
+    text-shadow: 0 0 12px hsl(var(--accent)), 0 0 24px hsl(var(--accent) / 0.5);
+  }
+
+  .rich-text-content a:hover::after {
+    @apply scale-x-100 origin-bottom-left;
+  }
 }
 
 /* Carousel Specific Styles */
