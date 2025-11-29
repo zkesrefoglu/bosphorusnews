@@ -173,6 +173,7 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
       
       {/* Action Buttons */}
       <div className="absolute top-6 right-6 flex items-center gap-2">
+        {/* TEMPORARILY HIDDEN - Uncomment when payment account is finalized
         <Link to="/coffee" onClick={(e) => e.stopPropagation()}>
           <Button 
             variant="outline" 
@@ -183,6 +184,7 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
             <Coffee className="w-4 h-4" />
           </Button>
         </Link>
+        */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
             <Button 
