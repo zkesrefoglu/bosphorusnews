@@ -8,7 +8,8 @@ import Article from "./pages/Article";
 import Section from "./pages/Section";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
-import Coffee from "./pages/Coffee";
+// TEMPORARILY HIDDEN - Uncomment when payment account is finalized
+// import Coffee from "./pages/Coffee";
 import Watermark from "./pages/Watermark";
 import NotFound from "./pages/NotFound";
 
@@ -26,7 +27,8 @@ const App = () => (
           <Route path="/section/:section" element={<Section />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/coffee" element={<Coffee />} />
+          {/* TEMPORARILY HIDDEN - Uncomment when payment account is finalized */}
+          {/* <Route path="/coffee" element={<Coffee />} /> */}
           <Route path="/watermark" element={<Watermark />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

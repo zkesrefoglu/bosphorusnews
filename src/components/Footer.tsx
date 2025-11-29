@@ -150,6 +150,7 @@ export const Footer = () => {
               <Button type="submit" size="sm" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Subscribing..." : "Subscribe"}
               </Button>
+              {/* TEMPORARILY HIDDEN - Uncomment when payment account is finalized
               <Link to="/coffee" className="mt-2.5" onClick={() => window.scrollTo(0, 0)}>
                 <Button 
                   type="button" 
@@ -159,6 +160,7 @@ export const Footer = () => {
                   Buy Me a Cup
                 </Button>
               </Link>
+              */}
             </form>
           </div>
         </div>

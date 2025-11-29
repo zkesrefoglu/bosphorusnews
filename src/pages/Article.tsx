@@ -315,12 +315,14 @@ const Article = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Share this article</h3>
               <div className="flex items-center gap-2">
+                {/* TEMPORARILY HIDDEN - Uncomment when payment account is finalized
                 <Link to="/coffee">
                   <Button variant="outline" size="sm">
                     <Coffee className="w-4 h-4 mr-2" />
                     Buy Me a Cup
                   </Button>
                 </Link>
+                */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
