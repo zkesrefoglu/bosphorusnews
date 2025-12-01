@@ -139,7 +139,7 @@ export const Footer = () => {
           {/* Newsletter */}
           <div>
             <h3 className="font-semibold mb-4 text-sm">Newsletter</h3>
-            <form onSubmit={handleSubscribe} className="space-y-2">
+            <form onSubmit={handleSubscribe} className="space-y-3">
               <Input
                 type="email"
                 placeholder="Your email"
