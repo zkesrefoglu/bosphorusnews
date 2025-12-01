@@ -139,7 +139,7 @@ export const Footer = () => {
           {/* Newsletter */}
           <div>
             <h3 className="font-semibold mb-4 text-sm">Newsletter</h3>
-            <form onSubmit={handleSubscribe} className="space-y-3">
+            <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
               <Input
                 type="email"
                 placeholder="Your email"
@@ -147,14 +147,16 @@ export const Footer = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 className="text-sm"
               />
-              <Button type="submit" size="sm" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Subscribing..." : "Subscribe"}
-              </Button>
-              <a href="mailto:info@bosphorusnews.com">
-                <Button type="button" variant="outline" size="sm" className="w-full">
-                  Contact
+              <div className="flex gap-2">
+                <Button type="submit" size="sm" className="flex-1" disabled={isSubmitting}>
+                  {isSubmitting ? "Subscribing..." : "Subscribe"}
                 </Button>
-              </a>
+                <a href="mailto:info@bosphorusnews.com" className="flex-1">
+                  <Button type="button" variant="outline" size="sm" className="w-full">
+                    Contact
+                  </Button>
+                </a>
+              </div>
               {/* TEMPORARILY HIDDEN - Uncomment when payment account is finalized
               <Link to="/coffee" className="mt-2.5" onClick={() => window.scrollTo(0, 0)}>
                 <Button 
