@@ -150,6 +150,11 @@ export const Footer = () => {
               <Button type="submit" size="sm" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Subscribing..." : "Subscribe"}
               </Button>
+              <a href="mailto:info@bosphorusnews.com">
+                <Button type="button" variant="outline" size="sm" className="w-full">
+                  Contact
+                </Button>
+              </a>
               {/* TEMPORARILY HIDDEN - Uncomment when payment account is finalized
               <Link to="/coffee" className="mt-2.5" onClick={() => window.scrollTo(0, 0)}>
                 <Button 
@@ -225,13 +230,6 @@ export const Footer = () => {
               aria-label="YouTube"
             >
               <Youtube className="w-5 h-5" />
-            </a>
-          </div>
-
-          {/* Email */}
-          <div className="text-sm text-muted-foreground">
-            <a href="mailto:info@bosphorusnews.com" className="hover:text-foreground transition-colors">
-              info@bosphorusnews.com
             </a>
           </div>
 
