@@ -88,7 +88,7 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
         break;
       case 'facebook':
         window.open(
-          `https://www.facebook.com/share.php?u=${encodeURIComponent(articleUrl)}&quote=${encodeURIComponent(shareText)}`,
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`,
           '_blank',
           'width=550,height=680'
         );
