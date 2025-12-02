@@ -188,9 +188,9 @@ const Article = () => {
         break;
       }
       case 'facebook':
-        // Facebook - share direct URL with quote text
+        // Facebook requires OG tags - use edge function URL which has proper meta tags
         window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(directUrl)}&quote=${encodeURIComponent(`${article.title} | Bosphorus News Network`)}`,
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
           '_blank',
           'width=550,height=680'
         );
