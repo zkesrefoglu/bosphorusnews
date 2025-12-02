@@ -142,7 +142,7 @@ const Article = () => {
     
     const getBlueskyText = () => {
       const baseText = `${article.title} | Bosphorus News Network`;
-      const urlPart = `\n\n${directUrl}`;
+      const urlPart = `\n\n${shareUrl}`;
       const maxLength = 300;
 
       let middle = article.excerpt ? `\n\n${article.excerpt}` : '';

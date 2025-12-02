@@ -73,7 +73,7 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
     
     const getBlueskyText = () => {
       const baseText = `${title} | Bosphorus News Network`;
-      const urlPart = `\n\n${directUrl}`;
+      const urlPart = `\n\n${shareUrl}`;
       const maxLength = 300;
 
       let middle = excerpt ? `\n\n${excerpt}` : '';
