@@ -6,6 +6,7 @@ import { ArrowLeft, Share2, Twitter, Cloud, Link2, Check, Facebook, Coffee } fro
 import { useToast } from "@/hooks/use-toast";
 import { stripCategoryPlaceholders, sanitizeArticleContent } from "@/lib/contentUtils";
 import { bustImageCache } from "@/lib/imageUtils";
+import { getShareUrl, getArticleUrl } from "@/lib/shareUtils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -128,7 +129,10 @@ const Article = () => {
   const handleShare = async (platform: 'twitter' | 'bluesky' | 'facebook' | 'copy') => {
     if (!slug || !article) return;
     
-    const articleUrl = `${window.location.origin}/article/${slug}`;
+    // Use edge function URL for social platforms (has proper OG tags)
+    // Use direct URL for copy (cleaner for users to share manually)
+    const shareUrl = getShareUrl(slug);
+    const directUrl = getArticleUrl(slug);
     
     await supabase.from('share_analytics').insert({
       article_slug: slug,
@@ -138,7 +142,7 @@ const Article = () => {
     
     const getBlueskyText = () => {
       const baseText = `${article.title} | Bosphorus News Network`;
-      const urlPart = `\n\n${articleUrl}`;
+      const urlPart = `\n\n${shareUrl}`;
       const maxLength = 300;
 
       let middle = article.excerpt ? `\n\n${article.excerpt}` : '';
@@ -147,16 +151,14 @@ const Article = () => {
       if (fullText.length <= maxLength) return fullText;
 
       if (!article.excerpt) {
-        // No excerpt to trim, just truncate the base text if needed
-        const allowedBaseLength = maxLength - urlPart.length - 3; // 3 for '...'
+        const allowedBaseLength = maxLength - urlPart.length - 3;
         const truncatedBase = allowedBaseLength > 0
           ? baseText.slice(0, allowedBaseLength) + '...'
           : baseText;
         return truncatedBase + urlPart;
       }
 
-      // Trim excerpt to fit within limit
-      const fixedLength = baseText.length + urlPart.length + 5; // 5 for "\n\n" and "..."
+      const fixedLength = baseText.length + urlPart.length + 5;
       const allowedExcerptLength = maxLength - fixedLength;
 
       if (allowedExcerptLength <= 0) {
@@ -171,7 +173,7 @@ const Article = () => {
     switch (platform) {
       case 'twitter':
         window.open(
-          `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${article.title} | Bosphorus News Network`)}&url=${encodeURIComponent(articleUrl)}`,
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${article.title} | Bosphorus News Network`)}&url=${encodeURIComponent(shareUrl)}`,
           '_blank',
           'width=550,height=420'
         );
@@ -188,14 +190,15 @@ const Article = () => {
       case 'facebook': {
         const facebookText = `${article.title}\n\n${article.excerpt}`;
         window.open(
-          `https://www.facebook.com/share.php?u=${encodeURIComponent(articleUrl)}&quote=${encodeURIComponent(facebookText)}`,
+          `https://www.facebook.com/share.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(facebookText)}`,
           '_blank',
           'width=550,height=680'
         );
         break;
       }
       case 'copy':
-        navigator.clipboard.writeText(articleUrl).then(() => {
+        // Copy the clean direct URL for users
+        navigator.clipboard.writeText(directUrl).then(() => {
           setCopied(true);
           toast({
             title: "Link copied!",

@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { BreakingNewsBadge } from "@/components/BreakingNewsBadge";
+import { getShareUrl, getArticleUrl } from "@/lib/shareUtils";
 
 interface NewsFeedItemProps {
   title: string;
@@ -49,10 +50,12 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
   const isMobile = useIsMobile();
   const [user, setUser] = useState<any>(null);
   
-  const articleUrl = `${window.location.origin}/article/${slug}`;
+  // Use edge function URL for social platforms (has proper OG tags)
+  // Use direct URL for copy (cleaner for users)
+  const shareUrl = getShareUrl(slug);
+  const directUrl = getArticleUrl(slug);
   
   useEffect(() => {
-    // Get current user
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
     });
@@ -62,7 +65,6 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
     e.preventDefault();
     e.stopPropagation();
     
-    // Track share analytics
     await supabase.from('share_analytics').insert({
       article_slug: slug,
       platform,
@@ -71,7 +73,7 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
     
     const getBlueskyText = () => {
       const baseText = `${title} | Bosphorus News Network`;
-      const urlPart = `\n\n${articleUrl}`;
+      const urlPart = `\n\n${shareUrl}`;
       const maxLength = 300;
 
       let middle = excerpt ? `\n\n${excerpt}` : '';
@@ -80,14 +82,14 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
       if (fullText.length <= maxLength) return fullText;
 
       if (!excerpt) {
-        const allowedBaseLength = maxLength - urlPart.length - 3; // 3 for '...'
+        const allowedBaseLength = maxLength - urlPart.length - 3;
         const truncatedBase = allowedBaseLength > 0
           ? baseText.slice(0, allowedBaseLength) + '...'
           : baseText;
         return truncatedBase + urlPart;
       }
 
-      const fixedLength = baseText.length + urlPart.length + 5; // 5 for "\n\n" and "..."
+      const fixedLength = baseText.length + urlPart.length + 5;
       const allowedExcerptLength = maxLength - fixedLength;
 
       if (allowedExcerptLength <= 0) {
@@ -102,7 +104,7 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
     switch (platform) {
       case 'twitter':
         window.open(
-          `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${title} | Bosphorus News Network`)}&url=${encodeURIComponent(articleUrl)}`,
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${title} | Bosphorus News Network`)}&url=${encodeURIComponent(shareUrl)}`,
           '_blank',
           'width=550,height=420'
         );
@@ -119,14 +121,14 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
       case 'facebook': {
         const facebookText = `${title}\n\n${excerpt}`;
         window.open(
-          `https://www.facebook.com/share.php?u=${encodeURIComponent(articleUrl)}&quote=${encodeURIComponent(facebookText)}`,
+          `https://www.facebook.com/share.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(facebookText)}`,
           '_blank',
           'width=550,height=680'
         );
         break;
       }
       case 'copy':
-        navigator.clipboard.writeText(articleUrl).then(() => {
+        navigator.clipboard.writeText(directUrl).then(() => {
           setCopied(true);
           toast({
             title: "Link copied!",
