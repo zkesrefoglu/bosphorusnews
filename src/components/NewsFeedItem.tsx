@@ -73,7 +73,7 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
     
     const getBlueskyText = () => {
       const baseText = `${title} | Bosphorus News Network`;
-      const urlPart = `\n\n${directUrl}`;
+      const urlPart = `\n\n${shareUrl}`;
       const maxLength = 300;
 
       let middle = excerpt ? `\n\n${excerpt}` : '';
@@ -109,20 +109,21 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
           'width=550,height=420'
         );
         break;
-      case 'facebook':
-        // Facebook requires OG tags - use edge function URL which has proper meta tags
-        window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
-          '_blank',
-          'width=550,height=680'
-        );
-        break;
       case 'bluesky': {
         const text = getBlueskyText();
         window.open(
           `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`,
           '_blank',
           'width=550,height=420'
+        );
+        break;
+      }
+      case 'facebook': {
+        const facebookText = `${title}\n\n${excerpt}`;
+        window.open(
+          `https://www.facebook.com/share.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(facebookText)}`,
+          '_blank',
+          'width=550,height=680'
         );
         break;
       }

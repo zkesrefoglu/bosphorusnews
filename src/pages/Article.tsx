@@ -142,7 +142,7 @@ const Article = () => {
     
     const getBlueskyText = () => {
       const baseText = `${article.title} | Bosphorus News Network`;
-      const urlPart = `\n\n${directUrl}`;
+      const urlPart = `\n\n${shareUrl}`;
       const maxLength = 300;
 
       let middle = article.excerpt ? `\n\n${article.excerpt}` : '';
@@ -187,14 +187,15 @@ const Article = () => {
         );
         break;
       }
-      case 'facebook':
-        // Facebook requires OG tags - use edge function URL which has proper meta tags
+      case 'facebook': {
+        const facebookText = `${article.title}\n\n${article.excerpt}`;
         window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+          `https://www.facebook.com/share.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(facebookText)}`,
           '_blank',
           'width=550,height=680'
         );
         break;
+      }
       case 'copy':
         // Copy the clean direct URL for users
         navigator.clipboard.writeText(directUrl).then(() => {
