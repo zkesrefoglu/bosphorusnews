@@ -80,13 +80,17 @@ Deno.serve(async (req) => {
 <meta property="og:image" content="${safeOgImage}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
 <meta property="og:site_name" content="Bosphorus News">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@BosphorusNews">
+<meta name="twitter:creator" content="@BosphorusNews">
+<meta name="twitter:domain" content="bosphorusnews.com">
 <meta name="twitter:url" content="${articleUrl}">
 <meta name="twitter:title" content="${escapeHtml(article.title)}">
 <meta name="twitter:description" content="${escapeHtml(article.excerpt)}">
 <meta name="twitter:image" content="${safeOgImage}">
+<meta name="twitter:image:alt" content="${escapeHtml(article.title)}">
 <link rel="canonical" href="${articleUrl}">
 <style>
 body{font-family:system-ui,-apple-system,sans-serif;max-width:600px;margin:40px auto;padding:20px;background:#0a0a0a;color:#fff}
