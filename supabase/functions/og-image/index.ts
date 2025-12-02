@@ -71,12 +71,12 @@ Deno.serve(async (req) => {
   <meta name="twitter:description" content="${escapeHtml(article.excerpt)}">
   <meta name="twitter:image" content="${ogImage}">
   
-  <!-- Redirect to actual page -->
-  <meta http-equiv="refresh" content="0;url=${articleUrl}">
   <link rel="canonical" href="${articleUrl}">
 </head>
 <body>
-  <p>Redirecting to <a href="${articleUrl}">${escapeHtml(article.title)}</a>...</p>
+  <h1>${escapeHtml(article.title)}</h1>
+  <p>${escapeHtml(article.excerpt)}</p>
+  <p><a href="${articleUrl}">Read full article on Bosphorus News</a></p>
 </body>
 </html>`;
 
