@@ -47,17 +47,37 @@ Deno.serve(async (req) => {
     const articleUrl = `${siteUrl}/article/${slug}`;
     const defaultImage = `${siteUrl}/logo.png`;
     
-    // Clean the image URL - remove cache-busting params that might cause issues
-    let ogImage = article.image_url || defaultImage;
-    if (ogImage && ogImage.includes('?t=')) {
-      ogImage = ogImage.split('?t=')[0];
+    // Generate optimized thumbnail URL using Supabase's image transformation
+    // Target size: 1200x630 (optimal for social media OG images)
+    let ogImage = defaultImage;
+    
+    if (article.image_url) {
+      // Clean the image URL - remove cache-busting params
+      let cleanImageUrl = article.image_url;
+      if (cleanImageUrl.includes('?')) {
+        cleanImageUrl = cleanImageUrl.split('?')[0];
+      }
+      
+      // Convert storage URL to render URL for image transformation
+      // From: /storage/v1/object/public/bucket/file.jpg
+      // To:   /storage/v1/render/image/public/bucket/file.jpg?width=1200&height=630&resize=cover
+      if (cleanImageUrl.includes('/storage/v1/object/public/')) {
+        ogImage = cleanImageUrl.replace(
+          '/storage/v1/object/public/',
+          '/storage/v1/render/image/public/'
+        ) + '?width=1200&height=630&resize=cover';
+      } else {
+        // External image URL - use as-is
+        ogImage = cleanImageUrl;
+      }
     }
     
     // Escape for HTML attributes
     const safeOgImage = escapeHtml(ogImage);
     
     console.log("Article slug:", slug);
-    console.log("Image URL:", ogImage);
+    console.log("Original image URL:", article.image_url);
+    console.log("Optimized thumbnail URL:", ogImage);
 
     // Return HTML with proper meta tags for social media crawlers
     // No instant redirect - crawlers will read the OG tags, users will click the link
