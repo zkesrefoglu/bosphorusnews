@@ -142,7 +142,7 @@ const Article = () => {
     
     const getBlueskyText = () => {
       const baseText = `${article.title} | Bosphorus News Network`;
-      const urlPart = `\n\n${shareUrl}`;
+      const urlPart = `\n\n${directUrl}`;
       const maxLength = 300;
 
       let middle = article.excerpt ? `\n\n${article.excerpt}` : '';
@@ -188,9 +188,9 @@ const Article = () => {
         break;
       }
       case 'facebook':
-        // Facebook requires text/html Content-Type, use direct URL
+        // Facebook - share direct URL with quote text
         window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(directUrl)}`,
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(directUrl)}&quote=${encodeURIComponent(`${article.title} | Bosphorus News Network`)}`,
           '_blank',
           'width=550,height=680'
         );

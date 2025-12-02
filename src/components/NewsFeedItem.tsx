@@ -73,7 +73,7 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
     
     const getBlueskyText = () => {
       const baseText = `${title} | Bosphorus News Network`;
-      const urlPart = `\n\n${shareUrl}`;
+      const urlPart = `\n\n${directUrl}`;
       const maxLength = 300;
 
       let middle = excerpt ? `\n\n${excerpt}` : '';
@@ -110,9 +110,9 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
         );
         break;
       case 'facebook':
-        // Facebook requires text/html Content-Type, share direct URL instead
+        // Facebook - share direct URL with quote text
         window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(directUrl)}`,
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(directUrl)}&quote=${encodeURIComponent(`${title} | Bosphorus News Network`)}`,
           '_blank',
           'width=550,height=680'
         );
