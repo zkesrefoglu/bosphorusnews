@@ -69,62 +69,30 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
       user_id: user?.id,
     });
     
-    const getBlueskyText = () => {
-      const baseText = `${title} | Bosphorus News Network`;
-      const urlPart = `\n\n${articleUrl}`;
-      const maxLength = 300;
-
-      let middle = excerpt ? `\n\n${excerpt}` : '';
-      let fullText = baseText + middle + urlPart;
-
-      if (fullText.length <= maxLength) return fullText;
-
-      if (!excerpt) {
-        const allowedBaseLength = maxLength - urlPart.length - 3; // 3 for '...'
-        const truncatedBase = allowedBaseLength > 0
-          ? baseText.slice(0, allowedBaseLength) + '...'
-          : baseText;
-        return truncatedBase + urlPart;
-      }
-
-      const fixedLength = baseText.length + urlPart.length + 5; // 5 for "\n\n" and "..."
-      const allowedExcerptLength = maxLength - fixedLength;
-
-      if (allowedExcerptLength <= 0) {
-        return baseText + urlPart;
-      }
-
-      const truncatedExcerpt = excerpt.slice(0, allowedExcerptLength) + '...';
-      middle = `\n\n${truncatedExcerpt}`;
-      return baseText + middle + urlPart;
-    };
+    const shareText = `${title} | Bosphorus News`;
     
     switch (platform) {
       case 'twitter':
         window.open(
-          `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${title} | Bosphorus News Network`)}&url=${encodeURIComponent(articleUrl)}`,
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(articleUrl)}`,
           '_blank',
           'width=550,height=420'
         );
         break;
-      case 'bluesky': {
-        const text = getBlueskyText();
+      case 'bluesky':
         window.open(
-          `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`,
+          `https://bsky.app/intent/compose?text=${encodeURIComponent(`${shareText}\n\n${articleUrl}`)}`,
           '_blank',
           'width=550,height=420'
         );
         break;
-      }
-      case 'facebook': {
-        const facebookText = `${title}\n\n${excerpt}`;
+      case 'facebook':
         window.open(
-          `https://www.facebook.com/share.php?u=${encodeURIComponent(articleUrl)}&quote=${encodeURIComponent(facebookText)}`,
+          `https://www.facebook.com/share.php?u=${encodeURIComponent(articleUrl)}&quote=${encodeURIComponent(shareText)}`,
           '_blank',
           'width=550,height=680'
         );
         break;
-      }
       case 'copy':
         navigator.clipboard.writeText(articleUrl).then(() => {
           setCopied(true);
