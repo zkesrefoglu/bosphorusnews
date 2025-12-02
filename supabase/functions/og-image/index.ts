@@ -46,7 +46,18 @@ Deno.serve(async (req) => {
     const siteUrl = "https://bosphorusnews.com";
     const articleUrl = `${siteUrl}/article/${slug}`;
     const defaultImage = `${siteUrl}/logo.png`;
-    const ogImage = article.image_url || defaultImage;
+    
+    // Clean the image URL - remove cache-busting params that might cause issues
+    let ogImage = article.image_url || defaultImage;
+    if (ogImage && ogImage.includes('?t=')) {
+      ogImage = ogImage.split('?t=')[0];
+    }
+    
+    // Escape for HTML attributes
+    const safeOgImage = escapeHtml(ogImage);
+    
+    console.log("Article slug:", slug);
+    console.log("Image URL:", ogImage);
 
     // Return HTML with proper meta tags for social media crawlers
     // No instant redirect - crawlers will read the OG tags, users will click the link
@@ -61,7 +72,7 @@ Deno.serve(async (req) => {
 <meta property="og:url" content="${articleUrl}">
 <meta property="og:title" content="${escapeHtml(article.title)}">
 <meta property="og:description" content="${escapeHtml(article.excerpt)}">
-<meta property="og:image" content="${ogImage}">
+<meta property="og:image" content="${safeOgImage}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="Bosphorus News">
@@ -70,7 +81,7 @@ Deno.serve(async (req) => {
 <meta name="twitter:url" content="${articleUrl}">
 <meta name="twitter:title" content="${escapeHtml(article.title)}">
 <meta name="twitter:description" content="${escapeHtml(article.excerpt)}">
-<meta name="twitter:image" content="${ogImage}">
+<meta name="twitter:image" content="${safeOgImage}">
 <link rel="canonical" href="${articleUrl}">
 <style>
 body{font-family:system-ui,-apple-system,sans-serif;max-width:600px;margin:40px auto;padding:20px;background:#0a0a0a;color:#fff}
@@ -82,7 +93,7 @@ img{max-width:100%;border-radius:8px;margin-bottom:20px}
 </style>
 </head>
 <body>
-<img src="${ogImage}" alt="${escapeHtml(article.title)}">
+<img src="${safeOgImage}" alt="${escapeHtml(article.title)}">
 <h1>${escapeHtml(article.title)}</h1>
 <p>${escapeHtml(article.excerpt)}</p>
 <a href="${articleUrl}">Read Full Article →</a>
