@@ -30,6 +30,35 @@ interface ArticleData {
 
 const Article = () => {
   const { slug } = useParams<{ slug: string }>();
+
+  // Crawler detection - redirects social media bots to edge function with proper meta tags
+  useEffect(() => {
+    const userAgent = navigator.userAgent || "";
+    const crawlers = [
+      "facebookexternalhit",
+      "Facebot",
+      "Twitterbot",
+      "LinkedInBot",
+      "WhatsApp",
+      "Slackbot",
+      "TelegramBot",
+      "Discordbot",
+      "Pinterest",
+      "vkShare",
+      "Applebot",
+      "bingbot",
+      "Embedly",
+      "redditbot",
+    ];
+
+    const isCrawler = crawlers.some((bot) => userAgent.toLowerCase().includes(bot.toLowerCase()));
+
+    if (isCrawler && slug) {
+      // Redirect crawlers to Supabase edge function which serves HTML with proper Open Graph tags
+      window.location.replace(`https://mxmarjrkwrqnhhipckzj.supabase.co/functions/v1/og-image?slug=${slug}`);
+    }
+  }, [slug]);
+
   const { toast } = useToast();
   const [article, setArticle] = useState<ArticleData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,7 +69,7 @@ const Article = () => {
   useEffect(() => {
     const fetchArticle = async () => {
       if (!slug) return;
-      
+
       try {
         const { data, error } = await supabase
           .from("news_articles")
@@ -50,7 +79,7 @@ const Article = () => {
           .maybeSingle();
 
         if (error) throw error;
-        
+
         setArticle(data);
       } catch (error: any) {
         toast({
@@ -65,7 +94,7 @@ const Article = () => {
     };
 
     fetchArticle();
-    
+
     // Get current user
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
@@ -77,71 +106,71 @@ const Article = () => {
     if (!article) return;
 
     const articleUrl = `${window.location.origin}/article/${slug}`;
-    
+
     // Update document title
     document.title = `${article.title} - Bosphorus News`;
-    
+
     // Helper to update or create meta tag
     const updateMetaTag = (property: string, content: string, isName = false) => {
-      const attribute = isName ? 'name' : 'property';
+      const attribute = isName ? "name" : "property";
       let metaTag = document.querySelector(`meta[${attribute}="${property}"]`);
-      
+
       if (!metaTag) {
-        metaTag = document.createElement('meta');
+        metaTag = document.createElement("meta");
         metaTag.setAttribute(attribute, property);
         document.head.appendChild(metaTag);
       }
-      
-      metaTag.setAttribute('content', content);
+
+      metaTag.setAttribute("content", content);
     };
 
     // Update Open Graph tags
-    updateMetaTag('og:title', article.title);
-    updateMetaTag('og:description', article.excerpt);
-    updateMetaTag('og:type', 'article');
-    updateMetaTag('og:url', articleUrl);
-    
+    updateMetaTag("og:title", article.title);
+    updateMetaTag("og:description", article.excerpt);
+    updateMetaTag("og:type", "article");
+    updateMetaTag("og:url", articleUrl);
+
     if (article.image_url) {
-      updateMetaTag('og:image', article.image_url);
-      updateMetaTag('og:image:width', '1200');
-      updateMetaTag('og:image:height', '630');
+      updateMetaTag("og:image", article.image_url);
+      updateMetaTag("og:image:width", "1200");
+      updateMetaTag("og:image:height", "630");
     }
-    
+
     // Update Twitter Card tags
-    updateMetaTag('twitter:card', 'summary_large_image', true);
-    updateMetaTag('twitter:title', article.title, true);
-    updateMetaTag('twitter:description', article.excerpt, true);
-    
+    updateMetaTag("twitter:card", "summary_large_image", true);
+    updateMetaTag("twitter:title", article.title, true);
+    updateMetaTag("twitter:description", article.excerpt, true);
+
     if (article.image_url) {
-      updateMetaTag('twitter:image', article.image_url, true);
+      updateMetaTag("twitter:image", article.image_url, true);
     }
-    
+
     // Update description meta tag
-    updateMetaTag('description', article.excerpt, true);
+    updateMetaTag("description", article.excerpt, true);
 
     // Cleanup function to reset meta tags when component unmounts
     return () => {
-      document.title = 'Bosphorus News - Daily News & Analysis';
+      document.title = "Bosphorus News - Daily News & Analysis";
     };
   }, [article, slug]);
 
-  const handleShare = async (platform: 'twitter' | 'bluesky' | 'facebook' | 'copy') => {
+  const handleShare = async (platform: "twitter" | "bluesky" | "facebook" | "copy") => {
     if (!slug || !article) return;
-    
+
     const articleUrl = `${window.location.origin}/article/${slug}`;
-    
-    await supabase.from('share_analytics').insert({
+
+    await supabase.from("share_analytics").insert({
       article_slug: slug,
       platform,
       user_id: user?.id,
     });
-    
+
     const getBlueskyText = () => {
       const baseText = `${article.title} | Bosphorus News Network`;
       const urlPart = `\n\n${articleUrl}`;
       const maxLength = 300;
 
-      let middle = article.excerpt ? `\n\n${article.excerpt}` : '';
+      let middle = article.excerpt ? `\n\n${article.excerpt}` : "";
       let fullText = baseText + middle + urlPart;
 
       if (fullText.length <= maxLength) return fullText;
@@ -149,9 +178,7 @@ const Article = () => {
       if (!article.excerpt) {
         // No excerpt to trim, just truncate the base text if needed
         const allowedBaseLength = maxLength - urlPart.length - 3; // 3 for '...'
-        const truncatedBase = allowedBaseLength > 0
-          ? baseText.slice(0, allowedBaseLength) + '...'
-          : baseText;
+        const truncatedBase = allowedBaseLength > 0 ? baseText.slice(0, allowedBaseLength) + "..." : baseText;
         return truncatedBase + urlPart;
       }
 
@@ -163,52 +190,55 @@ const Article = () => {
         return baseText + urlPart;
       }
 
-      const truncatedExcerpt = article.excerpt.slice(0, allowedExcerptLength) + '...';
+      const truncatedExcerpt = article.excerpt.slice(0, allowedExcerptLength) + "...";
       middle = `\n\n${truncatedExcerpt}`;
       return baseText + middle + urlPart;
     };
-    
+
     switch (platform) {
-      case 'twitter':
+      case "twitter":
         window.open(
           `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${article.title} | Bosphorus News Network`)}&url=${encodeURIComponent(articleUrl)}`,
-          '_blank',
-          'width=550,height=420'
+          "_blank",
+          "width=550,height=420",
         );
         break;
-      case 'bluesky': {
+      case "bluesky": {
         const text = getBlueskyText();
         window.open(
           `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`,
-          '_blank',
-          'width=550,height=420'
+          "_blank",
+          "width=550,height=420",
         );
         break;
       }
-      case 'facebook': {
+      case "facebook": {
         const facebookText = `${article.title}\n\n${article.excerpt}`;
         window.open(
           `https://www.facebook.com/share.php?u=${encodeURIComponent(articleUrl)}&quote=${encodeURIComponent(facebookText)}`,
-          '_blank',
-          'width=550,height=680'
+          "_blank",
+          "width=550,height=680",
         );
         break;
       }
-      case 'copy':
-        navigator.clipboard.writeText(articleUrl).then(() => {
-          setCopied(true);
-          toast({
-            title: "Link copied!",
-            description: "Article link copied to clipboard",
+      case "copy":
+        navigator.clipboard
+          .writeText(articleUrl)
+          .then(() => {
+            setCopied(true);
+            toast({
+              title: "Link copied!",
+              description: "Article link copied to clipboard",
+            });
+            setTimeout(() => setCopied(false), 2000);
+          })
+          .catch(() => {
+            toast({
+              title: "Failed to copy",
+              description: "Could not copy link to clipboard",
+              variant: "destructive",
+            });
           });
-          setTimeout(() => setCopied(false), 2000);
-        }).catch(() => {
-          toast({
-            title: "Failed to copy",
-            description: "Could not copy link to clipboard",
-            variant: "destructive",
-          });
-        });
         break;
     }
   };
@@ -246,9 +276,12 @@ const Article = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <Link to="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors">
+        <Link
+          to="/"
+          className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors"
+        >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Link>
@@ -256,7 +289,7 @@ const Article = () => {
         <article className="animate-fade-in">
           <div className="mb-6">
             <Link
-              to={`/section/${article.category.toLowerCase().replace(/\s&\s/g, '-').replace(/\s/g, '-')}`}
+              to={`/section/${article.category.toLowerCase().replace(/\s&\s/g, "-").replace(/\s/g, "-")}`}
               className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wide bg-primary text-primary-foreground rounded hover:opacity-80 transition-opacity"
             >
               {article.category}
@@ -269,9 +302,7 @@ const Article = () => {
             </div>
           )}
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight tracking-tight">
-            {article.title}
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight tracking-tight">{article.title}</h1>
 
           <div className="flex items-center space-x-4 mb-8 pb-8 border-b border-border">
             <time className="text-sm text-muted-foreground">
@@ -287,8 +318,8 @@ const Article = () => {
 
           {article.image_url && (
             <figure className="mb-8 rounded-lg overflow-hidden bg-muted">
-              <img 
-                src={bustImageCache(article.image_url)} 
+              <img
+                src={bustImageCache(article.image_url)}
                 alt={article.title}
                 className="w-full h-auto object-contain max-h-[70vh]"
               />
@@ -301,13 +332,11 @@ const Article = () => {
           )}
 
           <div className="prose prose-lg max-w-none">
-        <p className="text-xl leading-relaxed text-foreground mb-8">
-          {article.excerpt}
-        </p>
-        <div 
-          className="rich-text-content text-foreground"
-          dangerouslySetInnerHTML={{ __html: sanitizeArticleContent(article.content) }}
-        />
+            <p className="text-xl leading-relaxed text-foreground mb-8">{article.excerpt}</p>
+            <div
+              className="rich-text-content text-foreground"
+              dangerouslySetInnerHTML={{ __html: sanitizeArticleContent(article.content) }}
+            />
           </div>
 
           {/* Share Section */}
@@ -331,19 +360,19 @@ const Article = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleShare('twitter')}>
+                    <DropdownMenuItem onClick={() => handleShare("twitter")}>
                       <Twitter className="w-4 h-4 mr-2" />
                       Share on X
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleShare('bluesky')}>
+                    <DropdownMenuItem onClick={() => handleShare("bluesky")}>
                       <Cloud className="w-4 h-4 mr-2" />
                       Share on Bluesky
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleShare('facebook')}>
+                    <DropdownMenuItem onClick={() => handleShare("facebook")}>
                       <Facebook className="w-4 h-4 mr-2" />
                       Share on Facebook
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleShare('copy')}>
+                    <DropdownMenuItem onClick={() => handleShare("copy")}>
                       {copied ? <Check className="w-4 h-4 mr-2" /> : <Link2 className="w-4 h-4 mr-2" />}
                       {copied ? "Copied!" : "Copy Link"}
                     </DropdownMenuItem>
