@@ -187,15 +187,14 @@ const Article = () => {
         );
         break;
       }
-      case 'facebook': {
-        const facebookText = `${article.title}\n\n${article.excerpt}`;
+      case 'facebook':
+        // Facebook requires text/html Content-Type, use direct URL
         window.open(
-          `https://www.facebook.com/share.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(facebookText)}`,
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(directUrl)}`,
           '_blank',
           'width=550,height=680'
         );
         break;
-      }
       case 'copy':
         // Copy the clean direct URL for users
         navigator.clipboard.writeText(directUrl).then(() => {

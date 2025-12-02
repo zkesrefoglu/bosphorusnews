@@ -109,21 +109,20 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
           'width=550,height=420'
         );
         break;
+      case 'facebook':
+        // Facebook requires text/html Content-Type, share direct URL instead
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(directUrl)}`,
+          '_blank',
+          'width=550,height=680'
+        );
+        break;
       case 'bluesky': {
         const text = getBlueskyText();
         window.open(
           `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`,
           '_blank',
           'width=550,height=420'
-        );
-        break;
-      }
-      case 'facebook': {
-        const facebookText = `${title}\n\n${excerpt}`;
-        window.open(
-          `https://www.facebook.com/share.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(facebookText)}`,
-          '_blank',
-          'width=550,height=680'
         );
         break;
       }

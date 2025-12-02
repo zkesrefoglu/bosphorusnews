@@ -33,9 +33,13 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (error || !article) {
-      return new Response(JSON.stringify({ error: "Article not found" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      // Redirect to homepage if article not found
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          "Location": "https://bosphorusnews.com",
+        },
       });
     }
 
@@ -45,47 +49,53 @@ Deno.serve(async (req) => {
     const ogImage = article.image_url || defaultImage;
 
     // Return HTML with proper meta tags for social media crawlers
+    // No instant redirect - crawlers will read the OG tags, users will click the link
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${escapeHtml(article.title)} - Bosphorus News</title>
-  <meta name="description" content="${escapeHtml(article.excerpt)}">
-  
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="${articleUrl}">
-  <meta property="og:title" content="${escapeHtml(article.title)}">
-  <meta property="og:description" content="${escapeHtml(article.excerpt)}">
-  <meta property="og:image" content="${ogImage}">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:site_name" content="Bosphorus News">
-  
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@BosphorusNews">
-  <meta name="twitter:url" content="${articleUrl}">
-  <meta name="twitter:title" content="${escapeHtml(article.title)}">
-  <meta name="twitter:description" content="${escapeHtml(article.excerpt)}">
-  <meta name="twitter:image" content="${ogImage}">
-  
-  <!-- Redirect to actual page -->
-  <meta http-equiv="refresh" content="0;url=${articleUrl}">
-  <link rel="canonical" href="${articleUrl}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeHtml(article.title)} - Bosphorus News</title>
+<meta name="description" content="${escapeHtml(article.excerpt)}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="${articleUrl}">
+<meta property="og:title" content="${escapeHtml(article.title)}">
+<meta property="og:description" content="${escapeHtml(article.excerpt)}">
+<meta property="og:image" content="${ogImage}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="Bosphorus News">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@BosphorusNews">
+<meta name="twitter:url" content="${articleUrl}">
+<meta name="twitter:title" content="${escapeHtml(article.title)}">
+<meta name="twitter:description" content="${escapeHtml(article.excerpt)}">
+<meta name="twitter:image" content="${ogImage}">
+<link rel="canonical" href="${articleUrl}">
+<style>
+body{font-family:system-ui,-apple-system,sans-serif;max-width:600px;margin:40px auto;padding:20px;background:#0a0a0a;color:#fff}
+h1{font-size:1.5rem;line-height:1.4;margin-bottom:16px}
+p{color:#888;margin-bottom:24px}
+a{display:inline-block;background:#dc2626;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:500}
+a:hover{background:#b91c1c}
+img{max-width:100%;border-radius:8px;margin-bottom:20px}
+</style>
 </head>
 <body>
-  <p>Redirecting to <a href="${articleUrl}">${escapeHtml(article.title)}</a>...</p>
+<img src="${ogImage}" alt="${escapeHtml(article.title)}">
+<h1>${escapeHtml(article.title)}</h1>
+<p>${escapeHtml(article.excerpt)}</p>
+<a href="${articleUrl}">Read Full Article →</a>
 </body>
 </html>`;
 
     return new Response(html, {
       status: 200,
       headers: {
-        ...corsHeaders,
         "Content-Type": "text/html; charset=utf-8",
         "Cache-Control": "public, max-age=3600",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
       },
     });
   } catch (error) {
