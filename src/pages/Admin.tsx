@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { z } from "zod";
 import NewsConverter from "@/components/NewsConverter";
 import { ImageSizeFix } from "@/components/ImageSizeFix";
-import { Pencil, Trash2, Eye, EyeOff, Send, Search, Image } from "lucide-react";
+import { Pencil, Trash2, Eye, EyeOff, Send, Search, Image, Link2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { ArticlePreview } from "@/components/ArticlePreview";
 import {
@@ -77,6 +77,7 @@ const Admin = () => {
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [sendingNewsletter, setSendingNewsletter] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
+  const [generatingShortUrl, setGeneratingShortUrl] = useState<string | null>(null);
 
   useEffect(() => {
     checkAdmin();
@@ -241,6 +242,21 @@ const Admin = () => {
         });
 
       if (error) throw error;
+
+      // Generate short URL for social sharing
+      try {
+        const { data: shortenData, error: shortenError } = await supabase.functions.invoke('shorten-url', {
+          body: { slug }
+        });
+        
+        if (shortenError) {
+          console.error('Failed to generate short URL:', shortenError);
+        } else {
+          console.log('Short URL generated:', shortenData?.shortUrl);
+        }
+      } catch (shortenErr) {
+        console.error('Error calling shorten-url function:', shortenErr);
+      }
 
       toast({
         title: "Success!",
@@ -803,6 +819,35 @@ const Admin = () => {
       });
     } finally {
       setSendingNewsletter(false);
+    }
+  };
+
+  const handleGenerateShortUrl = async (articleId: string, articleSlug: string) => {
+    setGeneratingShortUrl(articleId);
+    try {
+      const { data, error } = await supabase.functions.invoke('shorten-url', {
+        body: { slug: articleSlug }
+      });
+      
+      if (error) throw error;
+      
+      if (data?.success) {
+        toast({
+          title: "Short URL Generated!",
+          description: `Short URL: ${data.shortUrl}`,
+        });
+        fetchArticles(); // Refresh to show updated short_url
+      } else {
+        throw new Error(data?.error || 'Failed to generate short URL');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to generate short URL",
+        variant: "destructive",
+      });
+    } finally {
+      setGeneratingShortUrl(null);
     }
   };
 
@@ -1517,6 +1562,15 @@ const Admin = () => {
                                   title="Post to Bluesky"
                                 >
                                   <Send className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant={article.short_url ? "secondary" : "outline"}
+                                  size="sm"
+                                  onClick={() => handleGenerateShortUrl(article.id, article.slug)}
+                                  disabled={generatingShortUrl === article.id}
+                                  title={article.short_url ? `Short URL: ${article.short_url}` : "Generate Short URL for sharing"}
+                                >
+                                  <Link2 className="w-4 h-4" />
                                 </Button>
                                 <Button
                                   variant="outline"

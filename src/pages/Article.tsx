@@ -26,6 +26,7 @@ interface ArticleData {
   image_url?: string;
   photo_credit?: string;
   breaking_news?: boolean;
+  short_url?: string;
 }
 
 const Article = () => {
@@ -129,6 +130,8 @@ const Article = () => {
     if (!slug || !article) return;
     
     const articleUrl = `${window.location.origin}/article/${slug}`;
+    // Use short_url for social sharing if available (for proper OG previews)
+    const shareUrl = article.short_url || articleUrl;
     
     await supabase.from('share_analytics').insert({
       article_slug: slug,
@@ -141,21 +144,21 @@ const Article = () => {
     switch (platform) {
       case 'twitter':
         window.open(
-          `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(articleUrl)}`,
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
           '_blank',
           'width=550,height=420'
         );
         break;
       case 'bluesky':
         window.open(
-          `https://bsky.app/intent/compose?text=${encodeURIComponent(`${shareText}\n\n${articleUrl}`)}`,
+          `https://bsky.app/intent/compose?text=${encodeURIComponent(`${shareText}\n\n${shareUrl}`)}`,
           '_blank',
           'width=550,height=420'
         );
         break;
       case 'facebook':
         window.open(
-          `https://www.facebook.com/share.php?u=${encodeURIComponent(articleUrl)}&quote=${encodeURIComponent(shareText)}`,
+          `https://www.facebook.com/share.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`,
           '_blank',
           'width=550,height=680'
         );
