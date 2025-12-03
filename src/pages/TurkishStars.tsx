@@ -16,6 +16,8 @@ interface AthleteProfile {
   team: string;
   league: string;
   photo_url: string | null;
+  national_photo_url: string | null;
+  action_photo_url: string | null;
   position: string;
   jersey_number: number | null;
 }

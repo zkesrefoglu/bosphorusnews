@@ -17,6 +17,8 @@ interface AthleteProfile {
   team: string;
   league: string;
   photo_url: string | null;
+  national_photo_url: string | null;
+  action_photo_url: string | null;
   position: string;
   jersey_number: number | null;
 }
@@ -190,97 +192,115 @@ const AthleteProfilePage = () => {
           Back to Turkish Stars
         </Link>
 
-        {/* HERO SECTION */}
-        <Card className="mb-8 p-6 md:p-8 bg-card border-border">
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Avatar */}
-            <div className="flex-shrink-0">
-              <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full bg-secondary flex items-center justify-center overflow-hidden border-4 border-accent/30 mx-auto md:mx-0">
-                {athlete.photo_url ? (
-                  <img src={athlete.photo_url} alt={athlete.name} className="w-full h-full object-cover" />
-                ) : (
-                  <User className="w-16 h-16 text-muted-foreground" />
+        {/* HERO SECTION WITH ACTION PHOTO BACKGROUND */}
+        <div className="relative mb-8 rounded-xl overflow-hidden">
+          {/* Action Photo Background */}
+          {athlete.action_photo_url && (
+            <div className="absolute inset-0 z-0">
+              <img 
+                src={athlete.action_photo_url} 
+                alt={`${athlete.name} in action`}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/70" />
+            </div>
+          )}
+          
+          <Card className={`relative z-10 p-6 md:p-8 ${athlete.action_photo_url ? 'bg-transparent border-transparent' : 'bg-card border-border'}`}>
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Avatar - National Photo */}
+              <div className="flex-shrink-0">
+                <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full bg-secondary flex items-center justify-center overflow-hidden border-4 border-accent/30 mx-auto md:mx-0 shadow-xl">
+                  {(athlete.national_photo_url || athlete.photo_url) ? (
+                    <img 
+                      src={athlete.national_photo_url || athlete.photo_url || ''} 
+                      alt={athlete.name} 
+                      className="w-full h-full object-cover" 
+                    />
+                  ) : (
+                    <User className="w-16 h-16 text-muted-foreground" />
+                  )}
+                  {athlete.jersey_number && (
+                    <div className="absolute -bottom-1 -right-1 bg-accent text-accent-foreground text-lg font-bold w-10 h-10 rounded-full flex items-center justify-center border-2 border-background shadow-lg">
+                      {athlete.jersey_number}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Info */}
+              <div className="flex-1 text-center md:text-left">
+                <h1 className="text-3xl md:text-4xl font-headline font-bold text-foreground mb-2 flex items-center justify-center md:justify-start gap-2">
+                  <span className="text-2xl">🇹🇷</span>
+                  {athlete.name}
+                </h1>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-4">
+                  <Badge variant="outline" className="text-sm bg-background/80">{athlete.team}</Badge>
+                  <Badge variant="outline" className="text-sm bg-background/80">{athlete.league}</Badge>
+                  <Badge variant="outline" className="text-sm bg-background/80">{athlete.position}</Badge>
+                  {athlete.jersey_number && (
+                    <Badge variant="outline" className="text-sm bg-background/80">#{athlete.jersey_number}</Badge>
+                  )}
+                </div>
+
+                {/* Current Status */}
+                {currentInjuryStatus !== "healthy" && (
+                  <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+                    <AlertTriangle className="w-4 h-4 text-destructive" />
+                    <Badge className={`${getInjuryColor(currentInjuryStatus)} border capitalize`}>
+                      {currentInjuryStatus}
+                    </Badge>
+                    {latestUpdate?.injury_details && (
+                      <span className="text-sm text-muted-foreground">({latestUpdate.injury_details})</span>
+                    )}
+                  </div>
                 )}
-                {athlete.jersey_number && (
-                  <div className="absolute -bottom-1 -right-1 bg-accent text-accent-foreground text-lg font-bold w-10 h-10 rounded-full flex items-center justify-center border-2 border-background">
-                    {athlete.jersey_number}
+
+                {/* Quick Season Stats */}
+                {currentSeasonStats && (
+                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                    <div className="text-center bg-background/80 rounded-lg px-3 py-2">
+                      <div className="text-2xl font-bold text-foreground">{currentSeasonStats.games_played || 0}</div>
+                      <div className="text-xs text-muted-foreground uppercase">Games</div>
+                    </div>
+                    {athlete.sport === "basketball" && currentSeasonStats.stats && (
+                      <>
+                        <div className="text-center bg-background/80 rounded-lg px-3 py-2">
+                          <div className="text-2xl font-bold text-foreground">{currentSeasonStats.stats.ppg?.toFixed(1) || "—"}</div>
+                          <div className="text-xs text-muted-foreground uppercase">PPG</div>
+                        </div>
+                        <div className="text-center bg-background/80 rounded-lg px-3 py-2">
+                          <div className="text-2xl font-bold text-foreground">{currentSeasonStats.stats.rpg?.toFixed(1) || "—"}</div>
+                          <div className="text-xs text-muted-foreground uppercase">RPG</div>
+                        </div>
+                        <div className="text-center bg-background/80 rounded-lg px-3 py-2">
+                          <div className="text-2xl font-bold text-foreground">{currentSeasonStats.stats.apg?.toFixed(1) || "—"}</div>
+                          <div className="text-xs text-muted-foreground uppercase">APG</div>
+                        </div>
+                      </>
+                    )}
+                    {athlete.sport === "football" && currentSeasonStats.stats && (
+                      <>
+                        <div className="text-center bg-background/80 rounded-lg px-3 py-2">
+                          <div className="text-2xl font-bold text-foreground">{currentSeasonStats.stats.goals || 0}</div>
+                          <div className="text-xs text-muted-foreground uppercase">Goals</div>
+                        </div>
+                        <div className="text-center bg-background/80 rounded-lg px-3 py-2">
+                          <div className="text-2xl font-bold text-foreground">{currentSeasonStats.stats.assists || 0}</div>
+                          <div className="text-xs text-muted-foreground uppercase">Assists</div>
+                        </div>
+                        <div className="text-center bg-background/80 rounded-lg px-3 py-2">
+                          <div className="text-2xl font-bold text-foreground">{currentSeasonStats.stats.avg_rating?.toFixed(1) || "—"}</div>
+                          <div className="text-xs text-muted-foreground uppercase">Avg Rating</div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
             </div>
-
-            {/* Info */}
-            <div className="flex-1 text-center md:text-left">
-              <h1 className="text-3xl md:text-4xl font-headline font-bold text-foreground mb-2 flex items-center justify-center md:justify-start gap-2">
-                <span className="text-2xl">🇹🇷</span>
-                {athlete.name}
-              </h1>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-4">
-                <Badge variant="outline" className="text-sm">{athlete.team}</Badge>
-                <Badge variant="outline" className="text-sm">{athlete.league}</Badge>
-                <Badge variant="outline" className="text-sm">{athlete.position}</Badge>
-                {athlete.jersey_number && (
-                  <Badge variant="outline" className="text-sm">#{athlete.jersey_number}</Badge>
-                )}
-              </div>
-
-              {/* Current Status */}
-              {currentInjuryStatus !== "healthy" && (
-                <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
-                  <AlertTriangle className="w-4 h-4 text-destructive" />
-                  <Badge className={`${getInjuryColor(currentInjuryStatus)} border capitalize`}>
-                    {currentInjuryStatus}
-                  </Badge>
-                  {latestUpdate?.injury_details && (
-                    <span className="text-sm text-muted-foreground">({latestUpdate.injury_details})</span>
-                  )}
-                </div>
-              )}
-
-              {/* Quick Season Stats */}
-              {currentSeasonStats && (
-                <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-foreground">{currentSeasonStats.games_played || 0}</div>
-                    <div className="text-xs text-muted-foreground uppercase">Games</div>
-                  </div>
-                  {athlete.sport === "basketball" && currentSeasonStats.stats && (
-                    <>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-foreground">{currentSeasonStats.stats.ppg?.toFixed(1) || "—"}</div>
-                        <div className="text-xs text-muted-foreground uppercase">PPG</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-foreground">{currentSeasonStats.stats.rpg?.toFixed(1) || "—"}</div>
-                        <div className="text-xs text-muted-foreground uppercase">RPG</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-foreground">{currentSeasonStats.stats.apg?.toFixed(1) || "—"}</div>
-                        <div className="text-xs text-muted-foreground uppercase">APG</div>
-                      </div>
-                    </>
-                  )}
-                  {athlete.sport === "football" && currentSeasonStats.stats && (
-                    <>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-foreground">{currentSeasonStats.stats.goals || 0}</div>
-                        <div className="text-xs text-muted-foreground uppercase">Goals</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-foreground">{currentSeasonStats.stats.assists || 0}</div>
-                        <div className="text-xs text-muted-foreground uppercase">Assists</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-foreground">{currentSeasonStats.stats.avg_rating?.toFixed(1) || "—"}</div>
-                        <div className="text-xs text-muted-foreground uppercase">Avg Rating</div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
 
         {/* UPCOMING MATCHES */}
         {upcomingMatches.length > 0 && (
