@@ -102,20 +102,10 @@ const Article = () => {
     updateMetaTag("og:type", "article");
     updateMetaTag("og:url", articleUrl);
 
-    if (article.image_url) {
-      updateMetaTag("og:image", article.image_url);
-      updateMetaTag("og:image:width", "1200");
-      updateMetaTag("og:image:height", "630");
-    }
-
-    // Update Twitter Card tags
-    updateMetaTag("twitter:card", "summary_large_image", true);
+    // Update Twitter Card tags (summary instead of summary_large_image - no thumbnail)
+    updateMetaTag("twitter:card", "summary", true);
     updateMetaTag("twitter:title", article.title, true);
     updateMetaTag("twitter:description", article.excerpt, true);
-
-    if (article.image_url) {
-      updateMetaTag("twitter:image", article.image_url, true);
-    }
 
     // Update description meta tag
     updateMetaTag("description", article.excerpt, true);
