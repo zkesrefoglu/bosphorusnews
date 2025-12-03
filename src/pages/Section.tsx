@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import { DailyTopic } from "@/components/DailyTopic";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Star, ChevronRight } from "lucide-react";
 import xtraLogo from "@/assets/xtra-logo.png";
 import bannerImage from "@/assets/banner-diplomatic.jpg";
 import { BreakingNewsBadge } from "@/components/BreakingNewsBadge";
@@ -224,7 +224,21 @@ const Section = () => {
               </div>
             ) : (
               <div className="mb-8">
-                <h1 className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">{sectionName}</h1>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
+                  <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{sectionName}</h1>
+                  
+                  {/* Turkish Stars Tracker Link - Sports Section Only */}
+                  {sectionName === "Sports" && (
+                    <Link 
+                      to="/section/sports/turkish-stars"
+                      className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 hover:border-primary/50 hover:from-primary/20 hover:to-accent/20 transition-all duration-300"
+                    >
+                      <Star className="w-4 h-4 text-primary group-hover:text-accent transition-colors group-hover:rotate-12 transform duration-300" />
+                      <span className="font-medium text-sm text-foreground">Turkish Stars Tracker</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-300" />
+                    </Link>
+                  )}
+                </div>
                 <p className="text-muted-foreground">
                   {articles.length} {articles.length === 1 ? 'article' : 'articles'} in this section
                 </p>
