@@ -55,22 +55,7 @@ const Index = () => {
       const { data: carouselData, error: carouselError } = await carouselQuery;
       if (carouselError) throw carouselError;
 
-      let carouselFinal = carouselData || [];
-
-      // FALLBACK: If fewer than 5, fill with latest articles
-      if (carouselFinal.length < 5) {
-        const { data: fillData, error: fillError } = await supabase
-          .from("news_articles")
-          .select("*")
-          .eq("published", true)
-          .or("is_carousel_featured.is.null,is_carousel_featured.eq.false")
-          .not("image_url", "is", null)
-          .order("created_at", { ascending: false })
-          .limit(5 - carouselFinal.length);
-
-        if (fillError) throw fillError;
-        carouselFinal = [...carouselFinal, ...(fillData || [])];
-      }
+      const carouselFinal = carouselData || [];
 
       setCarouselArticles([
         ...carouselFinal.map((article) => ({
