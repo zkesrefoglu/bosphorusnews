@@ -118,6 +118,18 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Validate webhook secret
+  const webhookSecret = Deno.env.get("NEWSLETTER_WEBHOOK_SECRET");
+  const providedSecret = req.headers.get("x-webhook-secret");
+  
+  if (!webhookSecret || providedSecret !== webhookSecret) {
+    console.error("Unauthorized: Invalid or missing webhook secret");
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
   try {
     console.log("Starting weekly newsletter send...");
 
