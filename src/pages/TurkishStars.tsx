@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, AlertTriangle, Calendar, TrendingUp, ExternalLink, User } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -87,17 +88,14 @@ const TurkishStars = () => {
     fetchData();
   }, []);
 
-  // Get latest update for an athlete
   const getLatestUpdate = (athleteId: string): DailyUpdate | undefined => {
     return dailyUpdates.find((u) => u.athlete_id === athleteId);
   };
 
-  // Get last played match for an athlete
   const getLastMatch = (athleteId: string): DailyUpdate | undefined => {
     return dailyUpdates.find((u) => u.athlete_id === athleteId && u.played);
   };
 
-  // Get next match for an athlete
   const getNextMatch = (athleteId: string): UpcomingMatch | undefined => {
     const now = new Date();
     return upcomingMatches.find(
@@ -105,12 +103,10 @@ const TurkishStars = () => {
     );
   };
 
-  // Get athlete by ID
   const getAthlete = (athleteId: string): AthleteProfile | undefined => {
     return athletes.find((a) => a.id === athleteId);
   };
 
-  // Filter alerts
   const injuryAlerts = dailyUpdates.filter(
     (u) => u.injury_status !== "healthy" && athletes.find((a) => a.id === u.athlete_id)
   );
@@ -119,7 +115,6 @@ const TurkishStars = () => {
     (r) => r.reliability === "tier_1" || r.reliability === "tier_2"
   );
 
-  // Filter upcoming matches in next 48 hours
   const next48Hours = upcomingMatches.filter((m) => {
     const matchDate = new Date(m.match_date);
     const now = new Date();
@@ -128,21 +123,21 @@ const TurkishStars = () => {
 
   const getInjuryColor = (status: string) => {
     switch (status) {
-      case "healthy": return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
-      case "questionable": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-      case "doubtful": return "bg-orange-500/20 text-orange-400 border-orange-500/30";
-      case "out": return "bg-red-500/20 text-red-400 border-red-500/30";
-      default: return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+      case "healthy": return "bg-emerald-100 text-emerald-700 border-emerald-300";
+      case "questionable": return "bg-yellow-100 text-yellow-700 border-yellow-300";
+      case "doubtful": return "bg-orange-100 text-orange-700 border-orange-300";
+      case "out": return "bg-red-100 text-red-700 border-red-300";
+      default: return "bg-muted text-muted-foreground border-border";
     }
   };
 
   const getReliabilityBadge = (reliability: string) => {
     switch (reliability) {
-      case "tier_1": return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
-      case "tier_2": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-      case "tier_3": return "bg-orange-500/20 text-orange-400 border-orange-500/30";
-      case "speculation": return "bg-gray-500/20 text-gray-400 border-gray-500/30";
-      default: return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+      case "tier_1": return "bg-emerald-100 text-emerald-700 border-emerald-300";
+      case "tier_2": return "bg-yellow-100 text-yellow-700 border-yellow-300";
+      case "tier_3": return "bg-orange-100 text-orange-700 border-orange-300";
+      case "speculation": return "bg-muted text-muted-foreground border-border";
+      default: return "bg-muted text-muted-foreground border-border";
     }
   };
 
@@ -163,34 +158,35 @@ const TurkishStars = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900">
+      <div className="min-h-screen bg-background">
         <Header />
-        <main className="container mx-auto px-4 py-8">
-          <div className="text-center py-16 text-gray-400">Loading...</div>
+        <main className="container-custom py-8">
+          <div className="text-center py-16 text-muted-foreground">Loading...</div>
         </main>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100">
+    <div className="min-h-screen bg-background text-foreground">
       <Header />
       
-      <main className="container mx-auto px-4 py-6 max-w-7xl">
-        <Link to="/section/sports" className="inline-flex items-center text-sm text-gray-400 hover:text-red-400 mb-6 transition-colors">
+      <main className="container-custom py-6">
+        <Link to="/section/sports" className="inline-flex items-center text-sm text-muted-foreground hover:text-accent mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Sports
         </Link>
 
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-3">
+          <h1 className="text-3xl md:text-4xl font-headline font-bold flex items-center gap-3">
             <span className="text-4xl">🇹🇷</span>
-            <span className="bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent">
+            <span className="text-accent">
               Turkish Stars Tracker
             </span>
           </h1>
-          <div className="text-gray-400 text-sm font-ui uppercase tracking-wider">
+          <div className="text-muted-foreground text-sm font-ui uppercase tracking-wider">
             {format(new Date(), "EEEE, MMMM d, yyyy")}
           </div>
         </div>
@@ -204,15 +200,15 @@ const TurkishStars = () => {
               return (
                 <div
                   key={alert.id}
-                  className="flex items-center gap-3 p-4 rounded-lg bg-red-950/50 border border-red-500/30"
+                  className="flex items-center gap-3 p-4 rounded-lg bg-red-50 border border-red-200"
                 >
-                  <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                  <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
                   <div className="flex-1">
-                    <span className="font-semibold text-red-400">{athlete.name}</span>
-                    <span className="text-gray-300 mx-2">—</span>
-                    <span className="text-gray-400 capitalize">{alert.injury_status}</span>
+                    <span className="font-semibold text-red-600">{athlete.name}</span>
+                    <span className="text-foreground mx-2">—</span>
+                    <span className="text-muted-foreground capitalize">{alert.injury_status}</span>
                     {alert.injury_details && (
-                      <span className="text-gray-500 ml-2">({alert.injury_details})</span>
+                      <span className="text-muted-foreground ml-2">({alert.injury_details})</span>
                     )}
                   </div>
                 </div>
@@ -225,14 +221,14 @@ const TurkishStars = () => {
               return (
                 <div
                   key={rumor.id}
-                  className="flex items-center gap-3 p-4 rounded-lg bg-orange-950/40 border border-orange-500/30"
+                  className="flex items-center gap-3 p-4 rounded-lg bg-orange-50 border border-orange-200"
                 >
-                  <TrendingUp className="w-5 h-5 text-orange-400 flex-shrink-0" />
+                  <TrendingUp className="w-5 h-5 text-orange-500 flex-shrink-0" />
                   <div className="flex-1">
-                    <span className="font-semibold text-orange-400">{athlete.name}</span>
-                    <span className="text-gray-300 mx-2">—</span>
-                    <span className="text-gray-300">{rumor.headline}</span>
-                    <Badge className={`ml-2 ${getReliabilityBadge(rumor.reliability)} text-xs`}>
+                    <span className="font-semibold text-orange-600">{athlete.name}</span>
+                    <span className="text-foreground mx-2">—</span>
+                    <span className="text-foreground">{rumor.headline}</span>
+                    <Badge className={`ml-2 ${getReliabilityBadge(rumor.reliability)} text-xs border`}>
                       {rumor.reliability.replace("_", " ")}
                     </Badge>
                   </div>
@@ -243,17 +239,17 @@ const TurkishStars = () => {
         )}
 
         {/* MAIN TABLE */}
-        <Card className="mb-8 bg-gray-800/50 border-gray-700/50 overflow-hidden">
+        <Card className="mb-8 bg-card border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-700/50 bg-gray-800/80">
-                  <th className="text-left p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Player</th>
-                  <th className="text-left p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-                  <th className="text-left p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider hidden md:table-cell">Last Match</th>
-                  <th className="text-left p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider hidden lg:table-cell">Performance</th>
-                  <th className="text-left p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider hidden sm:table-cell">Next Up</th>
-                  <th className="text-left p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider w-12"></th>
+                <tr className="border-b border-border bg-secondary">
+                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Player</th>
+                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Last Match</th>
+                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Performance</th>
+                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden sm:table-cell">Next Up</th>
+                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-12"></th>
                 </tr>
               </thead>
               <tbody>
@@ -264,26 +260,26 @@ const TurkishStars = () => {
                   const injuryStatus = latestUpdate?.injury_status || "healthy";
 
                   return (
-                    <tr key={athlete.id} className="border-b border-gray-700/30 hover:bg-gray-800/40 transition-colors">
+                    <tr key={athlete.id} className="border-b border-border hover:bg-secondary/50 transition-colors">
                       {/* Player */}
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="relative w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-gray-600">
+                          <div className="relative w-12 h-12 rounded-full bg-secondary flex items-center justify-center overflow-hidden border-2 border-border">
                             {athlete.photo_url ? (
                               <img src={athlete.photo_url} alt={athlete.name} className="w-full h-full object-cover" />
                             ) : (
-                              <User className="w-6 h-6 text-gray-500" />
+                              <User className="w-6 h-6 text-muted-foreground" />
                             )}
                             {athlete.jersey_number && (
-                              <div className="absolute -bottom-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                              <div className="absolute -bottom-1 -right-1 bg-accent text-accent-foreground text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                                 {athlete.jersey_number}
                               </div>
                             )}
                           </div>
                           <div>
-                            <div className="font-semibold text-gray-100">{athlete.name}</div>
-                            <div className="text-sm text-gray-400">{athlete.team}</div>
-                            <div className="text-xs text-gray-500">{athlete.position}</div>
+                            <div className="font-semibold text-foreground">{athlete.name}</div>
+                            <div className="text-sm text-muted-foreground">{athlete.team}</div>
+                            <div className="text-xs text-muted-foreground">{athlete.position}</div>
                           </div>
                         </div>
                       </td>
@@ -299,13 +295,13 @@ const TurkishStars = () => {
                       <td className="p-4 hidden md:table-cell">
                         {lastMatch ? (
                           <div>
-                            <div className="font-medium text-gray-200">{lastMatch.match_result || "—"}</div>
-                            <div className="text-sm text-gray-400">
+                            <div className="font-medium text-foreground">{lastMatch.match_result || "—"}</div>
+                            <div className="text-sm text-muted-foreground">
                               {lastMatch.home_away === "home" ? "vs" : "@"} {lastMatch.opponent}
                             </div>
                           </div>
                         ) : (
-                          <span className="text-gray-500">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </td>
 
@@ -313,18 +309,18 @@ const TurkishStars = () => {
                       <td className="p-4 hidden lg:table-cell">
                         {lastMatch ? (
                           <div>
-                            <div className="font-mono text-gray-200">
+                            <div className="font-mono text-foreground">
                               {formatStats(athlete, lastMatch.stats)}
                             </div>
                             {athlete.sport === "football" && lastMatch.rating && (
-                              <div className="text-sm text-yellow-400">{lastMatch.rating.toFixed(1)} rating</div>
+                              <div className="text-sm text-accent">{lastMatch.rating.toFixed(1)} rating</div>
                             )}
                             {lastMatch.minutes_played && (
-                              <div className="text-xs text-gray-500">{lastMatch.minutes_played}'</div>
+                              <div className="text-xs text-muted-foreground">{lastMatch.minutes_played}'</div>
                             )}
                           </div>
                         ) : (
-                          <span className="text-gray-500">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </td>
 
@@ -332,16 +328,16 @@ const TurkishStars = () => {
                       <td className="p-4 hidden sm:table-cell">
                         {nextMatch ? (
                           <div>
-                            <div className="font-medium text-gray-200">
+                            <div className="font-medium text-foreground">
                               {nextMatch.home_away === "home" ? "vs" : "@"} {nextMatch.opponent}
                             </div>
-                            <div className="text-sm text-gray-400">{nextMatch.competition}</div>
-                            <div className="text-xs text-gray-500">
+                            <div className="text-sm text-muted-foreground">{nextMatch.competition}</div>
+                            <div className="text-xs text-muted-foreground">
                               {format(new Date(nextMatch.match_date), "MMM d, h:mm a")}
                             </div>
                           </div>
                         ) : (
-                          <span className="text-gray-500">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </td>
 
@@ -349,7 +345,7 @@ const TurkishStars = () => {
                       <td className="p-4">
                         <Link
                           to={`/section/sports/turkish-stars/${athlete.slug}`}
-                          className="text-red-400 hover:text-red-300 transition-colors"
+                          className="text-accent hover:text-accent-light transition-colors"
                         >
                           <ExternalLink className="w-5 h-5" />
                         </Link>
@@ -364,9 +360,9 @@ const TurkishStars = () => {
 
         <div className="grid lg:grid-cols-2 gap-6">
           {/* TRANSFER RUMORS */}
-          <Card className="bg-gray-800/50 border-gray-700/50 p-6">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-red-400" />
+          <Card className="bg-card border-border p-6">
+            <h2 className="text-xl font-headline font-bold mb-4 flex items-center gap-2 text-foreground">
+              <TrendingUp className="w-5 h-5 text-accent" />
               Transfer Rumors
             </h2>
             
@@ -377,15 +373,15 @@ const TurkishStars = () => {
                   if (!athlete) return null;
                   
                   return (
-                    <div key={rumor.id} className="border-b border-gray-700/30 pb-4 last:border-0 last:pb-0">
+                    <div key={rumor.id} className="border-b border-border pb-4 last:border-0 last:pb-0">
                       <div className="flex items-start justify-between gap-2 mb-2">
-                        <span className="text-sm font-medium text-red-400">{athlete.name}</span>
+                        <span className="text-sm font-medium text-accent">{athlete.name}</span>
                         <Badge className={`${getReliabilityBadge(rumor.reliability)} border text-xs`}>
                           {rumor.reliability.replace("_", " ")}
                         </Badge>
                       </div>
-                      <p className="text-gray-200 text-sm mb-2">{rumor.headline}</p>
-                      <div className="flex items-center justify-between text-xs text-gray-500">
+                      <p className="text-foreground text-sm mb-2">{rumor.headline}</p>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span>{rumor.source || "Unknown source"}</span>
                         <span>{format(new Date(rumor.rumor_date), "MMM d")}</span>
                       </div>
@@ -394,14 +390,14 @@ const TurkishStars = () => {
                 })}
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">No active transfer rumors</p>
+              <p className="text-muted-foreground text-sm">No active transfer rumors</p>
             )}
           </Card>
 
           {/* UPCOMING FIXTURES */}
-          <Card className="bg-gray-800/50 border-gray-700/50 p-6">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-red-400" />
+          <Card className="bg-card border-border p-6">
+            <h2 className="text-xl font-headline font-bold mb-4 flex items-center gap-2 text-foreground">
+              <Calendar className="w-5 h-5 text-accent" />
               Upcoming (48h)
             </h2>
             
@@ -412,20 +408,17 @@ const TurkishStars = () => {
                   if (!athlete) return null;
                   
                   return (
-                    <div key={match.id} className="flex items-center gap-4 p-3 rounded-lg bg-gray-700/30">
+                    <div key={match.id} className="flex items-center gap-4 p-3 rounded-lg bg-secondary">
                       <div className="flex-1">
-                        <div className="font-medium text-gray-200">{athlete.name}</div>
-                        <div className="text-sm text-gray-400">
+                        <div className="font-semibold text-foreground">{athlete.name}</div>
+                        <div className="text-sm text-muted-foreground">
                           {match.home_away === "home" ? "vs" : "@"} {match.opponent}
                         </div>
-                        <div className="text-xs text-gray-500">{match.competition}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm font-medium text-red-400">
-                          {format(new Date(match.match_date), "MMM d")}
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          {format(new Date(match.match_date), "h:mm a")}
+                        <div className="text-sm font-medium text-foreground">{match.competition}</div>
+                        <div className="text-xs text-accent">
+                          {format(new Date(match.match_date), "MMM d, h:mm a")}
                         </div>
                       </div>
                     </div>
@@ -433,11 +426,13 @@ const TurkishStars = () => {
                 })}
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">No matches in the next 48 hours</p>
+              <p className="text-muted-foreground text-sm">No matches in the next 48 hours</p>
             )}
           </Card>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 };
