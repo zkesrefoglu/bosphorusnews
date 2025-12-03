@@ -102,11 +102,13 @@ export type Database = {
       }
       athlete_profiles: {
         Row: {
+          action_photo_url: string | null
           created_at: string
           id: string
           jersey_number: number | null
           league: string
           name: string
+          national_photo_url: string | null
           photo_url: string | null
           position: string
           slug: string
@@ -115,11 +117,13 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          action_photo_url?: string | null
           created_at?: string
           id?: string
           jersey_number?: number | null
           league: string
           name: string
+          national_photo_url?: string | null
           photo_url?: string | null
           position: string
           slug: string
@@ -128,11 +132,13 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          action_photo_url?: string | null
           created_at?: string
           id?: string
           jersey_number?: number | null
           league?: string
           name?: string
+          national_photo_url?: string | null
           photo_url?: string | null
           position?: string
           slug?: string
