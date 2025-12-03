@@ -202,7 +202,7 @@ const AthleteProfilePage = () => {
                 alt={`${athlete.name} in action`}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/70" />
+              <div className="absolute inset-0 bg-gradient-to-r from-background/50 via-background/40 to-background/20" />
             </div>
           )}
           
