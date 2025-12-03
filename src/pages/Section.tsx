@@ -280,6 +280,10 @@ const Section = () => {
                           src={item.imageUrl || `https://picsum.photos/seed/${item.slug}/600/400`}
                           alt={item.title}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = `https://picsum.photos/seed/${item.slug}/600/400`;
+                          }}
                         />
                         {item.photoCredit && (
                           <div className="absolute bottom-2 right-2 text-xs text-white/80 bg-black/40 px-2 py-1 rounded backdrop-blur-sm">

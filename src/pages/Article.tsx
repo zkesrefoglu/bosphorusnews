@@ -284,6 +284,10 @@ const Article = () => {
                 src={bustImageCache(article.image_url)}
                 alt={article.title}
                 className="w-full h-auto object-contain max-h-[70vh]"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://picsum.photos/seed/${slug}/1200/800`;
+                }}
               />
               {article.photo_credit && (
                 <figcaption className="mt-2 text-xs text-muted-foreground text-right">

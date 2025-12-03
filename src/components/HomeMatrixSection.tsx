@@ -66,12 +66,16 @@ export const HomeMatrixSection = ({ categories }: HomeMatrixSectionProps) => {
               <Link key={article.slug} to={`/article/${article.slug}`}>
                 {index === 0 ? (
                   /* Large Card with Image */
-                  <Card className="article-card group border-0 shadow-md hover:shadow-xl">
+                    <Card className="article-card group border-0 shadow-md hover:shadow-xl">
                     <div className="relative aspect-[3/2] overflow-hidden">
                       <img
                         src={article.imageUrl || `https://picsum.photos/seed/${article.slug}/600/400`}
                         alt={article.title}
                         className="article-image"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = `https://picsum.photos/seed/${article.slug}/600/400`;
+                        }}
                       />
                       {article.photoCredit && (
                         <div className="absolute bottom-2 right-2 text-xs text-white/70 bg-black/30 px-2 py-1 rounded z-10">

@@ -60,7 +60,15 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
               <div className="carousel-slide group cursor-pointer border-0 rounded-lg overflow-hidden shadow-2xl">
                 {/* Background Image with Ken Burns Effect */}
                 <div className="relative w-full h-full">
-                  <img src={article.imageUrl} alt={article.title} className="carousel-image" />
+                  <img 
+                    src={article.imageUrl} 
+                    alt={article.title} 
+                    className="carousel-image"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://picsum.photos/seed/${article.slug}/1920/820`;
+                    }}
+                  />
                   {article.photoCredit && (
                     <div className="absolute bottom-2 right-2 text-xs text-white/70 bg-black/30 px-2 py-1 rounded">
                       {article.photoCredit}
