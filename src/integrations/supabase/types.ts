@@ -41,6 +41,239 @@ export type Database = {
         }
         Relationships: []
       }
+      athlete_daily_updates: {
+        Row: {
+          athlete_id: string
+          competition: string | null
+          created_at: string
+          date: string
+          home_away: string | null
+          id: string
+          injury_details: string | null
+          injury_status: string | null
+          match_result: string | null
+          minutes_played: number | null
+          opponent: string | null
+          played: boolean
+          rating: number | null
+          stats: Json | null
+        }
+        Insert: {
+          athlete_id: string
+          competition?: string | null
+          created_at?: string
+          date: string
+          home_away?: string | null
+          id?: string
+          injury_details?: string | null
+          injury_status?: string | null
+          match_result?: string | null
+          minutes_played?: number | null
+          opponent?: string | null
+          played?: boolean
+          rating?: number | null
+          stats?: Json | null
+        }
+        Update: {
+          athlete_id?: string
+          competition?: string | null
+          created_at?: string
+          date?: string
+          home_away?: string | null
+          id?: string
+          injury_details?: string | null
+          injury_status?: string | null
+          match_result?: string | null
+          minutes_played?: number | null
+          opponent?: string | null
+          played?: boolean
+          rating?: number | null
+          stats?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "athlete_daily_updates_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athlete_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      athlete_profiles: {
+        Row: {
+          created_at: string
+          id: string
+          jersey_number: number | null
+          league: string
+          name: string
+          photo_url: string | null
+          position: string
+          slug: string
+          sport: string
+          team: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          jersey_number?: number | null
+          league: string
+          name: string
+          photo_url?: string | null
+          position: string
+          slug: string
+          sport: string
+          team: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          jersey_number?: number | null
+          league?: string
+          name?: string
+          photo_url?: string | null
+          position?: string
+          slug?: string
+          sport?: string
+          team?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      athlete_season_stats: {
+        Row: {
+          athlete_id: string
+          competition: string
+          created_at: string
+          games_played: number | null
+          games_started: number | null
+          id: string
+          season: string
+          stats: Json | null
+          updated_at: string
+        }
+        Insert: {
+          athlete_id: string
+          competition: string
+          created_at?: string
+          games_played?: number | null
+          games_started?: number | null
+          id?: string
+          season: string
+          stats?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          competition?: string
+          created_at?: string
+          games_played?: number | null
+          games_started?: number | null
+          id?: string
+          season?: string
+          stats?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "athlete_season_stats_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athlete_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      athlete_transfer_rumors: {
+        Row: {
+          athlete_id: string
+          created_at: string
+          headline: string
+          id: string
+          reliability: string | null
+          rumor_date: string
+          source: string | null
+          source_url: string | null
+          status: string | null
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          athlete_id: string
+          created_at?: string
+          headline: string
+          id?: string
+          reliability?: string | null
+          rumor_date?: string
+          source?: string | null
+          source_url?: string | null
+          status?: string | null
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          created_at?: string
+          headline?: string
+          id?: string
+          reliability?: string | null
+          rumor_date?: string
+          source?: string | null
+          source_url?: string | null
+          status?: string | null
+          summary?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "athlete_transfer_rumors_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athlete_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      athlete_upcoming_matches: {
+        Row: {
+          athlete_id: string
+          competition: string
+          created_at: string
+          home_away: string | null
+          id: string
+          match_date: string
+          opponent: string
+        }
+        Insert: {
+          athlete_id: string
+          competition: string
+          created_at?: string
+          home_away?: string | null
+          id?: string
+          match_date: string
+          opponent: string
+        }
+        Update: {
+          athlete_id?: string
+          competition?: string
+          created_at?: string
+          home_away?: string | null
+          id?: string
+          match_date?: string
+          opponent?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "athlete_upcoming_matches_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athlete_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_topics: {
         Row: {
           author: string
