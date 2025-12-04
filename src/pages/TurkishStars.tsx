@@ -211,53 +211,6 @@ const TurkishStars = () => {
         {/* LIVE MATCHES SECTION */}
         <LiveMatchTracker />
 
-        {/* ALERTS SECTION */}
-        {(injuryAlerts.length > 0 || topRumors.length > 0) && (
-          <div className="mb-8 space-y-3">
-            {injuryAlerts.map((alert) => {
-              const athlete = getAthlete(alert.athlete_id);
-              if (!athlete) return null;
-              return (
-                <div
-                  key={alert.id}
-                  className="flex items-center gap-3 p-4 rounded-lg bg-red-50 border border-red-200"
-                >
-                  <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                  <div className="flex-1">
-                    <span className="font-semibold text-red-600">{athlete.name}</span>
-                    <span className="text-foreground mx-2">—</span>
-                    <span className="text-muted-foreground capitalize">{alert.injury_status}</span>
-                    {alert.injury_details && (
-                      <span className="text-muted-foreground ml-2">({alert.injury_details})</span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-            
-            {topRumors.map((rumor) => {
-              const athlete = getAthlete(rumor.athlete_id);
-              if (!athlete) return null;
-              return (
-                <div
-                  key={rumor.id}
-                  className="flex items-center gap-3 p-4 rounded-lg bg-orange-50 border border-orange-200"
-                >
-                  <TrendingUp className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                  <div className="flex-1">
-                    <span className="font-semibold text-orange-600">{athlete.name}</span>
-                    <span className="text-foreground mx-2">—</span>
-                    <span className="text-foreground">{rumor.headline}</span>
-                    <Badge className={`ml-2 ${getReliabilityBadge(rumor.reliability)} text-xs border`}>
-                      {rumor.reliability.replace("_", " ")}
-                    </Badge>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
         {/* ATHLETE CARDS - One Per Row */}
         <div className="flex flex-col gap-4 mb-8">
           {athletes.map((athlete) => {
@@ -388,6 +341,53 @@ const TurkishStars = () => {
             );
           })}
         </div>
+
+        {/* ALERTS SECTION */}
+        {(injuryAlerts.length > 0 || topRumors.length > 0) && (
+          <div className="mb-8 space-y-3">
+            {injuryAlerts.map((alert) => {
+              const athlete = getAthlete(alert.athlete_id);
+              if (!athlete) return null;
+              return (
+                <div
+                  key={alert.id}
+                  className="flex items-center gap-3 p-4 rounded-lg bg-red-50 border border-red-200"
+                >
+                  <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                  <div className="flex-1">
+                    <span className="font-semibold text-red-600">{athlete.name}</span>
+                    <span className="text-foreground mx-2">—</span>
+                    <span className="text-muted-foreground capitalize">{alert.injury_status}</span>
+                    {alert.injury_details && (
+                      <span className="text-muted-foreground ml-2">({alert.injury_details})</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            
+            {topRumors.map((rumor) => {
+              const athlete = getAthlete(rumor.athlete_id);
+              if (!athlete) return null;
+              return (
+                <div
+                  key={rumor.id}
+                  className="flex items-center gap-3 p-4 rounded-lg bg-orange-50 border border-orange-200"
+                >
+                  <TrendingUp className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                  <div className="flex-1">
+                    <span className="font-semibold text-orange-600">{athlete.name}</span>
+                    <span className="text-foreground mx-2">—</span>
+                    <span className="text-foreground">{rumor.headline}</span>
+                    <Badge className={`ml-2 ${getReliabilityBadge(rumor.reliability)} text-xs border`}>
+                      {rumor.reliability.replace("_", " ")}
+                    </Badge>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-6">
           {/* TRANSFER RUMORS */}
