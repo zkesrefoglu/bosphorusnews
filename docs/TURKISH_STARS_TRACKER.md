@@ -55,8 +55,29 @@ The Turkish Stars Tracker is a feature within the Bosphorus News Network sports 
 - Match history with detailed performance data
 - Transfer rumors with reliability badges
 - Injury history timeline
+- Bio section with social media links (Instagram, official website)
+
+**Basketball-Specific Features**:
+- **Season Averages**: PPG, RPG, APG, BPG with NBA rankings (e.g., "15th in NBA")
+- **Career Highs**: Max points, rebounds, assists, blocks displayed in each stat box
+- **Milestones**: Double-doubles, triple-doubles, 20+ point games, 30+ point games
+- Milestones calculated dynamically from `athlete_daily_updates` data
 
 **Route**: `/section/sports/turkish-stars/:slug`
+
+---
+
+#### `src/pages/AdminTST.tsx`
+**Purpose**: Admin dashboard for managing Turkish Stars Tracker data.
+
+**Features**:
+- Tabbed interface for managing all data types
+- CRUD operations for athletes, daily updates, live matches, transfer rumors, upcoming matches, season stats
+- Manual sync triggers for API data fetching (football and NBA stats)
+- "Refresh All Data" button to trigger all sync functions
+- Protected by admin role authentication
+
+**Route**: `/admin/tst`
 
 ---
 
@@ -67,6 +88,7 @@ Contains route definitions:
 ```tsx
 <Route path="/section/sports/turkish-stars" element={<TurkishStars />} />
 <Route path="/section/sports/turkish-stars/:slug" element={<AthleteProfile />} />
+<Route path="/admin/tst" element={<AdminTST />} />
 ```
 
 ---
@@ -117,8 +139,9 @@ Contains route definitions:
 | injury_details | TEXT | Injury description |
 
 **Stats JSONB Structure**:
-- Basketball: `{ "points": 20, "rebounds": 10, "assists": 5 }`
-- Football: `{ "goals": 1, "assists": 0 }`
+- Basketball: `{ "points": 28, "rebounds": 10, "assists": 5, "steals": 2, "blocks": 1, "fg_made": 11, "fg_attempted": 20, "fg_pct": 0.55, "fg3_made": 1, "fg3_attempted": 3, "fg3_pct": 0.33, "ft_made": 6, "ft_attempted": 7, "ft_pct": 0.86, "offensive_rebounds": 3, "defensive_rebounds": 7, "personal_fouls": 3, "turnovers": 3, "plus_minus": 5, "fouls_drawn": 2 }`
+- Football: `{ "goals": 1, "assists": 0, "rating": 7.5 }`
+- Goalkeeper: `{ "saves": 5, "goals_conceded": 1, "clean_sheet": false }`
 
 **RLS Policies**: Public read, admin-only write.
 
@@ -177,10 +200,15 @@ Contains route definitions:
 | games_played | INTEGER | Total games |
 | games_started | INTEGER | Games started |
 | stats | JSONB | Aggregated statistics |
+| rankings | JSONB | League rankings for stats |
 
 **Stats JSONB Structure**:
 - Basketball: `{ "points_per_game": 18.5, "rebounds_per_game": 9.2, ... }`
 - Football: `{ "goals": 5, "assists": 3, "clean_sheets": 2, ... }`
+
+**Rankings JSONB Structure** (Basketball only):
+- `{ "ppg_rank": 15, "rpg_rank": 8, "apg_rank": 12, "bpg_rank": 25 }`
+- Displays as ordinal (e.g., "15th in NBA") under each stat
 
 **RLS Policies**: Public read, admin-only write.
 
@@ -291,6 +319,24 @@ Located in `public/athletes/`:
 - Score display with athlete stats
 - Last event notifications
 - Automatic removal of finished matches
+
+---
+
+## Basketball Milestone Calculations
+
+The athlete profile page dynamically calculates milestones from `athlete_daily_updates`:
+
+### Double-Doubles
+A game where the player reaches 10+ in two statistical categories (points, rebounds, assists, steals, or blocks).
+
+### Triple-Doubles
+A game where the player reaches 10+ in three statistical categories.
+
+### Career Highs
+Maximum single-game values for points, rebounds, assists, and blocks are calculated and displayed in each stat box with "Max: X" label.
+
+### 20+ and 30+ Point Games
+Count of games where the player scored 20 or more / 30 or more points.
 
 ---
 
