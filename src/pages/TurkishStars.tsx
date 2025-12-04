@@ -314,7 +314,7 @@ const TurkishStars = () => {
                               {nextMatch.home_away === "home" ? "vs" : "@"} {nextMatch.opponent}
                             </div>
                             <div className="text-xs text-accent">
-                              {format(new Date(nextMatch.match_date), "MMM d, h:mm a")}
+                              {format(new Date(nextMatch.match_date), "MMM d, h:mm a")} EST
                             </div>
                           </>
                         ) : (
@@ -449,7 +449,7 @@ const TurkishStars = () => {
                       <div className="text-right">
                         <div className="text-sm font-medium text-foreground">{match.competition}</div>
                         <div className="text-xs text-accent">
-                          {format(new Date(match.match_date), "MMM d, h:mm a")}
+                          {format(new Date(match.match_date), "MMM d, h:mm a")} EST
                         </div>
                       </div>
                     </div>
