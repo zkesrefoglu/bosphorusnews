@@ -227,7 +227,7 @@ const Section = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
                   <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{sectionName}</h1>
                   
-                  {/* Turkish Stars Tracker Link - Sports Section Only */}
+                  {/* Turkish Stars Tracker Link - Sports Section Only - TEMPORARILY HIDDEN
                   {sectionName === "Sports" && (
                     <Link 
                       to="/section/sports/turkish-stars"
@@ -238,6 +238,7 @@ const Section = () => {
                       <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-300" />
                     </Link>
                   )}
+                  */}
                 </div>
                 <p className="text-muted-foreground">
                   {articles.length} {articles.length === 1 ? 'article' : 'articles'} in this section
