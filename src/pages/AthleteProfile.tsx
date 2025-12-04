@@ -215,7 +215,7 @@ const AthleteProfilePage = () => {
                     <img 
                       src={athlete.national_photo_url || athlete.photo_url || ''} 
                       alt={athlete.name} 
-                      className="w-full h-full object-cover" 
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" 
                     />
                   ) : (
                     <User className="w-16 h-16 text-muted-foreground" />
