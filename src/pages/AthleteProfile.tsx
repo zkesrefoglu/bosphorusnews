@@ -284,7 +284,7 @@ const AthleteProfilePage = () => {
               <div className="flex flex-col md:flex-row gap-6 flex-1">
                 {/* Avatar - National Photo */}
                 <div className="flex-shrink-0">
-                  <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full bg-secondary flex items-center justify-center overflow-hidden border-4 border-accent/30 mx-auto md:mx-0 shadow-xl">
+                  <div className={`relative w-28 h-28 md:w-36 md:h-36 rounded-full flex items-center justify-center overflow-hidden border-4 border-accent/30 mx-auto md:mx-0 shadow-xl ${(athlete.national_photo_url || athlete.photo_url) ? 'bg-transparent' : 'bg-secondary'}`}>
                     {(athlete.national_photo_url || athlete.photo_url) ? (
                       <img 
                         src={athlete.national_photo_url || athlete.photo_url || ''} 
