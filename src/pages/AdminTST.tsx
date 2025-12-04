@@ -582,7 +582,7 @@ export default function AdminTST() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Fetches stats from FotMob API for: Arda Güler, Kenan Yıldız, Ferdi Kadıoğlu, Can Uzun, Berke Özer
+                    Fetches stats from API-Football for: Arda Guler, Kenan Yildiz, Ferdi Kadioglu, Can Uzun, Berke Ozer
                   </p>
                   <Button 
                     onClick={() => triggerSync('football')} 
