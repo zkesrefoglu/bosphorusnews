@@ -258,10 +258,45 @@ Located in `public/athletes/`:
 
 ---
 
+## Live Match Tracking
+
+### Table: `athlete_live_matches`
+**Purpose**: Real-time match tracking with live score updates.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID | Primary key |
+| athlete_id | UUID | Foreign key to athlete_profiles |
+| opponent | TEXT | Opposing team |
+| competition | TEXT | Competition name |
+| home_away | TEXT | "home" or "away" |
+| match_status | TEXT | "scheduled", "live", "halftime", "finished" |
+| kickoff_time | TIMESTAMP | Match start time |
+| current_minute | INTEGER | Current match minute |
+| home_score | INTEGER | Home team score |
+| away_score | INTEGER | Away team score |
+| athlete_stats | JSONB | Live athlete performance stats |
+| last_event | TEXT | Most recent match event |
+
+**RLS Policies**: Public read, admin-only write.
+
+**Realtime**: Enabled via `supabase_realtime` publication for instant updates.
+
+### Component: `src/components/LiveMatchTracker.tsx`
+**Purpose**: Displays live matches with real-time score updates.
+
+**Features**:
+- Real-time subscription to match updates
+- Animated live badge with current minute
+- Score display with athlete stats
+- Last event notifications
+- Automatic removal of finished matches
+
+---
+
 ## Future Enhancements
 
 Potential features to consider:
-- Live match tracking
 - Push notifications for match starts
 - Historical performance charts
 - Comparison tool between athletes

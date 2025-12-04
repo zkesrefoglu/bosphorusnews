@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { LiveMatchTracker } from "@/components/LiveMatchTracker";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, AlertTriangle, Calendar, TrendingUp, ExternalLink, User } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -197,6 +198,9 @@ const TurkishStars = () => {
             {format(new Date(), "EEEE, MMMM d, yyyy")}
           </div>
         </div>
+
+        {/* LIVE MATCHES SECTION */}
+        <LiveMatchTracker />
 
         {/* ALERTS SECTION */}
         {(injuryAlerts.length > 0 || topRumors.length > 0) && (
