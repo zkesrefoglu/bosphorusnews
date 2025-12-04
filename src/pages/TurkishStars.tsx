@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { LiveMatchTracker } from "@/components/LiveMatchTracker";
+import { FormGraphic } from "@/components/FormGraphic";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, AlertTriangle, Calendar, TrendingUp, ExternalLink, User } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -98,6 +99,10 @@ const TurkishStars = () => {
 
   const getLastMatch = (athleteId: string): DailyUpdate | undefined => {
     return dailyUpdates.find((u) => u.athlete_id === athleteId && u.played);
+  };
+
+  const getRecentMatches = (athleteId: string): DailyUpdate[] => {
+    return dailyUpdates.filter((u) => u.athlete_id === athleteId && u.played);
   };
 
   const getNextMatch = (athleteId: string): UpcomingMatch | undefined => {
@@ -259,6 +264,7 @@ const TurkishStars = () => {
             const latestUpdate = getLatestUpdate(athlete.id);
             const lastMatch = getLastMatch(athlete.id);
             const nextMatch = getNextMatch(athlete.id);
+            const recentMatches = getRecentMatches(athlete.id);
             const injuryStatus = latestUpdate?.injury_status || "healthy";
             const sportEmoji = athlete.sport === "basketball" ? "🏀" : "⚽";
 
@@ -292,7 +298,7 @@ const TurkishStars = () => {
                     </div>
 
                     {/* Data Fields */}
-                    <div className="flex-1 p-4 grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 items-center">
+                    <div className="flex-1 p-4 grid grid-cols-2 md:grid-cols-6 gap-3 md:gap-4 items-center">
                       {/* Athlete Name & Team */}
                       <div className="col-span-2 md:col-span-1">
                         <h3 className="font-headline font-bold text-lg text-foreground truncate group-hover:text-accent transition-colors">
@@ -329,6 +335,14 @@ const TurkishStars = () => {
                           ) : "—"}
                         </div>
                       </div>
+
+                      {/* Form Graphic (Football only) */}
+                      {athlete.sport === "football" && (
+                        <div>
+                          <div className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-ui mb-1">Form</div>
+                          <FormGraphic matches={recentMatches} maxMatches={5} />
+                        </div>
+                      )}
 
                       {/* Status */}
                       <div>
