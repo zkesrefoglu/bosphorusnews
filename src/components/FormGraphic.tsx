@@ -36,11 +36,10 @@ const getOpponentAbbrev = (opponent: string | null): string => {
 };
 
 export const FormGraphic = ({ matches, maxMatches = 5 }: FormGraphicProps) => {
-  // Filter to played matches with ratings, take most recent
+  // Filter to played matches with ratings, take most recent (latest first, left to right)
   const recentMatches = matches
     .filter((m) => m.played && m.rating !== null)
-    .slice(0, maxMatches)
-    .reverse(); // Show oldest to newest (left to right)
+    .slice(0, maxMatches);
 
   if (recentMatches.length === 0) {
     return (
