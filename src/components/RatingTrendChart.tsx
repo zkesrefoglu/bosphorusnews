@@ -99,7 +99,7 @@ export const RatingTrendChart = ({ matches, maxMatches = 15 }: RatingTrendChartP
             <Line
               type="linear"
               dataKey="trend"
-              stroke="hsl(var(--foreground))"
+              stroke="hsl(var(--muted-foreground))"
               strokeWidth={1}
               dot={false}
               activeDot={false}
