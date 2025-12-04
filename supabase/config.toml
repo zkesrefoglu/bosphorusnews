@@ -20,3 +20,12 @@ verify_jwt = false
 
 [functions.og-image]
 verify_jwt = false
+
+[functions.test-balldontlie]
+verify_jwt = false
+
+[functions.fetch-football-stats]
+verify_jwt = false
+
+[functions.fetch-nba-stats]
+verify_jwt = false

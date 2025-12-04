@@ -162,7 +162,9 @@ export type Database = {
       athlete_profiles: {
         Row: {
           action_photo_url: string | null
+          balldontlie_id: number | null
           created_at: string
+          fotmob_id: number | null
           id: string
           jersey_number: number | null
           league: string
@@ -178,7 +180,9 @@ export type Database = {
         }
         Insert: {
           action_photo_url?: string | null
+          balldontlie_id?: number | null
           created_at?: string
+          fotmob_id?: number | null
           id?: string
           jersey_number?: number | null
           league: string
@@ -194,7 +198,9 @@ export type Database = {
         }
         Update: {
           action_photo_url?: string | null
+          balldontlie_id?: number | null
           created_at?: string
+          fotmob_id?: number | null
           id?: string
           jersey_number?: number | null
           league?: string

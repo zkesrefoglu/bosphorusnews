@@ -14,6 +14,7 @@ import Watermark from "./pages/Watermark";
 import NotFound from "./pages/NotFound";
 import TurkishStars from "./pages/TurkishStars";
 import AthleteProfile from "./pages/AthleteProfile";
+import AdminTST from "./pages/AdminTST";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/section/sports/turkish-stars/:slug" element={<AthleteProfile />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/tst" element={<AdminTST />} />
           {/* TEMPORARILY HIDDEN - Uncomment when payment account is finalized */}
           {/* <Route path="/coffee" element={<Coffee />} /> */}
           <Route path="/watermark" element={<Watermark />} />
