@@ -18,6 +18,7 @@ interface AthleteProfile {
   photo_url: string | null;
   national_photo_url: string | null;
   action_photo_url: string | null;
+  team_logo_url: string | null;
   position: string;
   jersey_number: number | null;
 }
@@ -240,125 +241,95 @@ const TurkishStars = () => {
           </div>
         )}
 
-        {/* MAIN TABLE */}
-        <Card className="mb-8 bg-card border-border overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border bg-secondary">
-                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Player</th>
-                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
-                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Last Match</th>
-                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Performance</th>
-                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden sm:table-cell">Next Up</th>
-                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-12"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {athletes.map((athlete) => {
-                  const latestUpdate = getLatestUpdate(athlete.id);
-                  const lastMatch = getLastMatch(athlete.id);
-                  const nextMatch = getNextMatch(athlete.id);
-                  const injuryStatus = latestUpdate?.injury_status || "healthy";
+        {/* ATHLETE CARDS GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {athletes.map((athlete) => {
+            const latestUpdate = getLatestUpdate(athlete.id);
+            const nextMatch = getNextMatch(athlete.id);
+            const injuryStatus = latestUpdate?.injury_status || "healthy";
 
-                  return (
-                    <tr key={athlete.id} className="border-b border-border hover:bg-secondary/50 transition-colors">
-                      {/* Player */}
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="relative w-12 h-12 rounded-full bg-secondary flex items-center justify-center overflow-hidden border-2 border-border">
-                            {athlete.photo_url ? (
-                              <img src={athlete.photo_url} alt={athlete.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <User className="w-6 h-6 text-muted-foreground" />
-                            )}
-                            {athlete.jersey_number && (
-                              <div className="absolute -bottom-1 -right-1 bg-accent text-accent-foreground text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                                {athlete.jersey_number}
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <div className="font-semibold text-foreground">{athlete.name}</div>
-                            <div className="text-sm text-muted-foreground">{athlete.team}</div>
-                            <div className="text-xs text-muted-foreground">{athlete.position}</div>
-                          </div>
+            return (
+              <Link
+                key={athlete.id}
+                to={`/section/sports/turkish-stars/${athlete.slug}`}
+                className="group"
+              >
+                <Card className="bg-card border-border overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                  <div className="flex p-4 gap-4">
+                    {/* 200x200 Profile Photo - Card Style */}
+                    <div className="relative w-[200px] h-[200px] flex-shrink-0 bg-secondary overflow-hidden">
+                      {athlete.photo_url ? (
+                        <img 
+                          src={athlete.photo_url} 
+                          alt={athlete.name} 
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" 
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <User className="w-16 h-16 text-muted-foreground" />
                         </div>
-                      </td>
+                      )}
+                      {athlete.jersey_number && (
+                        <div className="absolute bottom-2 right-2 bg-accent text-accent-foreground text-sm font-bold w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
+                          {athlete.jersey_number}
+                        </div>
+                      )}
+                    </div>
 
-                      {/* Status */}
-                      <td className="p-4">
+                    {/* Athlete Info + Team Logo */}
+                    <div className="flex-1 flex flex-col justify-between min-w-0">
+                      {/* Top: Name and Team Logo */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <h3 className="font-headline font-bold text-lg text-foreground truncate">
+                            {athlete.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">{athlete.team}</p>
+                          <p className="text-xs text-muted-foreground">{athlete.position}</p>
+                        </div>
+                        
+                        {/* Team Logo */}
+                        {athlete.team_logo_url && (
+                          <div className="w-16 h-16 flex-shrink-0 bg-background rounded-lg p-1 border border-border">
+                            <img 
+                              src={athlete.team_logo_url} 
+                              alt={`${athlete.team} logo`}
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Middle: Status Badge */}
+                      <div className="mt-3">
                         <Badge className={`${getInjuryColor(injuryStatus)} border capitalize`}>
                           {injuryStatus}
                         </Badge>
-                      </td>
+                      </div>
 
-                      {/* Last Match */}
-                      <td className="p-4 hidden md:table-cell">
-                        {lastMatch ? (
-                          <div>
-                            <div className="font-medium text-foreground">{lastMatch.match_result || "—"}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {lastMatch.home_away === "home" ? "vs" : "@"} {lastMatch.opponent}
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </td>
-
-                      {/* Performance */}
-                      <td className="p-4 hidden lg:table-cell">
-                        {lastMatch ? (
-                          <div>
-                            <div className="font-mono text-foreground">
-                              {formatStats(athlete, lastMatch.stats)}
-                            </div>
-                            {athlete.sport === "football" && lastMatch.rating && (
-                              <div className="text-sm text-accent">{lastMatch.rating.toFixed(1)} rating</div>
-                            )}
-                            {lastMatch.minutes_played && (
-                              <div className="text-xs text-muted-foreground">{lastMatch.minutes_played}'</div>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </td>
-
-                      {/* Next Up */}
-                      <td className="p-4 hidden sm:table-cell">
+                      {/* Bottom: Next Match Preview */}
+                      <div className="mt-3 pt-3 border-t border-border">
                         {nextMatch ? (
-                          <div>
+                          <div className="text-sm">
+                            <div className="text-muted-foreground text-xs uppercase tracking-wide mb-1">Next Up</div>
                             <div className="font-medium text-foreground">
                               {nextMatch.home_away === "home" ? "vs" : "@"} {nextMatch.opponent}
                             </div>
-                            <div className="text-sm text-muted-foreground">{nextMatch.competition}</div>
                             <div className="text-xs text-muted-foreground">
                               {format(new Date(nextMatch.match_date), "MMM d, h:mm a")}
                             </div>
                           </div>
                         ) : (
-                          <span className="text-muted-foreground">—</span>
+                          <div className="text-sm text-muted-foreground">No upcoming match</div>
                         )}
-                      </td>
-
-                      {/* Link */}
-                      <td className="p-4">
-                        <Link
-                          to={`/section/sports/turkish-stars/${athlete.slug}`}
-                          className="text-accent hover:text-accent-light transition-colors"
-                        >
-                          <ExternalLink className="w-5 h-5" />
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
           {/* TRANSFER RUMORS */}
