@@ -230,7 +230,7 @@ const TurkishStars = () => {
                 <Card className="bg-card border-border overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.01] hover:shadow-xl hover:border-accent/40">
                   <div className="flex items-stretch">
                     {/* Photo */}
-                    <div className={`relative w-[140px] md:w-[180px] h-[160px] md:h-[180px] flex-shrink-0 overflow-hidden ${athlete.photo_url ? 'bg-transparent' : 'bg-secondary'}`}>
+                    <div className="relative w-[140px] md:w-[180px] h-[160px] md:h-[180px] flex-shrink-0 overflow-hidden bg-white">
                       {athlete.photo_url ? (
                         <img 
                           src={athlete.photo_url} 
