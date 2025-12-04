@@ -103,7 +103,7 @@ export default function AdminTST() {
   const [upcomingMatches, setUpcomingMatches] = useState<UpcomingMatch[]>([]);
   const [liveMatches, setLiveMatches] = useState<LiveMatch[]>([]);
   const [seasonStats, setSeasonStats] = useState<SeasonStats[]>([]);
-  const [syncStatus, setSyncStatus] = useState<{ football: string; nba: string }>({ football: 'idle', nba: 'idle' });
+  const [syncStatus, setSyncStatus] = useState<{ football: string; nba: string; all: string }>({ football: 'idle', nba: 'idle', all: 'idle' });
 
   useEffect(() => {
     checkAdminStatus();
@@ -202,6 +202,51 @@ export default function AdminTST() {
     }
   };
 
+  const triggerSyncAll = async () => {
+    setSyncStatus(prev => ({ ...prev, all: 'syncing', football: 'syncing', nba: 'syncing' }));
+    
+    try {
+      // Run both syncs in parallel
+      const [footballResult, nbaResult] = await Promise.allSettled([
+        supabase.functions.invoke('fetch-football-stats'),
+        supabase.functions.invoke('fetch-nba-stats'),
+      ]);
+
+      const footballSuccess = footballResult.status === 'fulfilled' && !footballResult.value.error;
+      const nbaSuccess = nbaResult.status === 'fulfilled' && !nbaResult.value.error;
+
+      setSyncStatus(prev => ({
+        ...prev,
+        football: footballSuccess ? 'success' : 'error',
+        nba: nbaSuccess ? 'success' : 'error',
+        all: footballSuccess && nbaSuccess ? 'success' : 'error',
+      }));
+
+      if (footballSuccess && nbaSuccess) {
+        toast({ title: 'Refresh Complete', description: 'All athlete stats updated successfully' });
+      } else {
+        const errors = [];
+        if (!footballSuccess) errors.push('Football');
+        if (!nbaSuccess) errors.push('NBA');
+        toast({ 
+          title: 'Partial Refresh', 
+          description: `${errors.join(' and ')} sync failed`,
+          variant: 'destructive' 
+        });
+      }
+
+      loadAllData();
+      
+      setTimeout(() => setSyncStatus({ football: 'idle', nba: 'idle', all: 'idle' }), 3000);
+    } catch (error: any) {
+      console.error('Sync all error:', error);
+      setSyncStatus({ football: 'error', nba: 'error', all: 'error' });
+      toast({ title: 'Refresh Failed', description: error.message, variant: 'destructive' });
+      
+      setTimeout(() => setSyncStatus({ football: 'idle', nba: 'idle', all: 'idle' }), 3000);
+    }
+  };
+
   const testBalldontlie = async () => {
     try {
       const { data, error } = await supabase.functions.invoke('test-balldontlie');
@@ -230,12 +275,26 @@ export default function AdminTST() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" onClick={() => navigate('/admin')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Admin
+        <div className="flex items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={() => navigate('/admin')}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Admin
+            </Button>
+            <h1 className="text-3xl font-bold">Turkish Stars Tracker Admin</h1>
+          </div>
+          <Button 
+            onClick={triggerSyncAll} 
+            disabled={syncStatus.all === 'syncing'}
+            size="lg"
+            className="gap-2"
+          >
+            {syncStatus.all === 'syncing' && <Loader2 className="h-4 w-4 animate-spin" />}
+            {syncStatus.all === 'success' && <CheckCircle className="h-4 w-4 text-green-500" />}
+            {syncStatus.all === 'error' && <XCircle className="h-4 w-4 text-red-500" />}
+            {syncStatus.all === 'idle' && <RefreshCw className="h-4 w-4" />}
+            {syncStatus.all === 'syncing' ? 'Refreshing...' : 'Refresh All Data'}
           </Button>
-          <h1 className="text-3xl font-bold">Turkish Stars Tracker Admin</h1>
         </div>
 
         <Tabs defaultValue="athletes" className="space-y-6">
