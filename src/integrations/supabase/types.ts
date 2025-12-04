@@ -164,6 +164,7 @@ export type Database = {
           action_photo_url: string | null
           api_football_id: number | null
           balldontlie_id: number | null
+          bio: string | null
           created_at: string
           fotmob_id: number | null
           id: string
@@ -183,6 +184,7 @@ export type Database = {
           action_photo_url?: string | null
           api_football_id?: number | null
           balldontlie_id?: number | null
+          bio?: string | null
           created_at?: string
           fotmob_id?: number | null
           id?: string
@@ -202,6 +204,7 @@ export type Database = {
           action_photo_url?: string | null
           api_football_id?: number | null
           balldontlie_id?: number | null
+          bio?: string | null
           created_at?: string
           fotmob_id?: number | null
           id?: string
