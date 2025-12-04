@@ -184,7 +184,11 @@ const TurkishStars = () => {
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <h1 className="text-3xl md:text-4xl font-headline font-bold flex items-center gap-3">
-            <span className="text-4xl">🇹🇷</span>
+            <img 
+              src="/images/turkish-flag.jpg" 
+              alt="Turkish Flag" 
+              className="w-12 h-8 md:w-14 md:h-10 object-cover rounded shadow-md"
+            />
             <span className="text-accent">
               Turkish Stars Tracker
             </span>
