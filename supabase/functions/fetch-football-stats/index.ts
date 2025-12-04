@@ -11,13 +11,22 @@ const API_FOOTBALL_BASE = 'https://v3.football.api-sports.io';
 // Current season
 const CURRENT_SEASON = 2024;
 
-// Team IDs for upcoming fixtures lookup
+// Team IDs for Turkish players' teams
 const TEAM_IDS: Record<string, number> = {
   'Real Madrid': 541,
   'Juventus': 496,
   'Brighton': 51,
   'Eintracht Frankfurt': 169,
   'Lille': 79,
+};
+
+// Player name mappings to handle Turkish characters
+const PLAYER_NAME_VARIANTS: Record<string, string[]> = {
+  'Arda Guler': ['Arda Güler', 'Guler', 'Güler'],
+  'Kenan Yildiz': ['Kenan Yıldız', 'Yildiz', 'Yıldız'],
+  'Ferdi Kadioglu': ['Ferdi Kadıoğlu', 'Kadioglu', 'Kadıoğlu'],
+  'Can Uzun': ['Can Uzun', 'Uzun'],
+  'Berke Ozer': ['Berke Özer', 'Ozer', 'Özer'],
 };
 
 interface ApiFootballResponse {
@@ -57,18 +66,94 @@ async function fetchApiFootball(endpoint: string, apiKey: string): Promise<ApiFo
   }
 }
 
+async function findPlayerInTeam(
+  teamId: number, 
+  playerName: string, 
+  apiKey: string
+): Promise<number | null> {
+  console.log(`Searching for ${playerName} in team ${teamId}...`);
+  
+  // Get team squad
+  const squadData = await fetchApiFootball(
+    `/players/squads?team=${teamId}`,
+    apiKey
+  );
+  
+  if (!squadData || !squadData.response || squadData.response.length === 0) {
+    console.log(`No squad data for team ${teamId}`);
+    return null;
+  }
+
+  const squad = squadData.response[0]?.players || [];
+  
+  // Get name variants to search for
+  const nameVariants = PLAYER_NAME_VARIANTS[playerName] || [playerName];
+  const searchTerms = [playerName, ...nameVariants].map(n => n.toLowerCase());
+  
+  // Also add last name variations
+  const lastName = playerName.split(' ').pop()?.toLowerCase();
+  if (lastName) {
+    searchTerms.push(lastName);
+  }
+  
+  console.log(`Looking for: ${searchTerms.join(', ')}`);
+  
+  for (const player of squad) {
+    const playerNameLower = player.name?.toLowerCase() || '';
+    
+    for (const term of searchTerms) {
+      if (playerNameLower.includes(term) || term.includes(playerNameLower)) {
+        console.log(`Found player: ${player.name} (ID: ${player.id})`);
+        return player.id;
+      }
+    }
+  }
+  
+  console.log(`Player ${playerName} not found in team squad`);
+  return null;
+}
+
+async function searchPlayerByName(name: string, apiKey: string): Promise<number | null> {
+  console.log(`Searching for player: ${name}`);
+  
+  // Get name variants
+  const nameVariants = PLAYER_NAME_VARIANTS[name] || [name];
+  
+  for (const variant of nameVariants) {
+    const searchData = await fetchApiFootball(
+      `/players?search=${encodeURIComponent(variant)}&season=${CURRENT_SEASON}`,
+      apiKey
+    );
+    
+    if (searchData && searchData.response && searchData.response.length > 0) {
+      // Find Turkish player
+      for (const result of searchData.response) {
+        if (result.player?.nationality === 'Turkey') {
+          console.log(`Found Turkish player: ${result.player.name} (ID: ${result.player.id})`);
+          return result.player.id;
+        }
+      }
+      // Return first result if no Turkish player
+      const player = searchData.response[0].player;
+      console.log(`Found player: ${player.name} (ID: ${player.id})`);
+      return player.id;
+    }
+  }
+  
+  console.log(`Could not find player: ${name}`);
+  return null;
+}
+
 function parsePlayerStats(data: ApiFootballResponse, athleteName: string): { 
-  seasonStats: any[], 
-  recentMatches: any[] 
+  seasonStats: any[]
 } {
   const seasonStats: any[] = [];
-  const recentMatches: any[] = [];
   
   try {
     const playerResponse = data.response?.[0];
     if (!playerResponse) {
       console.log(`No player data found for ${athleteName}`);
-      return { seasonStats, recentMatches };
+      return { seasonStats };
     }
 
     const statistics = playerResponse.statistics || [];
@@ -109,66 +194,55 @@ function parsePlayerStats(data: ApiFootballResponse, athleteName: string): {
     console.error(`Error parsing player stats for ${athleteName}:`, error);
   }
   
-  return { seasonStats, recentMatches };
+  return { seasonStats };
 }
 
-async function fetchPlayerFixtures(
+async function fetchTeamFixtures(
   apiKey: string, 
-  playerId: number, 
-  teamName: string
+  teamName: string,
+  type: 'next' | 'last'
 ): Promise<any[]> {
   const fixtures: any[] = [];
   
   try {
-    // Get team ID
-    const teamId = TEAM_IDS[teamName];
+    let teamId = TEAM_IDS[teamName];
+    
     if (!teamId) {
-      console.log(`No team ID found for ${teamName}, searching...`);
-      // Try to find team by name
+      console.log(`No cached team ID for ${teamName}, searching...`);
       const teamSearch = await fetchApiFootball(`/teams?search=${encodeURIComponent(teamName)}`, apiKey);
-      if (teamSearch?.response?.[0]?.team?.id) {
-        const foundTeamId = teamSearch.response[0].team.id;
-        console.log(`Found team ID ${foundTeamId} for ${teamName}`);
-        
-        // Fetch next 5 fixtures
-        const fixturesData = await fetchApiFootball(
-          `/fixtures?team=${foundTeamId}&next=5`,
-          apiKey
-        );
-        
-        if (fixturesData?.response) {
-          for (const fixture of fixturesData.response) {
-            const isHome = fixture.teams?.home?.id === foundTeamId;
-            const opponent = isHome ? fixture.teams?.away?.name : fixture.teams?.home?.name;
-            
-            fixtures.push({
-              match_date: fixture.fixture?.date,
-              opponent: opponent || 'Unknown',
-              competition: fixture.league?.name || 'Unknown',
-              home_away: isHome ? 'home' : 'away',
-            });
-          }
-        }
-      }
-    } else {
-      // Use known team ID
-      const fixturesData = await fetchApiFootball(
-        `/fixtures?team=${teamId}&next=5`,
-        apiKey
-      );
+      teamId = teamSearch?.response?.[0]?.team?.id;
       
-      if (fixturesData?.response) {
-        for (const fixture of fixturesData.response) {
-          const isHome = fixture.teams?.home?.id === teamId;
-          const opponent = isHome ? fixture.teams?.away?.name : fixture.teams?.home?.name;
-          
-          fixtures.push({
-            match_date: fixture.fixture?.date,
-            opponent: opponent || 'Unknown',
-            competition: fixture.league?.name || 'Unknown',
-            home_away: isHome ? 'home' : 'away',
-          });
-        }
+      if (teamId) {
+        console.log(`Found team ID ${teamId} for ${teamName}`);
+      }
+    }
+    
+    if (!teamId) {
+      console.log(`Could not find team ID for ${teamName}`);
+      return fixtures;
+    }
+
+    const fixturesData = await fetchApiFootball(
+      `/fixtures?team=${teamId}&${type}=5`,
+      apiKey
+    );
+    
+    if (fixturesData && fixturesData.response) {
+      for (const fixture of fixturesData.response) {
+        const isHome = fixture.teams?.home?.id === teamId;
+        const opponent = isHome ? fixture.teams?.away?.name : fixture.teams?.home?.name;
+        const homeScore = fixture.goals?.home ?? 0;
+        const awayScore = fixture.goals?.away ?? 0;
+        
+        fixtures.push({
+          date: fixture.fixture?.date ? new Date(fixture.fixture.date).toISOString().split('T')[0] : null,
+          match_date: fixture.fixture?.date,
+          opponent: opponent || 'Unknown',
+          competition: fixture.league?.name || 'Unknown',
+          home_away: isHome ? 'home' : 'away',
+          match_result: type === 'last' ? `${homeScore}-${awayScore}` : null,
+          played: fixture.fixture?.status?.short === 'FT',
+        });
       }
     }
   } catch (error) {
@@ -176,59 +250,6 @@ async function fetchPlayerFixtures(
   }
   
   return fixtures;
-}
-
-async function fetchRecentMatches(
-  apiKey: string,
-  playerId: number,
-  teamName: string
-): Promise<any[]> {
-  const matches: any[] = [];
-  
-  try {
-    // Get team ID
-    let teamId = TEAM_IDS[teamName];
-    if (!teamId) {
-      const teamSearch = await fetchApiFootball(`/teams?search=${encodeURIComponent(teamName)}`, apiKey);
-      teamId = teamSearch?.response?.[0]?.team?.id;
-    }
-    
-    if (!teamId) {
-      console.log(`Could not find team ID for ${teamName}`);
-      return matches;
-    }
-
-    // Fetch last 5 fixtures
-    const fixturesData = await fetchApiFootball(
-      `/fixtures?team=${teamId}&last=5`,
-      apiKey
-    );
-    
-    if (fixturesData?.response) {
-      for (const fixture of fixturesData.response) {
-        const isHome = fixture.teams?.home?.id === teamId;
-        const opponent = isHome ? fixture.teams?.away?.name : fixture.teams?.home?.name;
-        const homeScore = fixture.goals?.home ?? 0;
-        const awayScore = fixture.goals?.away ?? 0;
-        
-        matches.push({
-          date: fixture.fixture?.date ? new Date(fixture.fixture.date).toISOString().split('T')[0] : null,
-          opponent: opponent || 'Unknown',
-          competition: fixture.league?.name || 'Unknown',
-          home_away: isHome ? 'home' : 'away',
-          match_result: `${homeScore}-${awayScore}`,
-          played: fixture.fixture?.status?.short === 'FT',
-          minutes_played: null, // Would need player-specific fixture data
-          rating: null,
-          stats: {}, // Would need player-specific fixture data
-        });
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching recent matches:', error);
-  }
-  
-  return matches;
 }
 
 Deno.serve(async (req) => {
@@ -252,7 +273,7 @@ Deno.serve(async (req) => {
     // Get all football athletes from database
     const { data: athletes, error: athletesError } = await supabase
       .from('athlete_profiles')
-      .select('id, slug, api_football_id, fotmob_id, name, team')
+      .select('id, slug, api_football_id, name, team')
       .eq('sport', 'football');
 
     if (athletesError) {
@@ -265,28 +286,35 @@ Deno.serve(async (req) => {
 
     for (const athlete of athletes || []) {
       try {
-        const playerId = athlete.api_football_id || athlete.fotmob_id;
+        let playerId = athlete.api_football_id;
         
+        // If no API-Football ID, try to find the player
         if (!playerId) {
-          console.log(`No API ID found for ${athlete.name}, will try to search...`);
+          console.log(`No API-Football ID for ${athlete.name}, searching...`);
           
-          // Try to find player by name
-          const searchData = await fetchApiFootball(
-            `/players?search=${encodeURIComponent(athlete.name)}&season=${CURRENT_SEASON}`,
-            apiFootballKey
-          );
+          // First try team squad search
+          const teamId = TEAM_IDS[athlete.team];
+          if (teamId) {
+            playerId = await findPlayerInTeam(teamId, athlete.name, apiFootballKey);
+          }
           
-          if (searchData?.response?.[0]?.player?.id) {
-            const foundId = searchData.response[0].player.id;
-            console.log(`Found API-Football ID ${foundId} for ${athlete.name}`);
-            
-            // Update the database with the found ID
-            await supabase
+          // Fallback to name search
+          if (!playerId) {
+            playerId = await searchPlayerByName(athlete.name, apiFootballKey);
+          }
+          
+          if (playerId) {
+            // Save the found ID to database
+            const { error: updateError } = await supabase
               .from('athlete_profiles')
-              .update({ api_football_id: foundId })
+              .update({ api_football_id: playerId })
               .eq('id', athlete.id);
             
-            athlete.api_football_id = foundId;
+            if (updateError) {
+              console.error(`Failed to save API-Football ID for ${athlete.name}:`, updateError);
+            } else {
+              console.log(`Saved API-Football ID ${playerId} for ${athlete.name}`);
+            }
           } else {
             console.log(`Could not find ${athlete.name} in API-Football`);
             results.push({ athlete: athlete.name, status: 'not_found' });
@@ -294,29 +322,19 @@ Deno.serve(async (req) => {
           }
         }
 
-        console.log(`Processing ${athlete.name} (API-Football ID: ${athlete.api_football_id})...`);
+        console.log(`Processing ${athlete.name} (API-Football ID: ${playerId})...`);
         
         // Fetch player statistics for current season
         const playerData = await fetchApiFootball(
-          `/players?id=${athlete.api_football_id}&season=${CURRENT_SEASON}`,
+          `/players?id=${playerId}&season=${CURRENT_SEASON}`,
           apiFootballKey
         );
         
-        if (!playerData || playerData.results === 0) {
-          console.log(`No data returned for ${athlete.name}`);
-          results.push({ athlete: athlete.name, status: 'no_data' });
-          continue;
-        }
-
         // Parse player stats
-        const { seasonStats } = parsePlayerStats(playerData, athlete.name);
+        const { seasonStats } = playerData ? parsePlayerStats(playerData, athlete.name) : { seasonStats: [] };
         
         // Fetch recent matches (team-based)
-        const recentMatches = await fetchRecentMatches(
-          apiFootballKey,
-          athlete.api_football_id,
-          athlete.team
-        );
+        const recentMatches = await fetchTeamFixtures(apiFootballKey, athlete.team, 'last');
 
         // Upsert recent matches as daily updates
         for (const match of recentMatches) {
@@ -331,9 +349,9 @@ Deno.serve(async (req) => {
                 home_away: match.home_away,
                 match_result: match.match_result,
                 played: match.played,
-                minutes_played: match.minutes_played,
-                rating: match.rating,
-                stats: match.stats,
+                minutes_played: null,
+                rating: null,
+                stats: {},
               }, {
                 onConflict: 'athlete_id,date',
                 ignoreDuplicates: false,
@@ -367,36 +385,35 @@ Deno.serve(async (req) => {
         }
 
         // Fetch and upsert upcoming matches
-        const upcomingMatches = await fetchPlayerFixtures(
-          apiFootballKey,
-          athlete.api_football_id,
-          athlete.team
-        );
+        const upcomingMatches = await fetchTeamFixtures(apiFootballKey, athlete.team, 'next');
         
-        // First delete old upcoming matches for this athlete
+        // Delete old upcoming matches for this athlete
         await supabase
           .from('athlete_upcoming_matches')
           .delete()
           .eq('athlete_id', athlete.id);
 
         for (const match of upcomingMatches) {
-          const { error: matchError } = await supabase
-            .from('athlete_upcoming_matches')
-            .insert({
-              athlete_id: athlete.id,
-              match_date: match.match_date,
-              opponent: match.opponent,
-              competition: match.competition,
-              home_away: match.home_away,
-            });
+          if (match.match_date) {
+            const { error: matchError } = await supabase
+              .from('athlete_upcoming_matches')
+              .insert({
+                athlete_id: athlete.id,
+                match_date: match.match_date,
+                opponent: match.opponent,
+                competition: match.competition,
+                home_away: match.home_away,
+              });
 
-          if (matchError) {
-            console.error(`Error inserting upcoming match for ${athlete.name}:`, matchError);
+            if (matchError) {
+              console.error(`Error inserting upcoming match for ${athlete.name}:`, matchError);
+            }
           }
         }
 
         results.push({
           athlete: athlete.name,
+          api_football_id: playerId,
           status: 'success',
           matches_processed: recentMatches.length,
           upcoming_matches: upcomingMatches.length,
@@ -404,7 +421,7 @@ Deno.serve(async (req) => {
         });
 
         // Add a small delay between requests to respect rate limits
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 300));
 
       } catch (playerError: any) {
         console.error(`Error processing ${athlete.name}:`, playerError);
