@@ -436,21 +436,21 @@ const AthleteProfilePage = () => {
 
                             return (
                               <>
-                                <div className="text-center bg-background/90 border border-accent/30 rounded-lg px-2 py-2">
-                                  <div className="text-xl font-bold text-accent">{doubleDoubles}</div>
-                                  <div className="text-[11px] text-foreground/80 font-medium">Double-Doubles</div>
+                                <div className="text-center bg-background/80 rounded-lg px-2 py-1.5">
+                                  <div className="text-base font-bold text-accent">{doubleDoubles}</div>
+                                  <div className="text-[9px] text-muted-foreground">Double-Doubles</div>
                                 </div>
-                                <div className="text-center bg-background/90 border border-accent/30 rounded-lg px-2 py-2">
-                                  <div className="text-xl font-bold text-accent">{tripleDoubles}</div>
-                                  <div className="text-[11px] text-foreground/80 font-medium">Triple-Doubles</div>
+                                <div className="text-center bg-background/80 rounded-lg px-2 py-1.5">
+                                  <div className="text-base font-bold text-accent">{tripleDoubles}</div>
+                                  <div className="text-[9px] text-muted-foreground">Triple-Doubles</div>
                                 </div>
-                                <div className="text-center bg-background/90 border border-accent/30 rounded-lg px-2 py-2">
-                                  <div className="text-xl font-bold text-accent">{twentyPtGames}</div>
-                                  <div className="text-[11px] text-foreground/80 font-medium">20+ Pts</div>
+                                <div className="text-center bg-background/80 rounded-lg px-2 py-1.5">
+                                  <div className="text-base font-bold text-accent">{twentyPtGames}</div>
+                                  <div className="text-[9px] text-muted-foreground">20+ Pts</div>
                                 </div>
-                                <div className="text-center bg-background/90 border border-accent/30 rounded-lg px-2 py-2">
-                                  <div className="text-xl font-bold text-accent">{thirtyPtGames}</div>
-                                  <div className="text-[11px] text-foreground/80 font-medium">30+ Pts</div>
+                                <div className="text-center bg-background/80 rounded-lg px-2 py-1.5">
+                                  <div className="text-base font-bold text-accent">{thirtyPtGames}</div>
+                                  <div className="text-[9px] text-muted-foreground">30+ Pts</div>
                                 </div>
                               </>
                             );
