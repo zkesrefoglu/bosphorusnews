@@ -168,10 +168,12 @@ export type Database = {
           created_at: string
           fotmob_id: number | null
           id: string
+          instagram: string | null
           jersey_number: number | null
           league: string
           name: string
           national_photo_url: string | null
+          official_link: string | null
           photo_url: string | null
           position: string
           slug: string
@@ -188,10 +190,12 @@ export type Database = {
           created_at?: string
           fotmob_id?: number | null
           id?: string
+          instagram?: string | null
           jersey_number?: number | null
           league: string
           name: string
           national_photo_url?: string | null
+          official_link?: string | null
           photo_url?: string | null
           position: string
           slug: string
@@ -208,10 +212,12 @@ export type Database = {
           created_at?: string
           fotmob_id?: number | null
           id?: string
+          instagram?: string | null
           jersey_number?: number | null
           league?: string
           name?: string
           national_photo_url?: string | null
+          official_link?: string | null
           photo_url?: string | null
           position?: string
           slug?: string

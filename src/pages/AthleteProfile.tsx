@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, AlertTriangle, Calendar, TrendingUp, User, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, AlertTriangle, Calendar, TrendingUp, User, ChevronDown, ChevronUp, Instagram, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -22,6 +22,8 @@ interface AthleteProfile {
   position: string;
   jersey_number: number | null;
   bio: string | null;
+  instagram: string | null;
+  official_link: string | null;
 }
 
 interface SeasonStats {
@@ -270,8 +272,7 @@ const AthleteProfilePage = () => {
 
               {/* Info */}
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl md:text-4xl font-headline font-bold text-foreground mb-2 flex items-center justify-center md:justify-start gap-2">
-                  <span className="text-2xl">🇹🇷</span>
+                <h1 className="text-3xl md:text-4xl font-headline font-bold text-foreground mb-2">
                   {athlete.name}
                 </h1>
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-4">
@@ -363,11 +364,39 @@ const AthleteProfilePage = () => {
         </div>
 
         {/* BIO SECTION */}
-        {athlete.bio && (
+        {(athlete.bio || athlete.instagram || athlete.official_link) && (
           <Card className="mb-8 p-6 bg-card border-border">
-            <p className="text-muted-foreground text-justify leading-relaxed">
-              {athlete.bio}
-            </p>
+            {athlete.bio && (
+              <p className="text-muted-foreground text-justify leading-relaxed">
+                {athlete.bio}
+              </p>
+            )}
+            {(athlete.instagram || athlete.official_link) && (
+              <div className={`flex items-center gap-4 ${athlete.bio ? 'mt-4 pt-4 border-t border-border' : ''}`}>
+                {athlete.instagram && (
+                  <a 
+                    href={`https://instagram.com/${athlete.instagram.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-muted-foreground hover:text-accent transition-colors"
+                  >
+                    <Instagram className="w-5 h-5" />
+                    <span className="text-sm">{athlete.instagram}</span>
+                  </a>
+                )}
+                {athlete.official_link && (
+                  <a 
+                    href={athlete.official_link.startsWith('http') ? athlete.official_link : `https://${athlete.official_link}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-muted-foreground hover:text-accent transition-colors"
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                    <span className="text-sm">Official Page</span>
+                  </a>
+                )}
+              </div>
+            )}
           </Card>
         )}
 
