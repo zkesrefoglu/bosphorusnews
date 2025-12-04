@@ -38,7 +38,7 @@ async function findSengunPlayerId(apiKey: string): Promise<number | null> {
 
 async function fetchPlayerStats(playerId: number, apiKey: string, season: number = 2024): Promise<any[]> {
   const data = await fetchWithAuth(
-    `${BALLDONTLIE_BASE_URL}/stats?player_ids[]=${playerId}&seasons[]=${season}&per_page=100`,
+    `${BALLDONTLIE_BASE_URL}/stats?player_id=${playerId}&season=${season}&per_page=100`,
     apiKey
   );
   
@@ -47,7 +47,7 @@ async function fetchPlayerStats(playerId: number, apiKey: string, season: number
 
 async function fetchSeasonAverages(playerId: number, apiKey: string, season: number = 2024): Promise<any> {
   const data = await fetchWithAuth(
-    `${BALLDONTLIE_BASE_URL}/season_averages?player_ids[]=${playerId}&season=${season}`,
+    `${BALLDONTLIE_BASE_URL}/season_averages?player_id=${playerId}&season=${season}`,
     apiKey
   );
   
