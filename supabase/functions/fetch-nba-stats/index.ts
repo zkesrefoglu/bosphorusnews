@@ -37,8 +37,13 @@ async function findSengunPlayerId(apiKey: string): Promise<number | null> {
 }
 
 async function fetchPlayerStats(playerId: number, apiKey: string, season: number = 2025): Promise<any[]> {
+  // Get current season games by date range (October to now)
+  const seasonStartYear = new Date().getMonth() >= 9 ? new Date().getFullYear() : new Date().getFullYear() - 1;
+  const startDate = `${seasonStartYear}-10-01`;
+  const endDate = new Date().toISOString().split('T')[0];
+  
   const data = await fetchWithAuth(
-    `${BALLDONTLIE_BASE_URL}/stats?player_id=${playerId}&season=${season}&per_page=100`,
+    `${BALLDONTLIE_BASE_URL}/stats?player_ids[]=${playerId}&start_date=${startDate}&end_date=${endDate}&per_page=100`,
     apiKey
   );
   
@@ -54,19 +59,27 @@ async function fetchSeasonAverages(playerId: number, apiKey: string, season: num
   return data.data?.[0] || null;
 }
 
-async function fetchRecentGames(teamId: number, apiKey: string): Promise<any[]> {
-  const today = new Date();
-  const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-  
-  const startDate = thirtyDaysAgo.toISOString().split('T')[0];
-  const endDate = today.toISOString().split('T')[0];
+async function fetchRocketsGames(apiKey: string): Promise<Map<string, any>> {
+  // Houston Rockets team ID is 11
+  const rocketsTeamId = 11;
+  const seasonStartYear = new Date().getMonth() >= 9 ? new Date().getFullYear() : new Date().getFullYear() - 1;
+  const startDate = `${seasonStartYear}-10-01`;
+  const endDate = new Date().toISOString().split('T')[0];
   
   const data = await fetchWithAuth(
-    `${BALLDONTLIE_BASE_URL}/games?team_ids[]=${teamId}&start_date=${startDate}&end_date=${endDate}&per_page=20`,
+    `${BALLDONTLIE_BASE_URL}/games?team_ids[]=${rocketsTeamId}&start_date=${startDate}&end_date=${endDate}&per_page=100`,
     apiKey
   );
   
-  return data.data || [];
+  // Create a map of date -> game info for quick lookup
+  const gameMap = new Map<string, any>();
+  for (const game of (data.data || [])) {
+    const gameDate = new Date(game.date).toISOString().split('T')[0];
+    gameMap.set(gameDate, game);
+  }
+  
+  console.log(`Fetched ${gameMap.size} Rockets games for opponent info`);
+  return gameMap;
 }
 
 // Fetch player injury status (ALL-STAR tier)
@@ -109,7 +122,7 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    console.log('Starting NBA stats fetch for Alperen Sengun...');
+    console.log('Starting NBA stats fetch for Alperen Sengun, searching API...');
 
     // Get Alperen Sengun from database
     const { data: athlete, error: athleteError } = await supabase
@@ -124,22 +137,22 @@ Deno.serve(async (req) => {
 
     let playerId = athlete.balldontlie_id;
 
-    // If no balldontlie_id stored, search for it
+    // Always search fresh to ensure we have the correct player ID
+    console.log('Searching for Sengun player ID...');
+    const foundPlayerId = await findSengunPlayerId(apiKey);
+    console.log(`Search result player ID: ${foundPlayerId}, Stored ID: ${playerId}`);
+    
+    if (foundPlayerId && foundPlayerId !== playerId) {
+      console.log(`Updating stored ID from ${playerId} to ${foundPlayerId}`);
+      playerId = foundPlayerId;
+      await supabase
+        .from('athlete_profiles')
+        .update({ balldontlie_id: playerId })
+        .eq('id', athlete.id);
+    }
+
     if (!playerId) {
-      console.log('Searching for Sengun player ID...');
-      playerId = await findSengunPlayerId(apiKey);
-      
-      if (playerId) {
-        // Update the athlete profile with the found ID
-        await supabase
-          .from('athlete_profiles')
-          .update({ balldontlie_id: playerId })
-          .eq('id', athlete.id);
-        
-        console.log(`Found and saved Sengun player ID: ${playerId}`);
-      } else {
-        throw new Error('Could not find Alperen Sengun in Balldontlie API');
-      }
+      throw new Error('Could not find Alperen Sengun in Balldontlie API');
     }
 
     console.log(`Using player ID: ${playerId}`);
@@ -147,24 +160,40 @@ Deno.serve(async (req) => {
     // Fetch player stats for current season (2025-26 season uses 2025)
     const currentSeason = new Date().getFullYear();
     const nbaSeasonYear = new Date().getMonth() >= 9 ? currentSeason : currentSeason - 1; // NBA season starts in October
-    const playerStats = await fetchPlayerStats(playerId, apiKey, nbaSeasonYear);
+    
+    // Fetch both player stats and Rockets games in parallel
+    const [playerStats, gameMap] = await Promise.all([
+      fetchPlayerStats(playerId, apiKey, nbaSeasonYear),
+      fetchRocketsGames(apiKey)
+    ]);
     console.log(`Found ${playerStats.length} game stats for ${nbaSeasonYear}-${nbaSeasonYear + 1} season`);
 
     // Process game stats into daily updates
+    let gamesInserted = 0;
     for (const stat of playerStats) {
       const game = stat.game;
       if (!game) continue;
 
-      const isHome = stat.team?.id === game.home_team?.id;
-      const opponent = isHome 
-        ? (game.visitor_team?.full_name || game.visitor_team?.name || 'Unknown')
-        : (game.home_team?.full_name || game.home_team?.name || 'Unknown');
-      const teamScore = isHome ? game.home_team_score : game.visitor_team_score;
-      const opponentScore = isHome ? game.visitor_team_score : game.home_team_score;
-
       const matchDate = game.date ? new Date(game.date).toISOString().split('T')[0] : null;
-      
       if (!matchDate) continue;
+
+      // Get full game info from gameMap for opponent details
+      const fullGame = gameMap.get(matchDate);
+      
+      // Determine home/away and opponent from fullGame
+      const isHome = fullGame?.home_team?.id === 11; // Rockets team ID
+      const opponent = fullGame 
+        ? (isHome ? fullGame.visitor_team?.full_name : fullGame.home_team?.full_name) || 'Unknown'
+        : 'Unknown';
+      const teamScore = fullGame ? (isHome ? fullGame.home_team_score : fullGame.visitor_team_score) : null;
+      const opponentScore = fullGame ? (isHome ? fullGame.visitor_team_score : fullGame.home_team_score) : null;
+      
+      // Format result as W/L with scores
+      let matchResult = null;
+      if (teamScore !== null && opponentScore !== null) {
+        const won = teamScore > opponentScore;
+        matchResult = `${won ? 'W' : 'L'} ${teamScore}-${opponentScore}`;
+      }
 
       // Determine if player actually played - ensure it's always a boolean
       const minutesStr = stat.min || '0';
@@ -181,9 +210,7 @@ Deno.serve(async (req) => {
           opponent: opponent,
           competition: 'NBA',
           home_away: isHome ? 'home' : 'away',
-          match_result: teamScore !== undefined && opponentScore !== undefined 
-            ? `${teamScore}-${opponentScore}` 
-            : null,
+          match_result: matchResult,
           played: didPlay, // Always boolean now
           minutes_played: minutesPlayed,
           injury_status: 'healthy',
@@ -216,8 +243,11 @@ Deno.serve(async (req) => {
 
       if (updateError) {
         console.error(`Error upserting daily update for ${matchDate}:`, updateError);
+      } else {
+        gamesInserted++;
       }
     }
+    console.log(`Successfully upserted ${gamesInserted} game records`);
 
     // Fetch and store season averages
     const seasonAverages = await fetchSeasonAverages(playerId, apiKey, nbaSeasonYear);
