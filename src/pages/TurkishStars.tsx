@@ -338,15 +338,15 @@ const TurkishStars = () => {
                     </div>
 
                     {/* Team Logo - Right Edge */}
-                    <div className="w-[70px] md:w-[90px] flex-shrink-0 flex items-center justify-center bg-gradient-to-l from-secondary/30 to-transparent border-l border-border/20">
+                    <div className="w-[140px] md:w-[180px] h-[160px] md:h-[180px] flex-shrink-0 flex items-center justify-center bg-white border-l border-border/20">
                       {athlete.team_logo_url ? (
                         <img 
                           src={athlete.team_logo_url} 
                           alt={`${athlete.team} logo`}
-                          className="w-12 h-12 md:w-14 md:h-14 object-contain transition-transform duration-300 group-hover:scale-110"
+                          className="w-24 h-24 md:w-32 md:h-32 object-contain transition-transform duration-300 group-hover:scale-110"
                         />
                       ) : (
-                        <span className="text-3xl">{sportEmoji}</span>
+                        <span className="text-5xl">{sportEmoji}</span>
                       )}
                     </div>
                   </div>
