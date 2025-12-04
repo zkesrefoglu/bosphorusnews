@@ -436,19 +436,19 @@ const AthleteProfilePage = () => {
 
                             return (
                               <>
-                                <div className="text-center bg-background/80 rounded-lg px-2 py-1.5">
+                                <div className="text-center bg-muted/50 rounded-lg px-2 py-1.5">
                                   <div className="text-base font-bold text-accent">{doubleDoubles}</div>
                                   <div className="text-[9px] text-muted-foreground">Double-Doubles</div>
                                 </div>
-                                <div className="text-center bg-background/80 rounded-lg px-2 py-1.5">
+                                <div className="text-center bg-muted/50 rounded-lg px-2 py-1.5">
                                   <div className="text-base font-bold text-accent">{tripleDoubles}</div>
                                   <div className="text-[9px] text-muted-foreground">Triple-Doubles</div>
                                 </div>
-                                <div className="text-center bg-background/80 rounded-lg px-2 py-1.5">
+                                <div className="text-center bg-muted/50 rounded-lg px-2 py-1.5">
                                   <div className="text-base font-bold text-accent">{twentyPtGames}</div>
                                   <div className="text-[9px] text-muted-foreground">20+ Pts</div>
                                 </div>
-                                <div className="text-center bg-background/80 rounded-lg px-2 py-1.5">
+                                <div className="text-center bg-muted/50 rounded-lg px-2 py-1.5">
                                   <div className="text-base font-bold text-accent">{thirtyPtGames}</div>
                                   <div className="text-[9px] text-muted-foreground">30+ Pts</div>
                                 </div>
