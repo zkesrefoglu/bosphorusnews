@@ -970,7 +970,7 @@ const Admin = () => {
                         onCheckedChange={setPostToBluesky}
                       />
                       <Label htmlFor="post-to-bluesky" className="cursor-pointer">
-                        Post to Bluesky when published
+                        Post to Twitter when published
                       </Label>
                     </div>
 
