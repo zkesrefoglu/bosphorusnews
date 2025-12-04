@@ -236,6 +236,7 @@ export type Database = {
           games_played: number | null
           games_started: number | null
           id: string
+          rankings: Json | null
           season: string
           stats: Json | null
           updated_at: string
@@ -247,6 +248,7 @@ export type Database = {
           games_played?: number | null
           games_started?: number | null
           id?: string
+          rankings?: Json | null
           season: string
           stats?: Json | null
           updated_at?: string
@@ -258,6 +260,7 @@ export type Database = {
           games_played?: number | null
           games_started?: number | null
           id?: string
+          rankings?: Json | null
           season?: string
           stats?: Json | null
           updated_at?: string

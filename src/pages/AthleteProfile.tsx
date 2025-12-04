@@ -36,7 +36,15 @@ interface SeasonStats {
   games_played: number | null;
   games_started: number | null;
   stats: any;
+  rankings?: any;
 }
+
+// Helper function to get ordinal suffix (1st, 2nd, 3rd, etc.)
+const getOrdinal = (n: number): string => {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
 
 interface DailyUpdate {
   id: string;
@@ -317,18 +325,30 @@ const AthleteProfilePage = () => {
                           <div className="text-center bg-background/80 rounded-lg px-3 py-2">
                             <div className="text-2xl font-bold text-foreground">{avgPpg?.toFixed(1) || "—"}</div>
                             <div className="text-xs text-muted-foreground uppercase">PPG</div>
+                            {seasonStats[0]?.rankings?.ppg_rank && (
+                              <div className="text-[10px] text-accent font-semibold mt-0.5">{getOrdinal(seasonStats[0].rankings.ppg_rank)} in NBA</div>
+                            )}
                           </div>
                           <div className="text-center bg-background/80 rounded-lg px-3 py-2">
                             <div className="text-2xl font-bold text-foreground">{avgRpg?.toFixed(1) || "—"}</div>
                             <div className="text-xs text-muted-foreground uppercase">RPG</div>
+                            {seasonStats[0]?.rankings?.rpg_rank && (
+                              <div className="text-[10px] text-accent font-semibold mt-0.5">{getOrdinal(seasonStats[0].rankings.rpg_rank)} in NBA</div>
+                            )}
                           </div>
                           <div className="text-center bg-background/80 rounded-lg px-3 py-2">
                             <div className="text-2xl font-bold text-foreground">{avgApg?.toFixed(1) || "—"}</div>
                             <div className="text-xs text-muted-foreground uppercase">APG</div>
+                            {seasonStats[0]?.rankings?.apg_rank && (
+                              <div className="text-[10px] text-accent font-semibold mt-0.5">{getOrdinal(seasonStats[0].rankings.apg_rank)} in NBA</div>
+                            )}
                           </div>
                           <div className="text-center bg-background/80 rounded-lg px-3 py-2">
                             <div className="text-2xl font-bold text-foreground">{avgBpg?.toFixed(1) || "—"}</div>
                             <div className="text-xs text-muted-foreground uppercase">BPG</div>
+                            {seasonStats[0]?.rankings?.bpg_rank && (
+                              <div className="text-[10px] text-accent font-semibold mt-0.5">{getOrdinal(seasonStats[0].rankings.bpg_rank)} in NBA</div>
+                            )}
                           </div>
                         </>
                       )}
