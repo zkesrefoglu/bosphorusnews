@@ -36,7 +36,7 @@ async function findSengunPlayerId(apiKey: string): Promise<number | null> {
   return sengun?.id || null;
 }
 
-async function fetchPlayerStats(playerId: number, apiKey: string, season: number = 2024): Promise<any[]> {
+async function fetchPlayerStats(playerId: number, apiKey: string, season: number = 2025): Promise<any[]> {
   const data = await fetchWithAuth(
     `${BALLDONTLIE_BASE_URL}/stats?player_id=${playerId}&season=${season}&per_page=100`,
     apiKey
@@ -45,7 +45,7 @@ async function fetchPlayerStats(playerId: number, apiKey: string, season: number
   return data.data || [];
 }
 
-async function fetchSeasonAverages(playerId: number, apiKey: string, season: number = 2024): Promise<any> {
+async function fetchSeasonAverages(playerId: number, apiKey: string, season: number = 2025): Promise<any> {
   const data = await fetchWithAuth(
     `${BALLDONTLIE_BASE_URL}/season_averages?player_id=${playerId}&season=${season}`,
     apiKey
@@ -144,9 +144,11 @@ Deno.serve(async (req) => {
 
     console.log(`Using player ID: ${playerId}`);
 
-    // Fetch player stats for current season
-    const playerStats = await fetchPlayerStats(playerId, apiKey, 2024);
-    console.log(`Found ${playerStats.length} game stats`);
+    // Fetch player stats for current season (2025-26 season uses 2025)
+    const currentSeason = new Date().getFullYear();
+    const nbaSeasonYear = new Date().getMonth() >= 9 ? currentSeason : currentSeason - 1; // NBA season starts in October
+    const playerStats = await fetchPlayerStats(playerId, apiKey, nbaSeasonYear);
+    console.log(`Found ${playerStats.length} game stats for ${nbaSeasonYear}-${nbaSeasonYear + 1} season`);
 
     // Process game stats into daily updates
     for (const stat of playerStats) {
@@ -218,14 +220,14 @@ Deno.serve(async (req) => {
     }
 
     // Fetch and store season averages
-    const seasonAverages = await fetchSeasonAverages(playerId, apiKey, 2024);
+    const seasonAverages = await fetchSeasonAverages(playerId, apiKey, nbaSeasonYear);
     
     if (seasonAverages) {
       const { error: statsError } = await supabase
         .from('athlete_season_stats')
         .upsert({
           athlete_id: athlete.id,
-          season: '2024-25',
+          season: `${nbaSeasonYear}-${(nbaSeasonYear + 1).toString().slice(-2)}`,
           competition: 'NBA',
           games_played: seasonAverages.games_played || 0,
           games_started: seasonAverages.games_played || 0, // API doesn't provide starts separately
