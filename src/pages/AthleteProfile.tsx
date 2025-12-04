@@ -21,6 +21,7 @@ interface AthleteProfile {
   action_photo_url: string | null;
   position: string;
   jersey_number: number | null;
+  bio: string | null;
 }
 
 interface SeasonStats {
@@ -360,6 +361,19 @@ const AthleteProfilePage = () => {
             </div>
           </Card>
         </div>
+
+        {/* BIO SECTION */}
+        {athlete.bio && (
+          <Card className="mb-8 p-6 bg-card border-border">
+            <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <User className="w-5 h-5 text-accent" />
+              About
+            </h2>
+            <p className="text-muted-foreground text-justify leading-relaxed">
+              {athlete.bio}
+            </p>
+          </Card>
+        )}
 
         {/* UPCOMING MATCHES */}
         {upcomingMatches.length > 0 && (
