@@ -324,21 +324,25 @@ const AthleteProfilePage = () => {
                         <>
                           {(() => {
                             // Calculate milestones from daily updates
-                            const gamesPlayed = dailyUpdates.filter(u => u.played).length;
-                            const doubleDoubles = dailyUpdates.filter(u => {
-                              if (!u.played || !u.stats) return false;
+                            const playedGames = dailyUpdates.filter(u => u.played && u.stats);
+                            const doubleDoubles = playedGames.filter(u => {
                               const stats = u.stats;
                               const categories = [stats.pts || 0, stats.reb || 0, stats.ast || 0, stats.stl || 0, stats.blk || 0];
                               return categories.filter(c => c >= 10).length >= 2;
                             }).length;
-                            const tripleDoubles = dailyUpdates.filter(u => {
-                              if (!u.played || !u.stats) return false;
+                            const tripleDoubles = playedGames.filter(u => {
                               const stats = u.stats;
                               const categories = [stats.pts || 0, stats.reb || 0, stats.ast || 0, stats.stl || 0, stats.blk || 0];
                               return categories.filter(c => c >= 10).length >= 3;
                             }).length;
-                            const twentyPtGames = dailyUpdates.filter(u => u.played && u.stats?.pts >= 20).length;
-                            const thirtyPtGames = dailyUpdates.filter(u => u.played && u.stats?.pts >= 30).length;
+                            const twentyPtGames = playedGames.filter(u => u.stats?.pts >= 20).length;
+                            const thirtyPtGames = playedGames.filter(u => u.stats?.pts >= 30).length;
+                            
+                            // Career highs
+                            const maxPts = Math.max(...playedGames.map(u => u.stats?.pts || 0), 0);
+                            const maxReb = Math.max(...playedGames.map(u => u.stats?.reb || 0), 0);
+                            const maxAst = Math.max(...playedGames.map(u => u.stats?.ast || 0), 0);
+                            const maxBlk = Math.max(...playedGames.map(u => u.stats?.blk || 0), 0);
 
                             return (
                               <>
@@ -369,6 +373,26 @@ const AthleteProfilePage = () => {
                                   {seasonStats[0]?.rankings?.bpg_rank && (
                                     <div className="text-[10px] text-accent font-semibold mt-0.5">{getOrdinal(seasonStats[0].rankings.bpg_rank)} in NBA</div>
                                   )}
+                                </div>
+                                
+                                {/* Career Highs row */}
+                                <div className="col-span-4 grid grid-cols-4 gap-2 mt-2 pt-2 border-t border-border/30">
+                                  <div className="text-center bg-primary/10 rounded-lg px-2 py-1.5">
+                                    <div className="text-lg font-bold text-primary">{maxPts || "—"}</div>
+                                    <div className="text-[10px] text-muted-foreground uppercase">Max PTS</div>
+                                  </div>
+                                  <div className="text-center bg-primary/10 rounded-lg px-2 py-1.5">
+                                    <div className="text-lg font-bold text-primary">{maxReb || "—"}</div>
+                                    <div className="text-[10px] text-muted-foreground uppercase">Max REB</div>
+                                  </div>
+                                  <div className="text-center bg-primary/10 rounded-lg px-2 py-1.5">
+                                    <div className="text-lg font-bold text-primary">{maxAst || "—"}</div>
+                                    <div className="text-[10px] text-muted-foreground uppercase">Max AST</div>
+                                  </div>
+                                  <div className="text-center bg-primary/10 rounded-lg px-2 py-1.5">
+                                    <div className="text-lg font-bold text-primary">{maxBlk || "—"}</div>
+                                    <div className="text-[10px] text-muted-foreground uppercase">Max BLK</div>
+                                  </div>
                                 </div>
                                 
                                 {/* Milestones row */}
