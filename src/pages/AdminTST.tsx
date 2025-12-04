@@ -29,6 +29,7 @@ interface Athlete {
   national_photo_url: string | null;
   fotmob_id: number | null;
   balldontlie_id: number | null;
+  api_football_id: number | null;
 }
 
 interface DailyUpdate {
@@ -322,7 +323,7 @@ export default function AdminTST() {
                       <TableHead>Sport</TableHead>
                       <TableHead>Team</TableHead>
                       <TableHead>Position</TableHead>
-                      <TableHead>FotMob ID</TableHead>
+                      <TableHead>API Football ID</TableHead>
                       <TableHead>Balldontlie ID</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -338,7 +339,7 @@ export default function AdminTST() {
                         </TableCell>
                         <TableCell>{athlete.team}</TableCell>
                         <TableCell>{athlete.position}</TableCell>
-                        <TableCell>{athlete.fotmob_id || '-'}</TableCell>
+                        <TableCell>{athlete.api_football_id || '-'}</TableCell>
                         <TableCell>{athlete.balldontlie_id || '-'}</TableCell>
                         <TableCell>
                           <AthleteEditDialog athlete={athlete} onSave={loadAthletes} />
@@ -729,8 +730,8 @@ function AthleteEditDialog({ athlete, onSave }: { athlete: Athlete; onSave: () =
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>FotMob ID</Label>
-              <Input type="number" value={formData.fotmob_id || ''} onChange={e => setFormData({...formData, fotmob_id: parseInt(e.target.value) || null})} />
+              <Label>API Football ID</Label>
+              <Input type="number" value={formData.api_football_id || ''} onChange={e => setFormData({...formData, api_football_id: parseInt(e.target.value) || null})} />
             </div>
             <div>
               <Label>Balldontlie ID</Label>
