@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { FormGraphic } from "@/components/FormGraphic";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, AlertTriangle, Calendar, TrendingUp, User, ChevronDown, ChevronUp, Instagram, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -355,6 +356,14 @@ const AthleteProfilePage = () => {
                           <div className="text-xs text-muted-foreground uppercase">Avg Rating</div>
                         </div>
                       </>
+                    )}
+                    
+                    {/* Form Graphic for Football */}
+                    {athlete.sport === "football" && matchHistory.length > 0 && (
+                      <div className="w-full mt-4 pt-4 border-t border-border/50">
+                        <div className="text-xs text-muted-foreground uppercase mb-2">Recent Form</div>
+                        <FormGraphic matches={matchHistory} maxMatches={10} />
+                      </div>
                     )}
                   </div>
                 )}
