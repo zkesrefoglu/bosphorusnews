@@ -241,10 +241,11 @@ const TurkishStars = () => {
           </div>
         )}
 
-        {/* ATHLETE CARDS - Horizontal Rectangles */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
+        {/* ATHLETE CARDS - One Per Row */}
+        <div className="flex flex-col gap-4 mb-8">
           {athletes.map((athlete) => {
             const latestUpdate = getLatestUpdate(athlete.id);
+            const lastMatch = getLastMatch(athlete.id);
             const nextMatch = getNextMatch(athlete.id);
             const injuryStatus = latestUpdate?.injury_status || "healthy";
             const sportEmoji = athlete.sport === "basketball" ? "🏀" : "⚽";
@@ -255,13 +256,10 @@ const TurkishStars = () => {
                 to={`/section/sports/turkish-stars/${athlete.slug}`}
                 className="group block"
               >
-                <Card className="bg-card border-border overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:border-accent/50 relative">
-                  {/* Gradient overlay on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                  
-                  <div className="flex items-stretch relative">
-                    {/* 200x200 Profile Photo - Sharp Card Style */}
-                    <div className="relative w-[180px] md:w-[200px] h-[200px] flex-shrink-0 bg-secondary overflow-hidden">
+                <Card className="bg-card border-border overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.01] hover:shadow-xl hover:border-accent/40">
+                  <div className="flex items-stretch">
+                    {/* Photo */}
+                    <div className="relative w-[140px] md:w-[180px] h-[160px] md:h-[180px] flex-shrink-0 bg-secondary overflow-hidden">
                       {athlete.photo_url ? (
                         <img 
                           src={athlete.photo_url} 
@@ -270,72 +268,85 @@ const TurkishStars = () => {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-secondary to-muted">
-                          <User className="w-20 h-20 text-muted-foreground/50" />
+                          <User className="w-16 h-16 text-muted-foreground/50" />
                         </div>
                       )}
-                      {/* Jersey Number Badge */}
                       {athlete.jersey_number && (
-                        <div className="absolute top-3 left-3 bg-accent text-accent-foreground text-lg font-bold w-10 h-10 rounded-lg flex items-center justify-center shadow-lg border-2 border-background">
+                        <div className="absolute top-2 left-2 bg-accent text-accent-foreground text-sm font-bold w-8 h-8 rounded-lg flex items-center justify-center shadow-lg">
                           {athlete.jersey_number}
                         </div>
                       )}
-                      {/* Sport Emoji */}
-                      <div className="absolute bottom-3 left-3 text-2xl drop-shadow-lg">
-                        {sportEmoji}
-                      </div>
+                      <div className="absolute bottom-2 left-2 text-xl">{sportEmoji}</div>
                     </div>
 
-                    {/* Middle Content: Info */}
-                    <div className="flex-1 flex flex-col justify-between p-4 min-w-0">
-                      {/* Top: Name & Team */}
-                      <div>
-                        <h3 className="font-headline font-bold text-xl text-foreground truncate group-hover:text-accent transition-colors">
+                    {/* Data Fields */}
+                    <div className="flex-1 p-4 grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 items-center">
+                      {/* Athlete Name & Team */}
+                      <div className="col-span-2 md:col-span-1">
+                        <h3 className="font-headline font-bold text-lg text-foreground truncate group-hover:text-accent transition-colors">
                           {athlete.name}
                         </h3>
-                        <p className="text-sm text-muted-foreground font-medium">{athlete.team}</p>
-                        <p className="text-xs text-muted-foreground/70">{athlete.position} • {athlete.league}</p>
+                        <p className="text-sm text-muted-foreground">{athlete.team}</p>
+                        <p className="text-xs text-muted-foreground/70">{athlete.position}</p>
                       </div>
 
-                      {/* Middle: Status Badge */}
-                      <div className="my-2">
-                        <Badge className={`${getInjuryColor(injuryStatus)} border capitalize text-xs px-3 py-1`}>
+                      {/* Last Match Stats */}
+                      <div>
+                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-ui mb-1">Last Match</div>
+                        <div className="text-sm font-semibold text-foreground">
+                          {lastMatch ? formatStats(athlete, lastMatch.stats) : "—"}
+                        </div>
+                        {lastMatch && (
+                          <div className="text-xs text-muted-foreground">
+                            vs {lastMatch.opponent}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Result */}
+                      <div>
+                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-ui mb-1">Result</div>
+                        <div className="text-sm font-semibold text-foreground">
+                          {lastMatch?.match_result || "—"}
+                        </div>
+                      </div>
+
+                      {/* Status */}
+                      <div>
+                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-ui mb-1">Status</div>
+                        <Badge className={`${getInjuryColor(injuryStatus)} border capitalize text-xs`}>
                           {injuryStatus}
                         </Badge>
                       </div>
 
-                      {/* Bottom: Next Match */}
-                      <div className="pt-2 border-t border-border/50">
+                      {/* Next Match */}
+                      <div>
+                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-ui mb-1">Next Match</div>
                         {nextMatch ? (
-                          <div>
-                            <div className="text-[10px] uppercase tracking-widest text-muted-foreground/70 font-ui">Next Match</div>
+                          <>
                             <div className="text-sm font-semibold text-foreground">
                               {nextMatch.home_away === "home" ? "vs" : "@"} {nextMatch.opponent}
                             </div>
-                            <div className="text-xs text-accent font-medium">
+                            <div className="text-xs text-accent">
                               {format(new Date(nextMatch.match_date), "MMM d, h:mm a")}
                             </div>
-                          </div>
+                          </>
                         ) : (
-                          <div className="text-sm text-muted-foreground/50 italic">No upcoming match</div>
+                          <div className="text-sm text-muted-foreground">—</div>
                         )}
                       </div>
                     </div>
 
-                    {/* Right Edge: Team Logo */}
-                    <div className="w-[80px] md:w-[100px] flex-shrink-0 flex items-center justify-center bg-gradient-to-l from-secondary/50 to-transparent border-l border-border/30">
+                    {/* Team Logo - Right Edge */}
+                    <div className="w-[70px] md:w-[90px] flex-shrink-0 flex items-center justify-center bg-gradient-to-l from-secondary/30 to-transparent border-l border-border/20">
                       {athlete.team_logo_url ? (
-                        <div className="relative">
-                          <div className="absolute inset-0 bg-accent/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          <img 
-                            src={athlete.team_logo_url} 
-                            alt={`${athlete.team} logo`}
-                            className="w-14 h-14 md:w-16 md:h-16 object-contain relative z-10 transition-transform duration-300 group-hover:scale-110"
-                          />
-                        </div>
+                        <img 
+                          src={athlete.team_logo_url} 
+                          alt={`${athlete.team} logo`}
+                          className="w-12 h-12 md:w-14 md:h-14 object-contain transition-transform duration-300 group-hover:scale-110"
+                        />
                       ) : (
-                        <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center">
-                          <span className="text-2xl">{sportEmoji}</span>
-                        </div>
+                        <span className="text-3xl">{sportEmoji}</span>
                       )}
                     </div>
                   </div>
