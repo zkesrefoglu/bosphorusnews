@@ -318,7 +318,7 @@ const AthleteProfilePage = () => {
                     <>
                       <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                         <div className="text-center bg-background/80 rounded-lg px-3 py-2">
-                          <div className="text-2xl font-bold text-foreground">{aggregatedSeasonStats.games_played}</div>
+                          <div className="text-2xl font-semibold text-foreground">{aggregatedSeasonStats.games_played}</div>
                           <div className="text-xs text-muted-foreground uppercase">Games</div>
                         </div>
                         {athlete.sport === "basketball" && (
@@ -334,7 +334,7 @@ const AthleteProfilePage = () => {
                               return (
                                 <>
                                   <div className="text-center bg-background/80 rounded-lg px-3 py-2">
-                                    <div className="text-2xl font-bold text-foreground">{avgPpg?.toFixed(1) || "—"}</div>
+                                    <div className="text-2xl font-semibold text-foreground">{avgPpg?.toFixed(1) || "—"}</div>
                                     <div className="text-xs text-muted-foreground uppercase">PPG</div>
                                     {seasonStats[0]?.rankings?.ppg_rank && (
                                       <div className="text-[10px] text-accent font-semibold mt-0.5">{getOrdinal(seasonStats[0].rankings.ppg_rank)} in NBA</div>
@@ -342,7 +342,7 @@ const AthleteProfilePage = () => {
                                     <div className="text-[10px] text-primary font-medium mt-0.5">Max: {maxPts}</div>
                                   </div>
                                   <div className="text-center bg-background/80 rounded-lg px-3 py-2">
-                                    <div className="text-2xl font-bold text-foreground">{avgRpg?.toFixed(1) || "—"}</div>
+                                    <div className="text-2xl font-semibold text-foreground">{avgRpg?.toFixed(1) || "—"}</div>
                                     <div className="text-xs text-muted-foreground uppercase">RPG</div>
                                     {seasonStats[0]?.rankings?.rpg_rank && (
                                       <div className="text-[10px] text-accent font-semibold mt-0.5">{getOrdinal(seasonStats[0].rankings.rpg_rank)} in NBA</div>
@@ -350,7 +350,7 @@ const AthleteProfilePage = () => {
                                     <div className="text-[10px] text-primary font-medium mt-0.5">Max: {maxReb}</div>
                                   </div>
                                   <div className="text-center bg-background/80 rounded-lg px-3 py-2">
-                                    <div className="text-2xl font-bold text-foreground">{avgApg?.toFixed(1) || "—"}</div>
+                                    <div className="text-2xl font-semibold text-foreground">{avgApg?.toFixed(1) || "—"}</div>
                                     <div className="text-xs text-muted-foreground uppercase">APG</div>
                                     {seasonStats[0]?.rankings?.apg_rank && (
                                       <div className="text-[10px] text-accent font-semibold mt-0.5">{getOrdinal(seasonStats[0].rankings.apg_rank)} in NBA</div>
@@ -358,7 +358,7 @@ const AthleteProfilePage = () => {
                                     <div className="text-[10px] text-primary font-medium mt-0.5">Max: {maxAst}</div>
                                   </div>
                                   <div className="text-center bg-background/80 rounded-lg px-3 py-2">
-                                    <div className="text-2xl font-bold text-foreground">{avgBpg?.toFixed(1) || "—"}</div>
+                                    <div className="text-2xl font-semibold text-foreground">{avgBpg?.toFixed(1) || "—"}</div>
                                     <div className="text-xs text-muted-foreground uppercase">BPG</div>
                                     {seasonStats[0]?.rankings?.bpg_rank && (
                                       <div className="text-[10px] text-accent font-semibold mt-0.5">{getOrdinal(seasonStats[0].rankings.bpg_rank)} in NBA</div>
@@ -373,15 +373,15 @@ const AthleteProfilePage = () => {
                       {athlete.sport === "football" && !isGoalkeeper && (
                         <>
                           <div className="text-center bg-background/80 rounded-lg px-3 py-2">
-                            <div className="text-2xl font-bold text-foreground">{aggregatedSeasonStats.goals}</div>
+                            <div className="text-2xl font-semibold text-foreground">{aggregatedSeasonStats.goals}</div>
                             <div className="text-xs text-muted-foreground uppercase">Goals</div>
                           </div>
                           <div className="text-center bg-background/80 rounded-lg px-3 py-2">
-                            <div className="text-2xl font-bold text-foreground">{aggregatedSeasonStats.assists}</div>
+                            <div className="text-2xl font-semibold text-foreground">{aggregatedSeasonStats.assists}</div>
                             <div className="text-xs text-muted-foreground uppercase">Assists</div>
                           </div>
                           <div className="text-center bg-background/80 rounded-lg px-3 py-2">
-                            <div className="text-2xl font-bold text-foreground">{avgRating?.toFixed(1) || "—"}</div>
+                            <div className="text-2xl font-semibold text-foreground">{avgRating?.toFixed(1) || "—"}</div>
                             <div className="text-xs text-muted-foreground uppercase">Avg Rating</div>
                           </div>
                         </>
@@ -389,19 +389,19 @@ const AthleteProfilePage = () => {
                       {athlete.sport === "football" && isGoalkeeper && (
                         <>
                           <div className="text-center bg-background/80 rounded-lg px-3 py-2">
-                            <div className="text-2xl font-bold text-foreground">{aggregatedSeasonStats.saves}</div>
+                            <div className="text-2xl font-semibold text-foreground">{aggregatedSeasonStats.saves}</div>
                             <div className="text-xs text-muted-foreground uppercase">Saves</div>
                           </div>
                           <div className="text-center bg-background/80 rounded-lg px-3 py-2">
-                            <div className="text-2xl font-bold text-foreground">{aggregatedSeasonStats.goals_conceded}</div>
+                            <div className="text-2xl font-semibold text-foreground">{aggregatedSeasonStats.goals_conceded}</div>
                             <div className="text-xs text-muted-foreground uppercase">Conceded</div>
                           </div>
                           <div className="text-center bg-background/80 rounded-lg px-3 py-2">
-                            <div className="text-2xl font-bold text-foreground">{aggregatedSeasonStats.clean_sheets}</div>
+                            <div className="text-2xl font-semibold text-foreground">{aggregatedSeasonStats.clean_sheets}</div>
                             <div className="text-xs text-muted-foreground uppercase">Clean Sheets</div>
                           </div>
                           <div className="text-center bg-background/80 rounded-lg px-3 py-2">
-                            <div className="text-2xl font-bold text-foreground">{avgRating?.toFixed(1) || "—"}</div>
+                            <div className="text-2xl font-semibold text-foreground">{avgRating?.toFixed(1) || "—"}</div>
                             <div className="text-xs text-muted-foreground uppercase">Avg Rating</div>
                           </div>
                         </>
@@ -437,19 +437,19 @@ const AthleteProfilePage = () => {
                             return (
                               <>
                                 <div className="text-center bg-muted/50 rounded-lg px-2 py-1.5">
-                                  <div className="text-base font-bold text-accent">{doubleDoubles}</div>
+                                  <div className="text-base font-semibold text-accent">{doubleDoubles}</div>
                                   <div className="text-[9px] text-muted-foreground">Double-Doubles</div>
                                 </div>
                                 <div className="text-center bg-muted/50 rounded-lg px-2 py-1.5">
-                                  <div className="text-base font-bold text-accent">{tripleDoubles}</div>
+                                  <div className="text-base font-semibold text-accent">{tripleDoubles}</div>
                                   <div className="text-[9px] text-muted-foreground">Triple-Doubles</div>
                                 </div>
                                 <div className="text-center bg-muted/50 rounded-lg px-2 py-1.5">
-                                  <div className="text-base font-bold text-accent">{twentyPtGames}</div>
+                                  <div className="text-base font-semibold text-accent">{twentyPtGames}</div>
                                   <div className="text-[9px] text-muted-foreground">20+ Pts</div>
                                 </div>
                                 <div className="text-center bg-muted/50 rounded-lg px-2 py-1.5">
-                                  <div className="text-base font-bold text-accent">{thirtyPtGames}</div>
+                                  <div className="text-base font-semibold text-accent">{thirtyPtGames}</div>
                                   <div className="text-[9px] text-muted-foreground">30+ Pts</div>
                                 </div>
                               </>
@@ -512,7 +512,7 @@ const AthleteProfilePage = () => {
         {/* UPCOMING MATCHES */}
         {upcomingMatches.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-accent" />
               Upcoming Matches
             </h2>
@@ -548,42 +548,42 @@ const AthleteProfilePage = () => {
                 {seasonStats.map((stat) => (
                   <Card key={stat.id} className="p-6 bg-card border-border">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-bold text-foreground">{stat.season}</h3>
+                      <h3 className="text-lg font-semibold text-foreground">{stat.season}</h3>
                       <Badge variant="outline">{stat.competition}</Badge>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-4">
                       <div className="text-center p-3 bg-secondary rounded-lg">
-                        <div className="text-xl font-bold text-foreground">{stat.games_played || 0}</div>
+                        <div className="text-xl font-semibold text-foreground">{stat.games_played || 0}</div>
                         <div className="text-xs text-muted-foreground">GP</div>
                       </div>
                       <div className="text-center p-3 bg-secondary rounded-lg">
-                        <div className="text-xl font-bold text-foreground">{stat.games_started || 0}</div>
+                        <div className="text-xl font-semibold text-foreground">{stat.games_started || 0}</div>
                         <div className="text-xs text-muted-foreground">GS</div>
                       </div>
                       {athlete.sport === "basketball" && stat.stats && (
                         <>
                           <div className="text-center p-3 bg-secondary rounded-lg">
-                            <div className="text-xl font-bold text-foreground">{stat.stats.ppg?.toFixed(1) || "—"}</div>
+                            <div className="text-xl font-semibold text-foreground">{stat.stats.ppg?.toFixed(1) || "—"}</div>
                             <div className="text-xs text-muted-foreground">PPG</div>
                           </div>
                           <div className="text-center p-3 bg-secondary rounded-lg">
-                            <div className="text-xl font-bold text-foreground">{stat.stats.rpg?.toFixed(1) || "—"}</div>
+                            <div className="text-xl font-semibold text-foreground">{stat.stats.rpg?.toFixed(1) || "—"}</div>
                             <div className="text-xs text-muted-foreground">RPG</div>
                           </div>
                           <div className="text-center p-3 bg-secondary rounded-lg">
-                            <div className="text-xl font-bold text-foreground">{stat.stats.apg?.toFixed(1) || "—"}</div>
+                            <div className="text-xl font-semibold text-foreground">{stat.stats.apg?.toFixed(1) || "—"}</div>
                             <div className="text-xs text-muted-foreground">APG</div>
                           </div>
                           <div className="text-center p-3 bg-secondary rounded-lg">
-                            <div className="text-xl font-bold text-foreground">{stat.stats.fg_pct ? `${(stat.stats.fg_pct * 100).toFixed(1)}%` : "—"}</div>
+                            <div className="text-xl font-semibold text-foreground">{stat.stats.fg_pct ? `${(stat.stats.fg_pct * 100).toFixed(1)}%` : "—"}</div>
                             <div className="text-xs text-muted-foreground">FG%</div>
                           </div>
                           <div className="text-center p-3 bg-secondary rounded-lg">
-                            <div className="text-xl font-bold text-foreground">{stat.stats.three_pct ? `${(stat.stats.three_pct * 100).toFixed(1)}%` : "—"}</div>
+                            <div className="text-xl font-semibold text-foreground">{stat.stats.three_pct ? `${(stat.stats.three_pct * 100).toFixed(1)}%` : "—"}</div>
                             <div className="text-xs text-muted-foreground">3P%</div>
                           </div>
                           <div className="text-center p-3 bg-secondary rounded-lg">
-                            <div className="text-xl font-bold text-foreground">{stat.stats.ft_pct ? `${(stat.stats.ft_pct * 100).toFixed(1)}%` : "—"}</div>
+                            <div className="text-xl font-semibold text-foreground">{stat.stats.ft_pct ? `${(stat.stats.ft_pct * 100).toFixed(1)}%` : "—"}</div>
                             <div className="text-xs text-muted-foreground">FT%</div>
                           </div>
                         </>
@@ -591,27 +591,27 @@ const AthleteProfilePage = () => {
                       {athlete.sport === "football" && stat.stats && (
                         <>
                           <div className="text-center p-3 bg-secondary rounded-lg">
-                            <div className="text-xl font-bold text-foreground">{stat.stats.goals || 0}</div>
+                            <div className="text-xl font-semibold text-foreground">{stat.stats.goals || 0}</div>
                             <div className="text-xs text-muted-foreground">Goals</div>
                           </div>
                           <div className="text-center p-3 bg-secondary rounded-lg">
-                            <div className="text-xl font-bold text-foreground">{stat.stats.assists || 0}</div>
+                            <div className="text-xl font-semibold text-foreground">{stat.stats.assists || 0}</div>
                             <div className="text-xs text-muted-foreground">Assists</div>
                           </div>
                           <div className="text-center p-3 bg-secondary rounded-lg">
-                            <div className="text-xl font-bold text-foreground">{stat.stats.minutes || 0}</div>
+                            <div className="text-xl font-semibold text-foreground">{stat.stats.minutes || 0}</div>
                             <div className="text-xs text-muted-foreground">Minutes</div>
                           </div>
                           <div className="text-center p-3 bg-secondary rounded-lg">
-                            <div className="text-xl font-bold text-foreground">{stat.stats.shots || 0}</div>
+                            <div className="text-xl font-semibold text-foreground">{stat.stats.shots || 0}</div>
                             <div className="text-xs text-muted-foreground">Shots</div>
                           </div>
                           <div className="text-center p-3 bg-secondary rounded-lg">
-                            <div className="text-xl font-bold text-foreground">{stat.stats.pass_pct ? `${stat.stats.pass_pct}%` : "—"}</div>
+                            <div className="text-xl font-semibold text-foreground">{stat.stats.pass_pct ? `${stat.stats.pass_pct}%` : "—"}</div>
                             <div className="text-xs text-muted-foreground">Pass%</div>
                           </div>
                           <div className="text-center p-3 bg-secondary rounded-lg">
-                            <div className="text-xl font-bold text-foreground">{stat.stats.avg_rating?.toFixed(1) || "—"}</div>
+                            <div className="text-xl font-semibold text-foreground">{stat.stats.avg_rating?.toFixed(1) || "—"}</div>
                             <div className="text-xs text-muted-foreground">Rating</div>
                           </div>
                         </>
@@ -650,7 +650,7 @@ const AthleteProfilePage = () => {
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <div className="font-bold text-foreground">{match.match_result || "—"}</div>
+                          <div className="font-semibold text-foreground">{match.match_result || "—"}</div>
                           {match.rating && (
                             <div className="text-sm text-accent">{match.rating.toFixed(1)} rating</div>
                           )}
@@ -669,27 +669,27 @@ const AthleteProfilePage = () => {
                           {athlete.sport === "basketball" && (
                             <>
                               <div className="text-center">
-                                <div className="font-bold text-foreground">{match.stats.points ?? "—"}</div>
+                                <div className="font-semibold text-foreground">{match.stats.points ?? "—"}</div>
                                 <div className="text-xs text-muted-foreground">PTS</div>
                               </div>
                               <div className="text-center">
-                                <div className="font-bold text-foreground">{match.stats.rebounds ?? "—"}</div>
+                                <div className="font-semibold text-foreground">{match.stats.rebounds ?? "—"}</div>
                                 <div className="text-xs text-muted-foreground">REB</div>
                               </div>
                               <div className="text-center">
-                                <div className="font-bold text-foreground">{match.stats.assists ?? "—"}</div>
+                                <div className="font-semibold text-foreground">{match.stats.assists ?? "—"}</div>
                                 <div className="text-xs text-muted-foreground">AST</div>
                               </div>
                               <div className="text-center">
-                                <div className="font-bold text-foreground">{match.stats.steals ?? "—"}</div>
+                                <div className="font-semibold text-foreground">{match.stats.steals ?? "—"}</div>
                                 <div className="text-xs text-muted-foreground">STL</div>
                               </div>
                               <div className="text-center">
-                                <div className="font-bold text-foreground">{match.stats.blocks ?? "—"}</div>
+                                <div className="font-semibold text-foreground">{match.stats.blocks ?? "—"}</div>
                                 <div className="text-xs text-muted-foreground">BLK</div>
                               </div>
                               <div className="text-center">
-                                <div className="font-bold text-foreground">{match.minutes_played ?? "—"}'</div>
+                                <div className="font-semibold text-foreground">{match.minutes_played ?? "—"}'</div>
                                 <div className="text-xs text-muted-foreground">MIN</div>
                               </div>
                             </>
@@ -697,27 +697,27 @@ const AthleteProfilePage = () => {
                           {athlete.sport === "football" && (
                             <>
                               <div className="text-center">
-                                <div className="font-bold text-foreground">{match.stats.goals ?? 0}</div>
+                                <div className="font-semibold text-foreground">{match.stats.goals ?? 0}</div>
                                 <div className="text-xs text-muted-foreground">Goals</div>
                               </div>
                               <div className="text-center">
-                                <div className="font-bold text-foreground">{match.stats.assists ?? 0}</div>
+                                <div className="font-semibold text-foreground">{match.stats.assists ?? 0}</div>
                                 <div className="text-xs text-muted-foreground">Assists</div>
                               </div>
                               <div className="text-center">
-                                <div className="font-bold text-foreground">{match.stats.shots ?? "—"}</div>
+                                <div className="font-semibold text-foreground">{match.stats.shots ?? "—"}</div>
                                 <div className="text-xs text-muted-foreground">Shots</div>
                               </div>
                               <div className="text-center">
-                                <div className="font-bold text-foreground">{match.stats.tackles ?? "—"}</div>
+                                <div className="font-semibold text-foreground">{match.stats.tackles ?? "—"}</div>
                                 <div className="text-xs text-muted-foreground">Tackles</div>
                               </div>
                               <div className="text-center">
-                                <div className="font-bold text-foreground">{match.stats.pass_pct ? `${match.stats.pass_pct}%` : "—"}</div>
+                                <div className="font-semibold text-foreground">{match.stats.pass_pct ? `${match.stats.pass_pct}%` : "—"}</div>
                                 <div className="text-xs text-muted-foreground">Pass%</div>
                               </div>
                               <div className="text-center">
-                                <div className="font-bold text-foreground">{match.minutes_played ?? "—"}'</div>
+                                <div className="font-semibold text-foreground">{match.minutes_played ?? "—"}'</div>
                                 <div className="text-xs text-muted-foreground">MIN</div>
                               </div>
                             </>
