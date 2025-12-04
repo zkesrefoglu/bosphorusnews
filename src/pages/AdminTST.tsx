@@ -118,7 +118,7 @@ export default function AdminTST() {
   const [liveMatches, setLiveMatches] = useState<LiveMatch[]>([]);
   const [seasonStats, setSeasonStats] = useState<SeasonStats[]>([]);
   const [athleteNews, setAthleteNews] = useState<AthleteNews[]>([]);
-  const [syncStatus, setSyncStatus] = useState<{ football: string; nba: string; all: string }>({ football: 'idle', nba: 'idle', all: 'idle' });
+  const [syncStatus, setSyncStatus] = useState<{ football: string; nba: string; hollinger: string; all: string }>({ football: 'idle', nba: 'idle', hollinger: 'idle', all: 'idle' });
 
   useEffect(() => {
     checkAdminStatus();
@@ -268,13 +268,13 @@ export default function AdminTST() {
 
       loadAllData();
       
-      setTimeout(() => setSyncStatus({ football: 'idle', nba: 'idle', all: 'idle' }), 3000);
+      setTimeout(() => setSyncStatus({ football: 'idle', nba: 'idle', hollinger: 'idle', all: 'idle' }), 3000);
     } catch (error: any) {
       console.error('Sync all error:', error);
-      setSyncStatus({ football: 'error', nba: 'error', all: 'error' });
+      setSyncStatus({ football: 'error', nba: 'error', hollinger: 'error', all: 'error' });
       toast({ title: 'Refresh Failed', description: error.message, variant: 'destructive' });
       
-      setTimeout(() => setSyncStatus({ football: 'idle', nba: 'idle', all: 'idle' }), 3000);
+      setTimeout(() => setSyncStatus({ football: 'idle', nba: 'idle', hollinger: 'idle', all: 'idle' }), 3000);
     }
   };
 
@@ -290,6 +290,34 @@ export default function AdminTST() {
       loadAthletes();
     } catch (error: any) {
       toast({ title: 'Test Failed', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  const triggerHollingerSync = async () => {
+    setSyncStatus(prev => ({ ...prev, hollinger: 'syncing' }));
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-hollinger-stats');
+      
+      if (error) throw error;
+      
+      if (data?.success) {
+        setSyncStatus(prev => ({ ...prev, hollinger: 'success' }));
+        toast({ 
+          title: 'Hollinger Sync Complete', 
+          description: `PER Rank: #${data.data?.rank} | PER: ${data.data?.per}` 
+        });
+      } else {
+        throw new Error(data?.error || 'Unknown error');
+      }
+      
+      loadSeasonStats();
+      setTimeout(() => setSyncStatus(prev => ({ ...prev, hollinger: 'idle' })), 3000);
+    } catch (error: any) {
+      console.error('Hollinger sync error:', error);
+      setSyncStatus(prev => ({ ...prev, hollinger: 'error' }));
+      toast({ title: 'Hollinger Sync Failed', description: error.message, variant: 'destructive' });
+      setTimeout(() => setSyncStatus(prev => ({ ...prev, hollinger: 'idle' })), 3000);
     }
   };
 
@@ -705,6 +733,28 @@ export default function AdminTST() {
 
               <Card>
                 <CardHeader>
+                  <CardTitle>ESPN Hollinger Stats</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Fetches PER ranking from ESPN Hollinger stats for: Alperen Şengün
+                  </p>
+                  <Button 
+                    onClick={triggerHollingerSync} 
+                    disabled={syncStatus.hollinger === 'syncing'}
+                    className="w-full"
+                  >
+                    {syncStatus.hollinger === 'syncing' && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    {syncStatus.hollinger === 'success' && <CheckCircle className="h-4 w-4 mr-2 text-green-500" />}
+                    {syncStatus.hollinger === 'error' && <XCircle className="h-4 w-4 mr-2 text-red-500" />}
+                    {syncStatus.hollinger === 'idle' && <RefreshCw className="h-4 w-4 mr-2" />}
+                    Fetch Hollinger Stats
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
                   <CardTitle>Test Balldontlie Connection</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -730,6 +780,10 @@ export default function AdminTST() {
                     <div className="flex justify-between">
                       <span>NBA Stats:</span>
                       <Badge>Hourly at :30</Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Hollinger Stats:</span>
+                      <Badge>Hourly at :45</Badge>
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground">
