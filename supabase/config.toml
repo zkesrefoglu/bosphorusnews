@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.fetch-nba-stats]
 verify_jwt = false
+
+[functions.fetch-hollinger-stats]
+verify_jwt = false
