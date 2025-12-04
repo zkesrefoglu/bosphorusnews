@@ -100,6 +100,65 @@ export type Database = {
           },
         ]
       }
+      athlete_live_matches: {
+        Row: {
+          athlete_id: string
+          athlete_stats: Json | null
+          away_score: number | null
+          competition: string
+          created_at: string
+          current_minute: number | null
+          home_away: string | null
+          home_score: number | null
+          id: string
+          kickoff_time: string
+          last_event: string | null
+          match_status: string
+          opponent: string
+          updated_at: string
+        }
+        Insert: {
+          athlete_id: string
+          athlete_stats?: Json | null
+          away_score?: number | null
+          competition: string
+          created_at?: string
+          current_minute?: number | null
+          home_away?: string | null
+          home_score?: number | null
+          id?: string
+          kickoff_time: string
+          last_event?: string | null
+          match_status?: string
+          opponent: string
+          updated_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          athlete_stats?: Json | null
+          away_score?: number | null
+          competition?: string
+          created_at?: string
+          current_minute?: number | null
+          home_away?: string | null
+          home_score?: number | null
+          id?: string
+          kickoff_time?: string
+          last_event?: string | null
+          match_status?: string
+          opponent?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "athlete_live_matches_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athlete_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       athlete_profiles: {
         Row: {
           action_photo_url: string | null
