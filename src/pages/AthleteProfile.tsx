@@ -537,8 +537,8 @@ const AthleteProfilePage = () => {
           <TabsList className="w-full justify-start mb-6 bg-secondary overflow-x-auto">
             <TabsTrigger value="stats" className="flex-1 sm:flex-none">Season Stats</TabsTrigger>
             <TabsTrigger value="history" className="flex-1 sm:flex-none">Match History</TabsTrigger>
-            <TabsTrigger value="transfers" className="flex-1 sm:flex-none">Transfer News</TabsTrigger>
             <TabsTrigger value="injuries" className="flex-1 sm:flex-none">Injury History</TabsTrigger>
+            <TabsTrigger value="transfers" className="flex-1 sm:flex-none">Transfer News</TabsTrigger>
           </TabsList>
 
           {/* TAB 1: Season Stats */}
@@ -735,7 +735,32 @@ const AthleteProfilePage = () => {
             )}
           </TabsContent>
 
-          {/* TAB 3: Transfer News */}
+          {/* TAB 3: Injury History */}
+          <TabsContent value="injuries">
+            {injuryHistory.length > 0 ? (
+              <div className="space-y-2">
+                {injuryHistory.map((update) => (
+                  <Card key={update.id} className="p-4 bg-card border-border flex items-center gap-4">
+                    <div className="text-sm text-muted-foreground w-24">
+                      {format(new Date(update.date), "MMM d, yyyy")}
+                    </div>
+                    <Badge className={`${getInjuryColor(update.injury_status)} border capitalize`}>
+                      {update.injury_status}
+                    </Badge>
+                    {update.injury_details && (
+                      <span className="text-foreground">{update.injury_details}</span>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="p-8 text-center bg-card border-border">
+                <p className="text-muted-foreground">No injury history recorded.</p>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* TAB 4: Transfer News */}
           <TabsContent value="transfers">
             {transferRumors.length > 0 ? (
               <div className="space-y-4">
@@ -772,31 +797,6 @@ const AthleteProfilePage = () => {
             ) : (
               <Card className="p-8 text-center bg-card border-border">
                 <p className="text-muted-foreground">No transfer news available.</p>
-              </Card>
-            )}
-          </TabsContent>
-
-          {/* TAB 4: Injury History */}
-          <TabsContent value="injuries">
-            {injuryHistory.length > 0 ? (
-              <div className="space-y-2">
-                {injuryHistory.map((update) => (
-                  <Card key={update.id} className="p-4 bg-card border-border flex items-center gap-4">
-                    <div className="text-sm text-muted-foreground w-24">
-                      {format(new Date(update.date), "MMM d, yyyy")}
-                    </div>
-                    <Badge className={`${getInjuryColor(update.injury_status)} border capitalize`}>
-                      {update.injury_status}
-                    </Badge>
-                    {update.injury_details && (
-                      <span className="text-foreground">{update.injury_details}</span>
-                    )}
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="p-8 text-center bg-card border-border">
-                <p className="text-muted-foreground">No injury history recorded.</p>
               </Card>
             )}
           </TabsContent>
