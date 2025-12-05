@@ -1,4 +1,5 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { format, parseISO } from "date-fns";
 
 interface MatchData {
   id: string;
@@ -29,17 +30,20 @@ const getRatingTextColor = (rating: number | null): string => {
   return "text-foreground";
 };
 
-const getOpponentAbbrev = (opponent: string | null): string => {
-  if (!opponent) return "?";
-  // Return first 3 characters uppercase
-  return opponent.substring(0, 3).toUpperCase();
+const formatMatchDate = (dateStr: string): string => {
+  try {
+    return format(parseISO(dateStr), "MMM d, yyyy");
+  } catch {
+    return dateStr;
+  }
 };
 
 export const FormGraphic = ({ matches, maxMatches = 5 }: FormGraphicProps) => {
-  // Filter to played matches with ratings, take most recent (latest first, left to right)
+  // Filter to played matches with ratings, take most recent then reverse for ascending time (oldest to newest)
   const recentMatches = matches
     .filter((m) => m.played && m.rating !== null)
-    .slice(0, maxMatches);
+    .slice(0, maxMatches)
+    .reverse(); // Oldest first (left) to newest (right)
 
   if (recentMatches.length === 0) {
     return (
@@ -67,6 +71,9 @@ export const FormGraphic = ({ matches, maxMatches = 5 }: FormGraphicProps) => {
               <div className="text-sm">
                 <div className="font-semibold text-foreground">
                   vs {match.opponent || "Unknown"}
+                </div>
+                <div className="text-muted-foreground text-xs">
+                  {formatMatchDate(match.date)}
                 </div>
                 <div className="text-muted-foreground text-xs">
                   {match.match_result && <span className="mr-2">{match.match_result}</span>}
