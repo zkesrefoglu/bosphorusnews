@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Carousel, CarouselContent, CarouselItem, CarouselApi, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
@@ -50,37 +50,107 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   
+  // Refs for time-based progress tracking
+  const startTimeRef = useRef<number>(Date.now());
+  const animationFrameRef = useRef<number>();
+  const pausedAtRef = useRef<number>(0);
+  
   const plugin = React.useRef(
     Autoplay({ delay: AUTOPLAY_DELAY, stopOnInteraction: false, stopOnMouseEnter: true })
   );
 
-  // Update current slide index
+  // Progress bar animation using requestAnimationFrame for smooth sync
+  const updateProgress = useCallback(() => {
+    if (isPaused) return;
+    
+    const elapsed = Date.now() - startTimeRef.current;
+    const newProgress = Math.min((elapsed / AUTOPLAY_DELAY) * 100, 100);
+    setProgress(newProgress);
+    
+    if (newProgress < 100) {
+      animationFrameRef.current = requestAnimationFrame(updateProgress);
+    }
+  }, [isPaused]);
+
+  // Reset progress and start animation
+  const resetProgress = useCallback(() => {
+    startTimeRef.current = Date.now();
+    setProgress(0);
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+    if (!isPaused) {
+      animationFrameRef.current = requestAnimationFrame(updateProgress);
+    }
+  }, [isPaused, updateProgress]);
+
+  // Handle slide changes
   useEffect(() => {
     if (!api) return;
 
     setCurrent(api.selectedScrollSnap());
+    resetProgress();
     
-    api.on("select", () => {
+    const onSelect = () => {
       setCurrent(api.selectedScrollSnap());
-      setProgress(0); // Reset progress on slide change
-    });
-  }, [api]);
+      resetProgress();
+    };
 
-  // Progress bar animation
+    api.on("select", onSelect);
+    
+    return () => {
+      api.off("select", onSelect);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [api, resetProgress]);
+
+  // Handle pause/resume
   useEffect(() => {
-    if (isPaused || !api) return;
+    if (isPaused) {
+      // Store progress when pausing
+      pausedAtRef.current = Date.now() - startTimeRef.current;
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    } else {
+      // Resume from where we paused
+      startTimeRef.current = Date.now() - pausedAtRef.current;
+      animationFrameRef.current = requestAnimationFrame(updateProgress);
+    }
+  }, [isPaused, updateProgress]);
 
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          return 0;
-        }
-        return prev + (100 / (AUTOPLAY_DELAY / 50));
-      });
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, [isPaused, api, current]);
+  // Listen to autoplay plugin events for mouse hover sync
+  useEffect(() => {
+    if (!api || !plugin.current) return;
+    
+    const autoplayPlugin = plugin.current;
+    
+    const onMouseEnter = () => {
+      pausedAtRef.current = Date.now() - startTimeRef.current;
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+    
+    const onMouseLeave = () => {
+      if (!isPaused) {
+        startTimeRef.current = Date.now() - pausedAtRef.current;
+        animationFrameRef.current = requestAnimationFrame(updateProgress);
+      }
+    };
+    
+    // Get the carousel root element and add hover listeners
+    const rootNode = api.rootNode();
+    rootNode.addEventListener("mouseenter", onMouseEnter);
+    rootNode.addEventListener("mouseleave", onMouseLeave);
+    
+    return () => {
+      rootNode.removeEventListener("mouseenter", onMouseEnter);
+      rootNode.removeEventListener("mouseleave", onMouseLeave);
+    };
+  }, [api, isPaused, updateProgress]);
 
   const togglePause = useCallback(() => {
     if (!plugin.current) return;
@@ -96,7 +166,6 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
 
   const goToSlide = useCallback((index: number) => {
     api?.scrollTo(index);
-    setProgress(0);
   }, [api]);
 
   const nextSlideIndex = (current + 1) % articles.length;
