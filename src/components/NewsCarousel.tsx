@@ -209,18 +209,38 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
           ))}
         </div>
 
-        {/* Next Article Preview */}
-        {articles.length > 1 && (
+        {/* Next Article Preview - Expanded Card */}
+        {articles.length > 1 && nextArticle && (
           <button
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               goToSlide(nextSlideIndex);
             }}
-            className="hidden md:flex items-center gap-2 bg-black/40 backdrop-blur-sm rounded-full px-3 py-1.5 text-white hover:bg-black/60 transition-colors max-w-[200px]"
+            className="hidden md:flex items-center gap-3 bg-black/50 backdrop-blur-md rounded-lg p-2 text-white hover:bg-black/70 transition-all max-w-[320px] group/next"
           >
-            <span className="text-xs text-white/60 uppercase tracking-wide shrink-0">Next:</span>
-            <span className="text-xs font-medium truncate">{nextArticle?.title}</span>
+            {/* Thumbnail */}
+            <div className="relative w-20 h-14 rounded overflow-hidden shrink-0">
+              <img
+                src={nextArticle.imageUrl}
+                alt={nextArticle.title}
+                className="w-full h-full object-cover group-hover/next:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://picsum.photos/seed/${nextArticle.slug}/160/112`;
+                }}
+              />
+            </div>
+            {/* Text Content */}
+            <div className="flex flex-col items-start gap-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-white/60 uppercase tracking-wider font-medium">Up Next</span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded ${getCategoryColor(nextArticle.category)} text-white uppercase tracking-wide`}>
+                  {formatCategoryLabel(nextArticle.category)}
+                </span>
+              </div>
+              <span className="text-sm font-medium leading-tight line-clamp-2 text-left">{nextArticle.title}</span>
+            </div>
           </button>
         )}
       </div>
