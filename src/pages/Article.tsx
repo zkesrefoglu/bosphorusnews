@@ -2,17 +2,10 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Share2, Twitter, Cloud, Link2, Check, Facebook, Coffee } from "lucide-react";
+import { ArrowLeft, Share2, Twitter, Cloud, Link2, Check, Facebook, ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { stripCategoryPlaceholders, sanitizeArticleContent } from "@/lib/contentUtils";
 import { bustImageCache } from "@/lib/imageUtils";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { BreakingNewsBadge } from "@/components/BreakingNewsBadge";
 
@@ -36,6 +29,7 @@ const Article = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [copied, setCopied] = useState(false);
+  const [shareExpanded, setShareExpanded] = useState(false);
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -278,6 +272,69 @@ const Article = () => {
             </time>
           </div>
 
+          {/* Floating Share Button - Olympics.com style */}
+          <div className="fixed right-4 md:right-8 top-1/3 z-50 flex flex-col items-center">
+            <div className="bg-background border border-border rounded-full shadow-lg overflow-hidden flex flex-col items-center">
+              {/* Share Icon Button */}
+              <button
+                onClick={() => setShareExpanded(!shareExpanded)}
+                className="w-12 h-12 flex items-center justify-center hover:bg-destructive hover:text-white transition-colors group"
+                aria-label="Share"
+              >
+                <Share2 className="w-5 h-5" />
+              </button>
+              
+              {/* Divider */}
+              <div className="w-6 h-px bg-border" />
+              
+              {/* Expand/Collapse Button */}
+              <button
+                onClick={() => setShareExpanded(!shareExpanded)}
+                className="w-12 h-12 flex items-center justify-center hover:bg-destructive hover:text-white transition-colors"
+                aria-label={shareExpanded ? "Collapse" : "Expand"}
+              >
+                {shareExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+              </button>
+            </div>
+
+            {/* Expanded Share Options */}
+            {shareExpanded && (
+              <div className="mt-2 bg-background border border-border rounded-full shadow-lg overflow-hidden flex flex-col items-center animate-fade-in">
+                <button
+                  onClick={() => handleShare("twitter")}
+                  className="w-12 h-12 flex items-center justify-center hover:bg-destructive hover:text-white transition-colors"
+                  aria-label="Share on X"
+                >
+                  <Twitter className="w-5 h-5" />
+                </button>
+                <div className="w-6 h-px bg-border" />
+                <button
+                  onClick={() => handleShare("bluesky")}
+                  className="w-12 h-12 flex items-center justify-center hover:bg-destructive hover:text-white transition-colors"
+                  aria-label="Share on Bluesky"
+                >
+                  <Cloud className="w-5 h-5" />
+                </button>
+                <div className="w-6 h-px bg-border" />
+                <button
+                  onClick={() => handleShare("facebook")}
+                  className="w-12 h-12 flex items-center justify-center hover:bg-destructive hover:text-white transition-colors"
+                  aria-label="Share on Facebook"
+                >
+                  <Facebook className="w-5 h-5" />
+                </button>
+                <div className="w-6 h-px bg-border" />
+                <button
+                  onClick={() => handleShare("copy")}
+                  className="w-12 h-12 flex items-center justify-center hover:bg-destructive hover:text-white transition-colors"
+                  aria-label="Copy link"
+                >
+                  {copied ? <Check className="w-5 h-5" /> : <Link2 className="w-5 h-5" />}
+                </button>
+              </div>
+            )}
+          </div>
+
           {article.image_url && (
             <figure className="mb-8 rounded-lg overflow-hidden bg-muted">
               <img
@@ -305,48 +362,6 @@ const Article = () => {
             />
           </div>
 
-          {/* Share Section */}
-          <div className="mt-12 pt-8 border-t border-border">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Share this article</h3>
-              <div className="flex items-center gap-2">
-                {/* TEMPORARILY HIDDEN - Uncomment when payment account is finalized
-                <Link to="/coffee">
-                  <Button variant="outline" size="sm">
-                    <Coffee className="w-4 h-4 mr-2" />
-                    Buy Me a Cup
-                  </Button>
-                </Link>
-                */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <Share2 className="w-4 h-4 mr-2" />
-                      Share
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleShare("twitter")}>
-                      <Twitter className="w-4 h-4 mr-2" />
-                      Share on X
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleShare("bluesky")}>
-                      <Cloud className="w-4 h-4 mr-2" />
-                      Share on Bluesky
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleShare("facebook")}>
-                      <Facebook className="w-4 h-4 mr-2" />
-                      Share on Facebook
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleShare("copy")}>
-                      {copied ? <Check className="w-4 h-4 mr-2" /> : <Link2 className="w-4 h-4 mr-2" />}
-                      {copied ? "Copied!" : "Copy Link"}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-          </div>
         </article>
       </main>
 
