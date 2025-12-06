@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { Carousel, CarouselContent, CarouselItem, CarouselApi } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselApi, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { BreakingNewsBadge } from "@/components/BreakingNewsBadge";
 import { Pause, Play } from "lucide-react";
@@ -224,6 +224,10 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
           </button>
         )}
       </div>
+
+      {/* Navigation Arrows */}
+      <CarouselPrevious className="left-2 md:left-4 top-1/3 w-8 h-8 md:w-10 md:h-10 bg-black/30 backdrop-blur-sm border-white/10 text-white hover:bg-white/90 hover:text-foreground transition-all opacity-60 hover:opacity-100" />
+      <CarouselNext className="right-2 md:right-4 top-1/3 w-8 h-8 md:w-10 md:h-10 bg-black/30 backdrop-blur-sm border-white/10 text-white hover:bg-white/90 hover:text-foreground transition-all opacity-60 hover:opacity-100" />
     </Carousel>
   );
 };
