@@ -9,7 +9,14 @@ import { bustImageCache } from "@/lib/imageUtils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { BreakingNewsBadge } from "@/components/BreakingNewsBadge";
 
+interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 interface ArticleData {
+  id: string;
   title: string;
   excerpt: string;
   content: string;
@@ -26,6 +33,7 @@ const Article = () => {
 
   const { toast } = useToast();
   const [article, setArticle] = useState<ArticleData | null>(null);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [copied, setCopied] = useState(false);
@@ -47,6 +55,25 @@ const Article = () => {
         if (error) throw error;
 
         setArticle(data);
+
+        // Fetch tags for this article
+        if (data) {
+          const { data: articleTags } = await supabase
+            .from("article_tags")
+            .select("tag_id, tags(*)")
+            .eq("article_id", data.id);
+
+          if (articleTags) {
+            const fetchedTags = articleTags
+              .filter((at: any) => at.tags)
+              .map((at: any) => ({
+                id: at.tags.id,
+                name: at.tags.name,
+                slug: at.tags.slug,
+              }));
+            setTags(fetchedTags);
+          }
+        }
       } catch (error: any) {
         toast({
           title: "Error",
@@ -253,13 +280,22 @@ const Article = () => {
         </Link>
 
         <article className="animate-fade-in">
-          <div className="mb-6">
+          <div className="mb-6 flex flex-wrap items-center gap-2">
             <Link
               to={`/section/${article.category.toLowerCase().replace(/\s&\s/g, "-").replace(/\s/g, "-")}`}
               className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wide bg-primary text-primary-foreground rounded hover:opacity-80 transition-opacity"
             >
               {article.category}
             </Link>
+            {tags.map((tag) => (
+              <Link
+                key={tag.id}
+                to={`/tag/${tag.slug}`}
+                className="inline-block px-3 py-1 text-xs font-medium bg-muted text-primary rounded-full hover:bg-muted/80 transition-colors"
+              >
+                #{tag.name}
+              </Link>
+            ))}
           </div>
 
           {article.breaking_news && (

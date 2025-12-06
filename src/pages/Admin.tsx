@@ -17,6 +17,7 @@ import { ImageSizeFix } from "@/components/ImageSizeFix";
 import { Pencil, Trash2, Eye, EyeOff, Send, Search, Image } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { ArticlePreview } from "@/components/ArticlePreview";
+import { TagInput } from "@/components/TagInput";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,6 +62,7 @@ const Admin = () => {
   const [postingToBluesky, setPostingToBluesky] = useState(false);
   const [isBreakingNews, setIsBreakingNews] = useState(false);
   const [excludeFromCarousel, setExcludeFromCarousel] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<{ id: string; name: string; slug: string }[]>([]);
 
   // Xtra (Editorial) form state
   const [topicTitle, setTopicTitle] = useState("");
@@ -224,7 +226,7 @@ const Admin = () => {
         }
       }
       
-      const { error } = await supabase
+      const { data: insertedArticle, error } = await supabase
         .from("news_articles")
         .insert({
           title: validData.title,
@@ -240,9 +242,20 @@ const Admin = () => {
           published: true,
           breaking_news: isBreakingNews,
           is_carousel_featured: !excludeFromCarousel,
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Save article tags
+      if (selectedTags.length > 0 && insertedArticle) {
+        const tagInserts = selectedTags.map((tag) => ({
+          article_id: insertedArticle.id,
+          tag_id: tag.id,
+        }));
+        await supabase.from("article_tags").insert(tagInserts);
+      }
 
       toast({
         title: "Success!",
@@ -288,6 +301,7 @@ const Admin = () => {
       setPostToBluesky(false);
       setIsBreakingNews(false);
       setExcludeFromCarousel(false);
+      setSelectedTags([]);
       if (imageInput) imageInput.value = '';
       if (extraImageInput) extraImageInput.value = '';
     } catch (error: any) {
@@ -519,7 +533,7 @@ const Admin = () => {
     }
   };
 
-  const handleEditArticle = (article: any) => {
+  const handleEditArticle = async (article: any) => {
     setEditingArticle(article);
     setNewsTitle(article.title);
     setNewsSection(article.category);
@@ -530,6 +544,25 @@ const Admin = () => {
     setNewsExtraImageUrl(article.extra_image_url || "");
     setNewsExtraImageCredit(article.extra_image_credit || "");
     setIsBreakingNews(article.breaking_news || false);
+    
+    // Load existing tags for this article
+    const { data: articleTags } = await supabase
+      .from("article_tags")
+      .select("tag_id, tags(*)")
+      .eq("article_id", article.id);
+    
+    if (articleTags) {
+      const tags = articleTags
+        .filter((at: any) => at.tags)
+        .map((at: any) => ({
+          id: at.tags.id,
+          name: at.tags.name,
+          slug: at.tags.slug,
+        }));
+      setSelectedTags(tags);
+    } else {
+      setSelectedTags([]);
+    }
   };
 
   const handleUpdateArticle = async (e: React.FormEvent) => {
@@ -603,6 +636,17 @@ const Admin = () => {
 
       if (error) throw error;
 
+      // Update article tags - delete old ones and insert new ones
+      await supabase.from("article_tags").delete().eq("article_id", editingArticle.id);
+      
+      if (selectedTags.length > 0) {
+        const tagInserts = selectedTags.map((tag) => ({
+          article_id: editingArticle.id,
+          tag_id: tag.id,
+        }));
+        await supabase.from("article_tags").insert(tagInserts);
+      }
+
       toast({
         title: "Success",
         description: "Article updated successfully",
@@ -617,6 +661,7 @@ const Admin = () => {
       setNewsExtraImageUrl("");
       setNewsExtraImageCredit("");
       setIsBreakingNews(false);
+      setSelectedTags([]);
       setEditingArticle(null);
       fetchArticles();
     } catch (error: any) {
@@ -905,6 +950,15 @@ const Admin = () => {
                           <SelectItem value="Editorial">Editorial</SelectItem>
                         </SelectContent>
                       </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Tags (optional)</Label>
+                      <TagInput
+                        selectedTags={selectedTags}
+                        onTagsChange={setSelectedTags}
+                        maxTags={5}
+                      />
                     </div>
 
                     <div className="space-y-2">

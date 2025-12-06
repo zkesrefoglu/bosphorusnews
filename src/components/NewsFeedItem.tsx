@@ -14,6 +14,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { BreakingNewsBadge } from "@/components/BreakingNewsBadge";
 
+interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 interface NewsFeedItemProps {
   title: string;
   excerpt: string;
@@ -23,6 +29,7 @@ interface NewsFeedItemProps {
   date: string;
   slug: string;
   breakingNews?: boolean;
+  tags?: Tag[];
 }
 
 const getCategoryColor = (section: string): string => {
@@ -42,7 +49,7 @@ const getCategoryColor = (section: string): string => {
   return categoryMap[section] || "bg-muted/20";
 };
 
-export const NewsFeedItem = ({ title, excerpt, content, section, author, date, slug, breakingNews }: NewsFeedItemProps) => {
+export const NewsFeedItem = ({ title, excerpt, content, section, author, date, slug, breakingNews, tags }: NewsFeedItemProps) => {
   const categoryColor = getCategoryColor(section);
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
@@ -164,6 +171,24 @@ export const NewsFeedItem = ({ title, excerpt, content, section, author, date, s
         <p className="text-muted-foreground leading-relaxed mb-2">
           {excerpt}
         </p>
+        
+        {tags && tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag.id}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.location.href = `/tag/${tag.slug}`;
+                }}
+                className="inline-block px-2 py-0.5 text-xs font-medium bg-muted text-primary rounded-full hover:bg-muted/80 transition-colors cursor-pointer"
+              >
+                #{tag.name}
+              </span>
+            ))}
+          </div>
+        )}
         
         <div 
           className="rich-text-content text-foreground leading-relaxed mt-4"
