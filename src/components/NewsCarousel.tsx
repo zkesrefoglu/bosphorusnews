@@ -233,12 +233,7 @@ export const NewsCarousel = ({ articles }: NewsCarouselProps) => {
             </div>
             {/* Text Content */}
             <div className="flex flex-col items-start gap-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] text-white/60 uppercase tracking-wider font-medium">Up Next</span>
-                <span className={`text-[10px] px-1.5 py-0.5 rounded ${getCategoryColor(nextArticle.category)} text-white uppercase tracking-wide`}>
-                  {formatCategoryLabel(nextArticle.category)}
-                </span>
-              </div>
+              <span className="text-[10px] text-white/60 uppercase tracking-wider font-medium">Up Next</span>
               <span className="text-sm font-medium leading-tight line-clamp-2 text-left">{nextArticle.title}</span>
             </div>
           </button>
