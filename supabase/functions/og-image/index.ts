@@ -42,7 +42,10 @@ Deno.serve(async (req) => {
     const siteUrl = "https://bosphorusnews.com";
     const articleUrl = `${siteUrl}/article/${slug}`;
 
-    // Return HTML with proper meta tags for social media crawlers (no thumbnails)
+    // Use article image or fallback
+    const imageUrl = article.image_url || `${siteUrl}/logo.png`;
+
+    // Return HTML with proper meta tags for social media crawlers (with thumbnails)
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,13 +60,17 @@ Deno.serve(async (req) => {
   <meta property="og:title" content="${escapeHtml(article.title)}">
   <meta property="og:description" content="${escapeHtml(article.excerpt)}">
   <meta property="og:site_name" content="Bosphorus News">
+  <meta property="og:image" content="${imageUrl}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   
   <!-- Twitter -->
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@BosphorusNews">
   <meta name="twitter:url" content="${articleUrl}">
   <meta name="twitter:title" content="${escapeHtml(article.title)}">
   <meta name="twitter:description" content="${escapeHtml(article.excerpt)}">
+  <meta name="twitter:image" content="${imageUrl}">
   
   <link rel="canonical" href="${articleUrl}">
 </head>
