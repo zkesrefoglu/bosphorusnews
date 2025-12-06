@@ -105,15 +105,13 @@ export const LatestNewsStrip = ({ articles }: LatestNewsStripProps) => {
           >
             {/* FRONTPAGE NEWS Title Card */}
             <div className="flex-none w-[280px] md:w-[300px] snap-start">
-              <div className="bg-gradient-to-br from-destructive via-destructive/90 to-destructive/70 rounded-lg overflow-hidden shadow-sm flex items-center justify-center aspect-[16/10] relative">
+              <div className="bg-muted border border-border overflow-hidden shadow-sm flex items-center justify-center aspect-[16/10] relative">
                 {/* Decorative elements */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.1)_0%,transparent_50%)]" />
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,0,0,0.03)_0%,transparent_50%)]" />
                 
                 {/* Text */}
                 <div className="relative z-10 text-center px-6">
-                  <h2 className="font-headline text-2xl md:text-3xl font-black text-white leading-tight tracking-tight uppercase">
+                  <h2 className="font-headline text-2xl md:text-3xl font-black text-foreground leading-tight tracking-tight uppercase">
                     Frontpage
                     <br />
                     News
@@ -129,7 +127,7 @@ export const LatestNewsStrip = ({ articles }: LatestNewsStripProps) => {
                 to={`/article/${article.slug}`}
                 className="flex-none w-[280px] md:w-[300px] snap-start group/card"
               >
-                <article className="bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <article className="bg-card overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                   {/* Image */}
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <img
