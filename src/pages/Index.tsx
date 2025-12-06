@@ -76,17 +76,20 @@ const Index = () => {
         }))
       ]);
 
-      // Get carousel slugs for exclusion
+      // Get carousel slugs for exclusion from frontpage strip
       const carouselSlugs = carouselFinal.map(a => a.slug);
 
-      // 2. LATEST NEWS STRIP: Recent non-carousel articles (6 most recent)
+      // 2. FRONTPAGE NEWS STRIP: Carousel-featured articles that didn't make top 5
+      // These are the "overflow" articles - would be in carousel but dropped due to space
       const { data: latestData, error: latestError } = await supabase
         .from("news_articles")
         .select("*")
         .eq("published", true)
-        .eq("is_carousel_featured", false)
+        .eq("is_carousel_featured", true)
+        .order("is_carousel_pinned", { ascending: false })
+        .order("display_order", { ascending: true, nullsFirst: false })
         .order("created_at", { ascending: false })
-        .limit(10);
+        .range(5, 14); // Skip first 5 (shown in carousel), take next 10
 
       if (latestError) throw latestError;
 
