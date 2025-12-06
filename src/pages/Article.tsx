@@ -121,6 +121,9 @@ const Article = () => {
   const handleShare = async (platform: "twitter" | "bluesky" | "facebook" | "copy") => {
     if (!slug || !article) return;
 
+    // Use edge function URL for sharing - crawlers will see proper meta tags
+    // Human visitors get auto-redirected to the actual article
+    const shareUrl = `https://mxmarjrkwrqnhhipckzj.supabase.co/functions/v1/og-image?slug=${encodeURIComponent(slug)}`;
     const articleUrl = `${window.location.origin}/article/${slug}`;
 
     await supabase.from("share_analytics").insert({
@@ -131,7 +134,7 @@ const Article = () => {
 
     const getBlueskyText = () => {
       const baseText = `${article.title} | Bosphorus News Network`;
-      const urlPart = `\n\n${articleUrl}`;
+      const urlPart = `\n\n${shareUrl}`;
       const maxLength = 300;
 
       let middle = article.excerpt ? `\n\n${article.excerpt}` : "";
@@ -162,7 +165,7 @@ const Article = () => {
     switch (platform) {
       case "twitter":
         window.open(
-          `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${article.title} | Bosphorus News Network`)}&url=${encodeURIComponent(articleUrl)}`,
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${article.title} | Bosphorus News Network`)}&url=${encodeURIComponent(shareUrl)}`,
           "_blank",
           "width=550,height=420",
         );
@@ -177,9 +180,8 @@ const Article = () => {
         break;
       }
       case "facebook": {
-        const facebookText = `${article.title}\n\n${article.excerpt}`;
         window.open(
-          `https://www.facebook.com/share.php?u=${encodeURIComponent(articleUrl)}&quote=${encodeURIComponent(facebookText)}`,
+          `https://www.facebook.com/share.php?u=${encodeURIComponent(shareUrl)}`,
           "_blank",
           "width=550,height=680",
         );
@@ -187,7 +189,7 @@ const Article = () => {
       }
       case "copy":
         navigator.clipboard
-          .writeText(articleUrl)
+          .writeText(shareUrl)
           .then(() => {
             setCopied(true);
             toast({

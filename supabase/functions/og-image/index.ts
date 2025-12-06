@@ -73,11 +73,15 @@ Deno.serve(async (req) => {
   <meta name="twitter:image" content="${imageUrl}">
   
   <link rel="canonical" href="${articleUrl}">
+  
+  <!-- Auto-redirect human visitors to actual article -->
+  <meta http-equiv="refresh" content="0;url=${articleUrl}">
+  <script>window.location.replace("${articleUrl}");</script>
 </head>
 <body>
   <h1>${escapeHtml(article.title)}</h1>
   <p>${escapeHtml(article.excerpt)}</p>
-  <p><a href="${articleUrl}">Read full article on Bosphorus News</a></p>
+  <p>Redirecting to <a href="${articleUrl}">Bosphorus News</a>...</p>
 </body>
 </html>`;
 
