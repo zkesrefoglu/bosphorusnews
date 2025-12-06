@@ -37,6 +37,7 @@ export const LatestNewsStrip = ({ articles }: LatestNewsStripProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   const updateScrollButtons = () => {
     const container = scrollContainerRef.current;
@@ -47,6 +48,25 @@ export const LatestNewsStrip = ({ articles }: LatestNewsStripProps) => {
       );
     }
   };
+
+  // Auto-scroll effect
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const autoScroll = setInterval(() => {
+      if (!isPaused && container) {
+        // If at the end, scroll back to start
+        if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 10) {
+          container.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          container.scrollBy({ left: 1, behavior: "auto" });
+        }
+      }
+    }, 30);
+
+    return () => clearInterval(autoScroll);
+  }, [isPaused]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -60,7 +80,7 @@ export const LatestNewsStrip = ({ articles }: LatestNewsStripProps) => {
   const scroll = (direction: "left" | "right") => {
     const container = scrollContainerRef.current;
     if (container) {
-      const cardWidth = 320; // Approximate card width + gap
+      const cardWidth = 320;
       const scrollAmount = direction === "left" ? -cardWidth : cardWidth;
       container.scrollBy({ left: scrollAmount, behavior: "smooth" });
     }
@@ -71,21 +91,12 @@ export const LatestNewsStrip = ({ articles }: LatestNewsStripProps) => {
   return (
     <section className="py-12 bg-muted/30">
       <div className="container-custom">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="relative">
-            {/* Ghost/watermark text */}
-            <span className="absolute -top-2 left-0 text-6xl md:text-7xl font-headline font-black text-muted/20 select-none pointer-events-none tracking-tight">
-              LATEST
-            </span>
-            <h2 className="relative font-headline text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-              LATEST NEWS
-            </h2>
-          </div>
-        </div>
-
         {/* Scrollable container with navigation */}
-        <div className="relative group">
+        <div 
+          className="relative group"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
           {/* Left arrow */}
           {canScrollLeft && (
             <Button
@@ -116,7 +127,31 @@ export const LatestNewsStrip = ({ articles }: LatestNewsStripProps) => {
             className="flex gap-5 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory pb-2"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {articles.map((article, index) => (
+            {/* LATEST NEWS Title Card */}
+            <div className="flex-none w-[280px] md:w-[300px] snap-start">
+              <div className="relative h-full min-h-[280px] bg-gradient-to-br from-primary via-primary/90 to-primary/70 rounded-lg overflow-hidden shadow-lg flex items-center justify-center">
+                {/* Decorative elements */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.1)_0%,transparent_50%)]" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+                
+                {/* Text */}
+                <div className="relative z-10 text-center px-6">
+                  <span className="block text-primary-foreground/60 text-sm font-ui uppercase tracking-[0.3em] mb-2">
+                    Breaking
+                  </span>
+                  <h2 className="font-headline text-3xl md:text-4xl font-black text-primary-foreground leading-tight tracking-tight">
+                    LATEST
+                    <br />
+                    NEWS
+                  </h2>
+                  <div className="mt-4 w-12 h-1 bg-primary-foreground/40 mx-auto rounded-full" />
+                </div>
+              </div>
+            </div>
+
+            {/* Article cards */}
+            {articles.map((article) => (
               <Link
                 key={article.slug}
                 to={`/article/${article.slug}`}
