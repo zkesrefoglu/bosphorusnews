@@ -36,7 +36,10 @@ const newsArticleSchema = z.object({
   category: z.string().min(1, "Section is required"),
   excerpt: z.string().trim().min(1, "Excerpt is required").max(500, "Excerpt must be less than 500 characters"),
   content: z.string().trim().min(1, "Content is required").max(50000, "Content must be less than 50,000 characters"),
-  image_url: z.string().trim().url("Invalid URL format").optional().or(z.literal("")),
+  image_url: z.string().trim().refine(
+    (val) => val === "" || val.startsWith("/") || val.startsWith("http://") || val.startsWith("https://"),
+    "Must be a valid URL or relative path"
+  ).optional().or(z.literal("")),
 });
 
 const Admin = () => {
