@@ -41,6 +41,42 @@ export type Database = {
         }
         Relationships: []
       }
+      article_tags: {
+        Row: {
+          article_id: string
+          created_at: string
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          article_id: string
+          created_at?: string
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          article_id?: string
+          created_at?: string
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_tags_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       athlete_daily_updates: {
         Row: {
           athlete_id: string
@@ -578,6 +614,27 @@ export type Database = {
           id?: string
           platform?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      tags: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
         }
         Relationships: []
       }
