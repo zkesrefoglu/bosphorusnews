@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { NewsCarousel } from "@/components/NewsCarousel";
+import { LatestNewsStrip } from "@/components/LatestNewsStrip";
 import { HomeMatrixSection } from "@/components/HomeMatrixSection";
 import { DailyTopic } from "@/components/DailyTopic";
 import { Footer } from "@/components/Footer";
@@ -23,6 +24,7 @@ interface Article {
 const Index = () => {
   const { toast } = useToast();
   const [carouselArticles, setCarouselArticles] = useState<Article[]>([]);
+  const [latestNewsArticles, setLatestNewsArticles] = useState<Article[]>([]);
   const [matrixCategories, setMatrixCategories] = useState<Array<{ name: string; articles: Article[] }>>([]);
   const [editorsPick, setEditorsPick] = useState<{
     title: string;
@@ -74,7 +76,36 @@ const Index = () => {
         }))
       ]);
 
-      // 2. MATRIX SECTION: Get all categories dynamically (3 articles each)
+      // Get carousel slugs for exclusion
+      const carouselSlugs = carouselFinal.map(a => a.slug);
+
+      // 2. LATEST NEWS STRIP: Recent non-carousel articles (6 most recent)
+      const { data: latestData, error: latestError } = await supabase
+        .from("news_articles")
+        .select("*")
+        .eq("published", true)
+        .eq("is_carousel_featured", false)
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      if (latestError) throw latestError;
+
+      setLatestNewsArticles(
+        (latestData || []).map((article) => ({
+          title: article.title,
+          excerpt: article.excerpt,
+          slug: article.slug,
+          imageUrl: bustImageCache(article.image_url) || `https://picsum.photos/seed/${article.slug}/600/400`,
+          category: article.category,
+          date: new Date(article.created_at).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          }),
+        }))
+      );
+
+      // 3. MATRIX SECTION: Get all categories dynamically (3 articles each)
       // First get distinct categories excluding Xtra
       const { data: categoriesData, error: categoriesError } = await supabase
         .from("news_articles")
@@ -191,6 +222,11 @@ const Index = () => {
           <div className="container-custom">
             <NewsCarousel articles={carouselArticles} />
           </div>
+        )}
+
+        {/* LATEST NEWS STRIP */}
+        {latestNewsArticles.length > 0 && (
+          <LatestNewsStrip articles={latestNewsArticles} />
         )}
 
         {/* MATRIX SECTION */}
